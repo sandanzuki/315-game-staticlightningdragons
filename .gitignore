@@ -26,3 +26,14 @@
 *.exe
 *.out
 *.app
+
+# Don't commit swap files, or Makefiles! Or CMake whatevers.
+*.swp
+Makefile
+CMakeCache.txt
+CMakeFiles
+cmake_install.cmake
+
+# Don't commit our server executable or its stuff.
+rqserver
+logfile.txt

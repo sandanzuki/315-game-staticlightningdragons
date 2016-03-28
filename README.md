@@ -1,2 +1,3 @@
-# thank-naga
-a multiplayer game for csce 315, spring 2016
+# Radical Quest: Tactics
+
+A multiplayer online game developed for CSCE 315.
