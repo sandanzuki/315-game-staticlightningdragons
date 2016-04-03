@@ -5,3 +5,7 @@ Player::Player(int _player_id, int _game_id, string _name) {
     game_id = _game_id;
     name = _name;
 }
+
+Player::~Player(){
+    
+}

@@ -2,6 +2,7 @@
 #define PLAYER_H
 
 #include <string>
+#include "connection.h"
 
 using namespace std;
 
@@ -17,7 +18,7 @@ class Player {
         int player_id;
         int game_id;
         string name;
-        //connection;
+        Connection connection;
 };
 
 #endif
