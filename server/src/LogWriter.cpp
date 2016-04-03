@@ -12,13 +12,19 @@ namespace rqs
     LogWriter::~LogWriter()
     {
         if(mLogfile.is_open())
+        {
             mLogfile.close();
+        }
     }
 
     void LogWriter::write(std::string text)
     {
+        mMutex.lock();
         if(mLogfile.is_open())
+        {
             mLogfile << text;
+        }
         std::cout << text << std::endl;
+        mMutex.unlock();
     }
 };

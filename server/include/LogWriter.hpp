@@ -1,6 +1,7 @@
 #pragma once
 
 #include <fstream>
+#include <mutex>
 
 namespace rqs
 {
@@ -9,6 +10,7 @@ namespace rqs
     private:
 
         std::ofstream mLogfile;
+        std::mutex mMutex;
 
     public:
 
