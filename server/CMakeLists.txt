@@ -4,6 +4,8 @@ project(rqserver)
 set(CMAKE_MODULE_PATH "." ${CMAKE_MODULE_PATH})
 #find_package(SFML COMPONENTS audio graphics system window)
 
+include_directories(./include)
+
 set(RQSERVER_SOURCES
     ./src/LogWriter.cpp
     ./src/main.cpp
