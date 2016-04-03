@@ -10,10 +10,10 @@ Unit::Unit(int _unit_id, int _player_id, string _name) {
     name = _name;
     remaining_health = 100;
     max_health = 100;
-    //effects = ;
+    effects = new vector<Effect>;
 }
 
-Unit::Unit(int _unit_id, int _player_id, string _name, int _remaining_health, list<Effect> _effects) {
+Unit::Unit(int _unit_id, int _player_id, string _name, int _remaining_health, vector<Effect> _effects) {
     unit_id = _unit_id;
     player_id = _player_id;
     name = _name;
@@ -32,5 +32,13 @@ Unit::Unit(const Unit &obj) {
 }
 
 Unit::~Unit() {
+    
+}
+
+void Unit::add_effects(vector<Effect> add_effect){
+    
+}
+
+void Unit::remove_effects(vector<Effect> remove_effect){
     
 }
