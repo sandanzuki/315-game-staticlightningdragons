@@ -1,14 +1,59 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
-<title>Radical Quest: Tactics</title>
-<script src="./main.js"></script>
+    <meta charset="UTF-8" />
+	<title>Radical Quest: Tactics</title>
+    <script type="text/javascript" src="Phaser/build/phaser.js"></script>
+    <script type="text/javascript"></script>
+    <script type="text/javascript" src="game.js"></script>
+    <script type="text/javascript" src="menu.js"></script>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
+
+
 <body>
-    <div id="stuff">
-        Stuff.
+    <!--div class="dim"  title="Event"></div-->
+    <element onkeypress="myScript">
+
+    <!--input type="text" onkeypress="myFunction()"-->
+    <!--div id="button"><a href="#popup">Click Me</a></div>
+    <div id="popup">
+    <div class="window">
+    <a href="#" class="close-button" title="Close">X</a>
+    <h1>Overlay CSS Popup Window Box</h1>
+    <p>It is a simple CSS Popup Window Box without jQuery<br/>
+    This window is raised by CSS<br/>
+    To close this window, click the close button in the top
+    right</p>
     </div>
-    <div id="things">
-    </div>
+    </div-->
+
+
+
+
+    <!--Menu for the units owned by the player-->
+    <!-- div id="optionsMenu">
+        <ul>
+            <li>Resume</li>
+            <li>Options</li>
+            <li>Forfeit</li>
+        </ul>
+    </div -->
+
+    <!--div id="stats">
+        <ul>
+            <p id=x>0</p>
+            <p id=y>0</p>
+        </ul>
+    </div-->
+
+
+    <script src="//cdnjs.cloudflare.com/ajax/libs/mousetrap/1.4.6/mousetrap.min.js"></script>
+    <script
+        Mousetrap.bind('spacebar',
+            function() {
+                console.log('escape');
+            }, 'keypress');></script>
+
 </body>
 </html>
