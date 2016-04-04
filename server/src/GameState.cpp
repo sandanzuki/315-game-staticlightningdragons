@@ -1,4 +1,4 @@
-#include "gamestate.h"
+#include "GameState.hpp"
 
 GameState::GameState(int _game_id, int _map_width, int _map_height, map<int, TileInfo> _tiles, vector<Unit> _units) {
     game_id = _game_id;
@@ -9,5 +9,5 @@ GameState::GameState(int _game_id, int _map_width, int _map_height, map<int, Til
 }
 
 GameState::~GameState() {
-    
+
 }

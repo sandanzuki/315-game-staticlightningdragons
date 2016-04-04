@@ -2,7 +2,7 @@
 #define PLAYER_H
 
 #include <string>
-#include "connection.h"
+#include "Connection.hpp"
 
 using namespace std;
 

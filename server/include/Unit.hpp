@@ -3,7 +3,7 @@
 
 #include <vector>
 #include <string>
-#include "effect.h"
+#include "Effect.hpp"
 
 using namespace std;
 

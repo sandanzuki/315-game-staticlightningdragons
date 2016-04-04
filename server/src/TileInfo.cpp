@@ -1,10 +1,10 @@
-#include "tileinfo.h"
+#include "TileInfo.hpp"
 
 TileInfo::TileInfo(){
     
 }
 
-TileInfo::TileInfo(int _tile_id, int _x, int _y, Unit _occupant, vector<Effect> _effects){
+TileInfo::TileInfo(int _tile_id, int _x, int _y, Unit *_occupant, vector<Effect> _effects){
     tile_id = _tile_id;
     x = _x;
     y = _y;
@@ -17,14 +17,14 @@ TileInfo::~TileInfo(){
 }
 
 
-TileInfo::enter_tile(Unit _occupant) {
+void TileInfo::enter_tile(Unit *_occupant) {
     if(occupant == NULL) {
         occupant = _occupant;
-        occupant.add_effects(effects); 
+        occupant->add_effects(effects); 
     }
 }
 
-TileInfo::exit_tile() {
-    if(occupant != NULL) occupant.remove_effects(effects);
+void TileInfo::exit_tile() {
+    if(occupant != NULL) occupant->remove_effects(effects);
     occupant = NULL;
 }

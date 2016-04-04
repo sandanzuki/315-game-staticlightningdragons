@@ -1,4 +1,4 @@
-#include "unit.h"
+#include "Unit.hpp"
 
 Unit::Unit() {
     
@@ -10,7 +10,6 @@ Unit::Unit(int _unit_id, int _player_id, string _name) {
     name = _name;
     remaining_health = 100;
     max_health = 100;
-    effects = new vector<Effect>;
 }
 
 Unit::Unit(int _unit_id, int _player_id, string _name, int _remaining_health, vector<Effect> _effects) {

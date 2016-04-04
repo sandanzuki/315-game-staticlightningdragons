@@ -3,10 +3,8 @@
 #include <fstream>
 #include <mutex>
 
-namespace rqs
+class LogWriter
 {
-    class LogWriter
-    {
     private:
 
         std::ofstream mLogfile;
@@ -19,6 +17,4 @@ namespace rqs
         ~LogWriter();
 
         void write(std::string text);
-    };
 };
-

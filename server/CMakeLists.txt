@@ -7,14 +7,19 @@ set(CMAKE_MODULE_PATH "." ${CMAKE_MODULE_PATH})
 include_directories(./include)
 
 set(RQSERVER_SOURCES
+    ./src/Effect.cpp
+    ./src/GameState.cpp
     ./src/LogWriter.cpp
-    ./src/jsoncpp.cpp
     ./src/main.cpp
     ./src/network.cpp
+    ./src/Player.cpp
+    ./src/TileInfo.cpp
+    ./src/Unit.cpp
+    ./src/UnitFactory.cpp
+
+    ./src/jsoncpp.cpp
 )
 
 add_executable(rqserver ${RQSERVER_SOURCES})
 target_link_libraries(rqserver websockets)
 target_compile_features(rqserver PRIVATE cxx_range_for)
-#target_link_libraries(soltora ${SFML_LIBRARIES})
-

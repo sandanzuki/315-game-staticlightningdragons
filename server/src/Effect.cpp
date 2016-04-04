@@ -1,4 +1,4 @@
-#include "effect.h"
+#include "Effect.hpp"
 
 Effect::Effect() {
     

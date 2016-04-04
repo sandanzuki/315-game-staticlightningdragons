@@ -2,7 +2,10 @@
 #define CONNECTION_H
 
 #include <queue>
-#include "event.h"
+
+#include "json/json.h"
+
+typedef Json::Value Event;
 
 using namespace std;
 

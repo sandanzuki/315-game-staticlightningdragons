@@ -1,7 +1,7 @@
 #ifndef UNITFACTORY_H
 #define UNITFACTORY_H
 
-#include "unit.h"
+#include "Unit.hpp"
 
 class UnitFactory {
     public:

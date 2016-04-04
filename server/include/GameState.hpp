@@ -4,10 +4,15 @@
 #include <vector>
 #include <map>
 #include <string>
-#include "tileinfo.h"
-#include "unit.h"
+#include "TileInfo.hpp"
+#include "Unit.hpp"
+
+#include "json/json.h"
 
 using namespace std;
+
+typedef Json::Value EventRequest;
+typedef Json::Value Event;
 
 class GameState {
     public:
