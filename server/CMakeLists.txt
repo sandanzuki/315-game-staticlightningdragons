@@ -7,6 +7,7 @@ set(CMAKE_MODULE_PATH "." ${CMAKE_MODULE_PATH})
 include_directories(./include)
 
 set(RQSERVER_SOURCES
+    ./src/Connection.cpp
     ./src/Effect.cpp
     ./src/GameState.cpp
     ./src/LogWriter.cpp

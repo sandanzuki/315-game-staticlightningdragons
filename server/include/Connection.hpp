@@ -1,23 +1,34 @@
 #ifndef CONNECTION_H
 #define CONNECTION_H
 
+#include "Event.hpp"
+
+#include <mutex>
 #include <queue>
-
-#include "json/json.h"
-
-typedef Json::Value Event;
+#include <string>
 
 using namespace std;
 
-class Connection {
+class Connection
+{
     public:
-        Connection() {}
-        ~Connection() {}
-        void read_callback();	// called by libwebsockets when data is received.
-        void write_callback();	// called by libwebsockets when we can write again.
-    
+        Connection(int _playerId);
+        ~Connection();
+
+        void submit_incoming_message(string &message);
+        void submit_outgoing_event(Event &event);
+
+        EventRequest *pop_incoming_request();   // Grab a pointer to that request. Don't forget to delete it. Null on none.
+        string *pop_outgoing_message();         // Grab a pointer to the string. Don't forget to delete it. Null on none.
+
     private:
-        queue<Event> send_queue;	// queue of outgoing Events.
+        int playerId;   // ID of the Player this Connection is associated with
+
+        queue<EventRequest*> recv_queue;     // queue of Events that have been received, pre-processed
+        queue<string*> send_queue;           // queue of outgoing events, already as strings
+
+        mutex recv_mutex;   // mutex surrounding recv_queue
+        mutex send_mutex;   // mutex locking send_queue
 };
 
 #endif

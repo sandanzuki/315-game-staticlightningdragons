@@ -18,7 +18,7 @@ class Player {
         int player_id;
         int game_id;
         string name;
-        Connection connection;
+        Connection *connection;
 };
 
 #endif
