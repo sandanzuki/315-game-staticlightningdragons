@@ -18,6 +18,8 @@ var cursor,
     isDown,
     graphics;
 
+var friendlyUnits = [],
+    enemyUnits = [];
 
 function preload() {
 	// load map
@@ -121,26 +123,31 @@ function loadUnits(){
 
     // add all blue sprites to the map
     bFighter1 = game.add.sprite(0, 0,'b_fighter');
+    friendlyUnits.push(bFighter1);
     bFighter1.locked = false;                       //information about the unit and its tile for movment
     map.getTileWorldXY(0,0).properties.unitType = 1;//Is the unit done moving this turn?
     map.getTileWorldXY(0,0).unit = bFighter1;       //Does a tile have a unit on it?
 
     bFighter2 = game.add.sprite(0, 240,'b_fighter');
+    friendlyUnits.push(bFighter2);
     bFighter2.locked = false;
     map.getTileWorldXY(0,240).properties.unitType = 1;
     map.getTileWorldXY(0,240).unit = bFighter2;
 
     bArcher1 = game.add.sprite(0, 60,'b_archer');
+    friendlyUnits.push(bArcher1);
     bArcher1.locked = false;
     map.getTileWorldXY(0, 60).properties.unitType = 2;
     map.getTileWorldXY(0, 60).unit = bArcher1;
 
     bArcher2 = game.add.sprite(0, 180,'b_archer');
+    friendlyUnits.push(bArcher2);
     bArcher2.locked = false;
     map.getTileWorldXY(0, 180).properties.unitType = 2;
     map.getTileWorldXY(0, 180).unit = bArcher2;
 
     bMage = game.add.sprite(0, 120,'b_mage');
+    friendlyUnits.push(bMage);
     bMage.locked = false;
     map.getTileWorldXY(0, 120).properties.unitType = 3;
     map.getTileWorldXY(0, 120).unit = bMage;
@@ -148,26 +155,31 @@ function loadUnits(){
     // add all red sprites
     var x = map.widthInPixels-60;
     rFighter1 = game.add.sprite(x, 180, 'r_fighter');
+    friendlyUnits.push(rFighter1);
     rFighter1.locked = false;
     map.getTileWorldXY(x, 180).properties.unitType = 1;
     map.getTileWorldXY(x, 180).unit = rFighter1;
 
     rFighter2 = game.add.sprite(x, 420, 'r_fighter');
+    friendlyUnits.push(rFighter2);
     rFighter2.locked = false;
     map.getTileWorldXY(x, 420).properties.unitType = 1;
     map.getTileWorldXY(x, 420).unit = rFighter2;
 
     rArcher1 = game.add.sprite(x, 240, 'r_archer');
+    friendlyUnits.push(rArcher1);
     rArcher1.locked = false;
     map.getTileWorldXY(x, 240).properties.unitType = 2
     map.getTileWorldXY(x, 240).unit = rArcher1;
 
     rArcher2 = game.add.sprite(x, 360, 'r_archer');
+    friendlyUnits.push(rArcher2);
     rArcher2.locked = false;
     map.getTileWorldXY(x, 360).properties.unitType = 2;
     map.getTileWorldXY(x, 360).unit = rArcher2;
 
     rMage = game.add.sprite(x, 300, 'r_mage');
+    friendlyUnits.push(rMage);
     rMage.locked = false;
     map.getTileWorldXY(x, 300).properties.unitType = 3;
     map.getTileWorldXY(x, 300).unit = rMage;
