@@ -23,12 +23,21 @@ Connection::~Connection()
 
 void Connection::submit_incoming_message(string &message)
 {
-    // TODO string -> JSON
+    // TODO - figure out if this throws exceptions
+    EventRequest *r = new EventRequest();
+    stringstream(message) >> (*r);
+    (*r)["playerId"] = playerId;
+    recv_mutex.lock();
+    recv_queue.push(r);
+    recv_mutex.unlock();
 }
 
 void Connection::submit_outgoing_event(Event &event)
 {
-    // TODO JSON -> string
+    string *s = new string(event.asString());
+    send_mutex.lock();
+    send_queue.push(s);
+    send_mutex.unlock();
 }
 
 EventRequest *Connection::pop_incoming_request()
