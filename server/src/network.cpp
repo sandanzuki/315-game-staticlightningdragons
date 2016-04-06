@@ -1,4 +1,5 @@
 #include "LogWriter.hpp"
+#include "NetworkManager.hpp"
 
 #include "json/json.h"
 
@@ -72,3 +73,53 @@ int network_thread(LogWriter *logptr, bool &should_continue)
     return 0;
 }
 
+NetworkManager::NetworkManager()
+{
+    highest_connection_id = 0;
+}
+
+NetworkManager::~NetworkManager()
+{
+    recv_queue_mutex.lock();
+    for(EventRequest *r = pop_incoming_request(); r != NULL; r = pop_incoming_request())
+    {
+        delete r;
+    }
+    recv_queue_mutex.unlock();
+}
+
+void NetworkManager::submit_incoming_message(std::string &message)
+{
+    // TODO - figure out if this throws exceptions
+    EventRequest *r = new EventRequest();
+    stringstream(message) >> (*r);
+    (*r)["playerId"] = playerId;
+    recv_queue_mutex.lock();
+    recv_queue.push(r);
+    recv_queue_mutex.unlock();
+}
+
+EventRequest *NetworkManager::pop_incoming_request()
+{
+    recv_queue_mutex.lock();
+    if(recv_queue.empty())
+    {
+        recv_queue_mutex.unlock();
+        return NULL;
+    }
+    EventRequest *r = recv_queue.front();
+    recv_queue.pop();
+    recv_queue_mutex.unlock();
+    return r;
+}
+
+int NetworkManager::add_connection()
+{
+    new_connections_mutex.lock();
+    connections_mutex.lock();
+    ++highest_connection_id;
+    connections.emplace(highest_connection_id, highest_connection_id);
+    new_connections.push(&connections[highest_connection_id]);
+    connections_mutex.unlock();
+    new_connections_mutex.unlock();
+}

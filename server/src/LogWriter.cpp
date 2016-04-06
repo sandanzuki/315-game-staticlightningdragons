@@ -1,7 +1,5 @@
 #include "LogWriter.hpp"
 
-#include <iostream>
-
 LogWriter::LogWriter()
 {
     mLogfile.open("./logfile.txt", std::ios::trunc);
