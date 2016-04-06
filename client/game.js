@@ -116,7 +116,6 @@ function update() {
     pauseButton.onDown.add(pauseGame, this);
 
     enterButton.onDown.add(choosingMove, this);
-
 }
 
 //function for loading units to tilemap
@@ -249,6 +248,10 @@ function cursorRight() {
 
 //function that decides the actual functionality of pressing 'enter'
 function choosingMove(){
+    if (document.getElementById("stats").childNodes.length != 0){//remove the text below the game screen
+        document.getElementById("stats").innerHTML = "";
+    }
+
     if(isDown == 0){
         oldTile = moveMenu();
     }
@@ -268,25 +271,36 @@ function moveMenu() {
 
     var currTile = map.getTile(x,y, background);
 
-    switch(currTile.properties.unitType){
-        case 1:
-            isDown = 1;
-            fighterMoveOptions(currTile);
-            return currTile;
-            break;
-        case 2:
-            isDown = 1;
-            archerMoveOptions(currTile);
-            return currTile;
-            break;
-        case 3:
-            isDown = 1;
-            mageMoveOptions(currTile);
-            return currTile;
-            break;
-        default:
-            output("No unit here");
-            break;
+    if(currTile != null){
+        switch(currTile.properties.unitType){
+            case 1:
+                if(currTile.unit.locked == false){
+                    isDown = 1;
+                    fighterMoveOptions(currTile);
+                    return currTile;
+                }
+                break;
+            case 2:
+                if(currTile.unit.locked == false){
+                    isDown = 1;
+                    archerMoveOptions(currTile);
+                    return currTile;
+                }
+                break;
+            case 3:
+                if(currTile.unit.locked == false){
+                    isDown = 1;
+                    mageMoveOptions(currTile);
+                    return currTile;
+                }
+                break;
+            default:
+                output("No Unit Here");
+                break;
+        }
+    }
+    else{
+        output("Invalid Tile Selection");
     }
 }
 
