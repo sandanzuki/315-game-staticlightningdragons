@@ -14,7 +14,6 @@ set(RQSERVER_SOURCES
     ./src/main.cpp
     ./src/network.cpp
     ./src/Player.cpp
-    ./src/TileInfo.cpp
     ./src/Unit.cpp
     ./src/UnitFactory.cpp
 

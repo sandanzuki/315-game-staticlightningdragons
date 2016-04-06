@@ -1,33 +1,35 @@
 #ifndef TILEINFO_H
 #define TILEINFO_H
 
-#include <vector>
 #include "Effect.hpp"
 #include "Unit.hpp"
 
+#include <vector>
+
 using namespace std;
 
-class TileInfo {
+class TileInfo
+{
     public:
-        TileInfo();
-        TileInfo(int _tile_id, int _x, int _y, Unit *_occupant, vector<Effect> _effects);
-        ~TileInfo();
-        int get_tile_id() { return tile_id; }
+        TileInfo(int _x, int _y, bool _blocked) { x = _x; y = _y; blocked = _blocked; occupant = NULL; }
+
+        void add_effect(Effect *_effect) { effects.push_back(_effect); }
+        void set_occupant(Unit *_occupant) { occupant = _occupant; }
+
+        // Getters
         int get_x() { return x; }
         int get_y() { return y; }
+        bool is_blocked() { return blocked; }
         Unit *get_occupant() { return occupant; }
-        vector<Effect> get_effects() { return effects; }
-        void enter_tile(Unit *_occupant);
-        void exit_tile();
+        bool has_effects() { return !effects.empty(); }
+        vector<Effect*> &get_effects() { return effects; }
     
     private:
-        int tile_id;
         int x;
         int y;
         bool blocked; // determines if the tile may be traversed.
         Unit *occupant;
-        vector<Effect> effects;
-    
+        vector<Effect*> effects;
 };
 
 #endif
