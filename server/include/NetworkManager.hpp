@@ -32,9 +32,7 @@ class NetworkManager
         map<int, Connection*> connections;
         queue<Connection*> new_connections;
         queue<EventRequest*> recv_queue;
-        mutex connections_mutex;
-        mutex new_connections_mutex;
-        mutex recv_queue_mutex;
+        mutex nm_mutex;
 };
 
 void init_networking_thread(NetworkManager *nm, LogWriter *log);

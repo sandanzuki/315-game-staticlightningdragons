@@ -5,6 +5,7 @@
 
 #include <libwebsockets.h>
 #include <mutex>
+#include <string>
 #include <thread>
 
 using namespace std;
@@ -17,18 +18,42 @@ NetworkManager *nm = NULL;
 mutex should_continue;
 thread *primary_network_thread = NULL;
 
-int callback_http(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
+int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
+    int *id = (int*) user;
     // Just give me a reason, just a little bit's enough...
     switch(reason)
     {
-        case LWS_CALLBACK_RECEIVE:
-
-            lws_callback_on_writable(wsi);
+        // connection has been established
+        case LWS_CALLBACK_ESTABLISHED:
+            *id = nm->add_connection();
+            char buffer[2048];
+            memset(buffer, 0, 2048);
+            sprintf(buffer, "[NET] INFO: Player with ID %d has connected.");
+            log->write(buffer);
+            //lws_callback_on_writable(wsi);
             break;
 
+        // connection has been closed
+        case LWS_CALLBACK_CLOSED:
+            nm->kill_connection(*id);
+            return -1;
+
+        // data has been received over the connection
+        case LWS_CALLBACK_RECEIVE:
+            {
+                string recvst((const char*) in, len);
+                nm->submit_incoming_message(*id, recvst);
+                //lws_callback_on_writable(wsi);
+            }
+            break;
+
+        // the connection can be written to again
         case LWS_CALLBACK_SERVER_WRITEABLE:
-        case LWS_CALLBACK_HTTP_WRITEABLE:
+
+            // TODO - make it so that we can automatically write later if there
+            // aren't any outgoing messages right now... unless lws_callback_on_writable
+            // will do this for us - I don't really know
 
             char response[2048];
             memset(response, 0, 2048);
@@ -42,8 +67,11 @@ int callback_http(struct lws *wsi, enum lws_callback_reasons reason, void *user,
                 log->write("[NET] ERROR: Unable to write response, disconnecting player.");
                 return -1;
             }
+            //lws_callback_on_writable(wsi);
             break;
     }
+
+    // notify us when we can write to this connection again
     return 0;
 }
 
@@ -52,8 +80,8 @@ int network_thread()
     // Setup LWS.
     struct lws_context_creation_info info;
     memset(&info, 0, sizeof info);
-    info.port = 41337; // a hard-coded port of magnificent importance
-    struct lws_protocols protocols[] = { {"http-only", callback_http, 0, 0,}, { NULL, NULL, 0, 0} };
+    info.port = 13337; // a hard-coded port of magnificent importance
+    struct lws_protocols protocols[] = { {"rqs", callback_rqs, sizeof(int), 0,}, { NULL, NULL, 0, 0} };
     info.protocols = protocols;
 
     // Create the LWS context and verify that there were no errors.
@@ -103,20 +131,18 @@ NetworkManager::NetworkManager()
 NetworkManager::~NetworkManager()
 {
     // Delete any outstanding EventRequests.
-    recv_queue_mutex.lock();
+    nm_mutex.lock();
     for(EventRequest *r = pop_incoming_request(); r != NULL; r = pop_incoming_request())
     {
         delete r;
     }
-    recv_queue_mutex.unlock();
 
     // Delete all Connections.
-    connections_mutex.lock();
     for(pair<int, Connection*> p : connections)
     {
         delete p.second;
     }
-    connections_mutex.unlock();
+    nm_mutex.unlock();
 }
 
 void NetworkManager::submit_incoming_message(int connection_id, std::string &message)
@@ -125,67 +151,65 @@ void NetworkManager::submit_incoming_message(int connection_id, std::string &mes
     EventRequest *r = new EventRequest();
     stringstream(message) >> (*r);
     (*r)["playerId"] = connection_id;
-    recv_queue_mutex.lock();
+    nm_mutex.lock();
     recv_queue.push(r);
-    recv_queue_mutex.unlock();
+    nm_mutex.unlock();
 }
 
 EventRequest *NetworkManager::pop_incoming_request()
 {
-    recv_queue_mutex.lock();
+    nm_mutex.lock();
     if(recv_queue.empty())
     {
-        recv_queue_mutex.unlock();
+        nm_mutex.unlock();
         return NULL;
     }
     EventRequest *r = recv_queue.front();
     recv_queue.pop();
-    recv_queue_mutex.unlock();
+    nm_mutex.unlock();
     return r;
 }
 
 int NetworkManager::add_connection()
 {
-    new_connections_mutex.lock();
-    connections_mutex.lock();
+    nm_mutex.lock();
     ++highest_connection_id;
     connections[highest_connection_id] = new Connection(highest_connection_id);
     new_connections.push(connections[highest_connection_id]);
-    connections_mutex.unlock();
-    new_connections_mutex.unlock();
+    nm_mutex.unlock();
 }
 
 Connection *NetworkManager::get_connection(int id)
 {
-    connections_mutex.lock();
+    nm_mutex.lock();
     Connection *c = NULL;
     if(connections.find(id) != connections.end())
     {
         c = connections[id];
     }
-    connections_mutex.unlock();
+    nm_mutex.unlock();
     return c;
 }
 
 void NetworkManager::kill_connection(int id)
 {
-    connections_mutex.lock();
+    nm_mutex.lock();
     if(get_connection(id) != NULL)
     {
         connections.erase(id);
     }
-    connections_mutex.unlock();
+    nm_mutex.unlock();
 }
 
 Connection *NetworkManager::pop_new_connection()
 {
-    new_connections_mutex.lock();
+    nm_mutex.lock();
     Connection *c = NULL;
     if(!new_connections.empty())
     {
         c = new_connections.front();
         new_connections.pop();
     }
-    new_connections_mutex.unlock();
+    nm_mutex.unlock();
     return c;
 }

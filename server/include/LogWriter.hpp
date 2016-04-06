@@ -15,8 +15,4 @@ class LogWriter
         ~LogWriter();
 
         void write(std::string text);
-        std::ostream &operator<<(std::string text)
-        {
-            write(text);
-        }
 };
