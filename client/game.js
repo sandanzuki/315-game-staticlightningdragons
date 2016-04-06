@@ -18,6 +18,7 @@ var cursor,
     isDown,
     graphics,
     lockGraphics,
+    selected,
     lockCounter = 0;
 
 var friendlyUnits = [],
@@ -77,7 +78,9 @@ function create() {
 
     loadUnits();
 
-    lockGraphics = game.add.graphics();
+    lockGraphics = game.add.graphics();//used to identify a locked unit
+    selected = game.add.graphics();//used to identify the user's selected unit
+
     cursor = game.add.graphics();
     cursor.lineStyle(2, 0xffffff, 1);
     cursor.drawRect(1, 1, 58, 58);
@@ -122,66 +125,64 @@ function update() {
 function loadUnits(){
     // add all blue sprites to the map
     bFighter1 = game.add.sprite(0, 0,'b_fighter');
-    friendlyUnits.push(bFighter1);
-    bFighter1.locked = false;                       //information about the unit and its tile for movment
+    friendlyUnits.push(bFighter1);                  //information about the unit and its tile for movment
     map.getTileWorldXY(0,0).properties.unitType = 1;//Is the unit done moving this turn?
     map.getTileWorldXY(0,0).unit = bFighter1;       //Does a tile have a unit on it?
+    bFighter1.maxHealth=100;
 
     bFighter2 = game.add.sprite(0, 240,'b_fighter');
     friendlyUnits.push(bFighter2);
-    bFighter2.locked = false;
     map.getTileWorldXY(0,240).properties.unitType = 1;
     map.getTileWorldXY(0,240).unit = bFighter2;
 
     bArcher1 = game.add.sprite(0, 60,'b_archer');
     friendlyUnits.push(bArcher1);
-    bArcher1.locked = false;
     map.getTileWorldXY(0, 60).properties.unitType = 2;
     map.getTileWorldXY(0, 60).unit = bArcher1;
 
     bArcher2 = game.add.sprite(0, 180,'b_archer');
     friendlyUnits.push(bArcher2);
-    bArcher2.locked = false;
     map.getTileWorldXY(0, 180).properties.unitType = 2;
     map.getTileWorldXY(0, 180).unit = bArcher2;
 
     bMage = game.add.sprite(0, 120,'b_mage');
     friendlyUnits.push(bMage);
-    bMage.locked = false;
     map.getTileWorldXY(0, 120).properties.unitType = 3;
     map.getTileWorldXY(0, 120).unit = bMage;
 
     // add all red sprites
     var x = map.widthInPixels-60;
     rFighter1 = game.add.sprite(x, 180, 'r_fighter');
-    friendlyUnits.push(rFighter1);
-    rFighter1.locked = false;
+    enemyUnits.push(rFighter1);
     map.getTileWorldXY(x, 180).properties.unitType = 1;
     map.getTileWorldXY(x, 180).unit = rFighter1;
 
     rFighter2 = game.add.sprite(x, 420, 'r_fighter');
-    friendlyUnits.push(rFighter2);
-    rFighter2.locked = false;
+    enemyUnits.push(rFighter2);
     map.getTileWorldXY(x, 420).properties.unitType = 1;
     map.getTileWorldXY(x, 420).unit = rFighter2;
 
     rArcher1 = game.add.sprite(x, 240, 'r_archer');
-    friendlyUnits.push(rArcher1);
-    rArcher1.locked = false;
+    enemyUnits.push(rArcher1);
     map.getTileWorldXY(x, 240).properties.unitType = 2
     map.getTileWorldXY(x, 240).unit = rArcher1;
 
     rArcher2 = game.add.sprite(x, 360, 'r_archer');
-    friendlyUnits.push(rArcher2);
-    rArcher2.locked = false;
+    enemyUnits.push(rArcher2);
     map.getTileWorldXY(x, 360).properties.unitType = 2;
     map.getTileWorldXY(x, 360).unit = rArcher2;
 
     rMage = game.add.sprite(x, 300, 'r_mage');
-    friendlyUnits.push(rMage);
-    rMage.locked = false;
+    enemyUnits.push(rMage);
     map.getTileWorldXY(x, 300).properties.unitType = 3;
     map.getTileWorldXY(x, 300).unit = rMage;
+
+    for(var i = 0; i<friendlyUnits.length; i++){
+        friendlyUnits[i].maxHealth = 100;
+        friendlyUnits[i].locked = false;
+        enemyUnits[i].maxHealth = 100;
+        enemyUnits[i].locked = false;
+    }
 }
 
 // functions for moving the cursor around one tile at a time
@@ -256,6 +257,7 @@ function choosingMove(){
         oldTile = moveMenu();
     }
     else{
+        selected.clear();
         moveComplete(coordinates);
     }
 }
@@ -266,37 +268,46 @@ function moveMenu() {
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
 
-    coordinates[0] = x;
-    coordinates[1] = y;
+    coordinates[0] = x;//because phaser is being dumb and wont let me do someTile = tile
+    coordinates[1] = y;//so saved the x,y coords in an array for my convienience.
 
     var currTile = map.getTile(x,y, background);
 
-    if(currTile != null){
-        switch(currTile.properties.unitType){
-            case 1:
-                if(currTile.unit.locked == false){
-                    isDown = 1;
-                    fighterMoveOptions(currTile);
-                    return currTile;
+    //the nexted ifs get a little hairy here.
+    if(currTile != null){//is the current tile actually a valid tile on the map?
+        if(currTile.properties.unitType != 0){ //if the tile actually holds a unit, carry on
+
+            selected.lineStyle(2, 0xffbf00, 1); //draw a spiffy looking gold square
+            selected.beginFill(0xffbf00, .5);   //to rep the selected unit
+            selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
+
+            if(currTile.unit.locked==false){ //if the unit is not locked, figure out what kind it is
+                switch(currTile.properties.unitType){
+                    case 1: //the unit is a fighter
+                        isDown = 1;
+                        output("Friendly Fighter");
+                        fighterMoveOptions(currTile);
+                        return currTile;
+                        break;
+                    case 2: //the unit is an archer
+                        isDown = 1;
+                        output("Friendly Archer");
+                        archerMoveOptions(currTile);
+                        return currTile;
+                        break;
+                    case 3: //the unit is a mage
+                        isDown = 1;
+                        output("Friendly Mage");
+                        mageMoveOptions(currTile);
+                        return currTile;
+                        break;
+                    default:
+                        break;
                 }
-                break;
-            case 2:
-                if(currTile.unit.locked == false){
-                    isDown = 1;
-                    archerMoveOptions(currTile);
-                    return currTile;
-                }
-                break;
-            case 3:
-                if(currTile.unit.locked == false){
-                    isDown = 1;
-                    mageMoveOptions(currTile);
-                    return currTile;
-                }
-                break;
-            default:
-                output("No Unit Here");
-                break;
+            }
+        }
+        else{
+            output("No Unit Here");
         }
     }
     else{
@@ -314,7 +325,7 @@ function fighterMoveOptions(currTile){
     for(var n=1; n<5; n++){//tiles to the right
         possibleTiles.push(map.getTile(x+n, y, background));
 
-        if(map.getTileRight(i, x+n, y) != null){
+        if(map.getTileRight(i, x+n, y) != null){//prevent unit from moving through blocked tiles
             if(map.getTileRight(i, x+n, y).index == -1){
                 break;
             }
@@ -349,6 +360,17 @@ function fighterMoveOptions(currTile){
                 break;
             }
         }
+    }
+
+    var k = 3;
+    for(var n=1; n<4; n++){ //all tiles in a diamond shape around the x/y axis
+        for(var m=1; m<=k; m++){
+            possibleTiles.push(map.getTile(x+n,y-m,background));
+            possibleTiles.push(map.getTile(x-n,y+m,background));
+            possibleTiles.push(map.getTile(x+n,y+m,background));
+            possibleTiles.push(map.getTile(x-n,y-m,background));
+        }
+        k--;
     }
 
     possibleTiles = drawOptions(possibleTiles);
@@ -403,6 +425,18 @@ function archerMoveOptions(currTile){
         }
     }
 
+    var k = 5;
+    for(var n=1; n<6; n++){ //all tiles in a diamond shape around the x/y axis
+        for(var m=1; m<=k; m++){
+            possibleTiles.push(map.getTile(x+n,y-m,background));
+            possibleTiles.push(map.getTile(x-n,y+m,background));
+            possibleTiles.push(map.getTile(x+n,y+m,background));
+            possibleTiles.push(map.getTile(x-n,y-m,background));
+        }
+        k--;
+    }
+
+
     possibleTiles = drawOptions(possibleTiles);
 }
 
@@ -452,6 +486,18 @@ function mageMoveOptions(currTile){
             }
         }
     }
+
+    var k = 4;
+    for(var n=1; n<5; n++){ //all tiles in a diamond shape around the x/y axis
+        for(var m=1; m<=k; m++){
+            possibleTiles.push(map.getTile(x+n,y-m,background));
+            possibleTiles.push(map.getTile(x-n,y+m,background));
+            possibleTiles.push(map.getTile(x+n,y+m,background));
+            possibleTiles.push(map.getTile(x-n,y-m,background));
+        }
+        k--;
+    }
+
 
     possibleTiles = drawOptions(possibleTiles);
 }
