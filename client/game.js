@@ -16,7 +16,9 @@ var cursor,
     possibleTiles = [],
     coordinates = [],
     isDown,
-    graphics;
+    graphics,
+    lockGraphics,
+    lockCounter = 0;
 
 var friendlyUnits = [],
     enemyUnits = [];
@@ -47,7 +49,6 @@ function create() {
     //this.physics.arcade.gravity.y = GRAVITY;
 	// show map
 	isDown = 0;
-	graphics = game.add.group();
 	game.scale.pageAlignHorizontally = true; // aligns canvas
 	game.scale.pageAlignVertically = true; // aligns canvas
 	game.scale.refresh();
@@ -76,6 +77,7 @@ function create() {
 
     loadUnits();
 
+    lockGraphics = game.add.graphics();
     cursor = game.add.graphics();
     cursor.lineStyle(2, 0xffffff, 1);
     cursor.drawRect(1, 1, 58, 58);
@@ -114,13 +116,11 @@ function update() {
     pauseButton.onDown.add(pauseGame, this);
 
     enterButton.onDown.add(choosingMove, this);
+
 }
 
 //function for loading units to tilemap
 function loadUnits(){
-    //calculate same x coords for all blues and reds
-
-
     // add all blue sprites to the map
     bFighter1 = game.add.sprite(0, 0,'b_fighter');
     friendlyUnits.push(bFighter1);
@@ -285,7 +285,7 @@ function moveMenu() {
             return currTile;
             break;
         default:
-            window.alert("No unit");
+            output("No unit here");
             break;
     }
 }
@@ -481,13 +481,42 @@ function moveComplete(coordinates){
             currTile.properties.unitType = oldTile.properties.unitType; //give the new tile all of the old tile's properties
             oldTile.properties.unitType = 0;
             oldTile.unit = null;
-            currTile.unit.locked = true; //this unit is done moving for the turn
+
+            lockUnit(currTile.unit);//show the user that this unit is now locked, and cannot be moved again
         }
     }
     graphics.clear();
-    graphics.lineStyle(2, 0xcc0000, 1);
-    graphics.beginFill(0xcc0000, .25);
-    graphics.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
+
+}
+
+function lockUnit(unit){
+    var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+    var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+    var currTile = map.getTile(x, y, background);
+
+    currTile.unit.locked = true;
+
+    lockGraphics.lineStyle(2, 0xcc0000, 1);
+    lockGraphics.beginFill(0xcc0000, .25);
+    lockGraphics.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
+    lockCounter++;
+
+    if(lockCounter == friendlyUnits.length + enemyUnits.length){
+        unlockUnits(friendlyUnits);
+        unlockUnits(enemyUnits);
+        lockCounter = 0;
+    }
+}
+
+function unlockUnits(unitList){
+    for(var i = 0; i<unitList.length; i++){
+        unitList[i].locked = false;
+    }
+    lockGraphics.clear();
+}
+
+function output(input){
+    document.getElementById("stats").innerHTML = input;
 }
 
 var pause = false;
