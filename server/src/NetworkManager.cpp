@@ -4,13 +4,18 @@
 #include "json/json.h"
 
 #include <libwebsockets.h>
+#include <mutex>
+#include <thread>
 
+using namespace std;
 
-// Globals - because there is no better way.
-// Well, there might be, but I can't think of it.
-// Because C.
+// Unfortunately, libwebsockets doesn't play nicely with C++, so we're
+// going to have to rely on a few (limited!) globals here.
 
-LogWriter *log;
+LogWriter *log = NULL;
+NetworkManager *nm = NULL;
+mutex should_continue;
+thread *primary_network_thread = NULL;
 
 int callback_http(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
@@ -42,11 +47,8 @@ int callback_http(struct lws *wsi, enum lws_callback_reasons reason, void *user,
     return 0;
 }
 
-int network_thread(LogWriter *logptr, bool &should_continue)
+int network_thread()
 {
-    // Make the log accessible to other functions.
-    log = logptr;
-
     // Setup LWS.
     struct lws_context_creation_info info;
     memset(&info, 0, sizeof info);
@@ -63,7 +65,7 @@ int network_thread(LogWriter *logptr, bool &should_continue)
     }
 
     // Keep LWS ticking.
-    while(should_continue)
+    while(!should_continue.try_lock())
     {
         lws_service(context, 50);
     }
@@ -73,6 +75,26 @@ int network_thread(LogWriter *logptr, bool &should_continue)
     return 0;
 }
 
+void init_networking_thread(NetworkManager *_nm, LogWriter *_log)
+{
+    nm = _nm;
+    log = _log;
+    should_continue.lock();
+    primary_network_thread = new thread(network_thread);
+
+}
+
+void shutdown_networking_thread()
+{
+    if(primary_network_thread == NULL)
+    {
+        return;
+    }
+    should_continue.unlock();
+    primary_network_thread->join();
+    delete primary_network_thread;
+}
+
 NetworkManager::NetworkManager()
 {
     highest_connection_id = 0;
@@ -80,20 +102,29 @@ NetworkManager::NetworkManager()
 
 NetworkManager::~NetworkManager()
 {
+    // Delete any outstanding EventRequests.
     recv_queue_mutex.lock();
     for(EventRequest *r = pop_incoming_request(); r != NULL; r = pop_incoming_request())
     {
         delete r;
     }
     recv_queue_mutex.unlock();
+
+    // Delete all Connections.
+    connections_mutex.lock();
+    for(pair<int, Connection*> p : connections)
+    {
+        delete p.second;
+    }
+    connections_mutex.unlock();
 }
 
-void NetworkManager::submit_incoming_message(std::string &message)
+void NetworkManager::submit_incoming_message(int connection_id, std::string &message)
 {
     // TODO - figure out if this throws exceptions
     EventRequest *r = new EventRequest();
     stringstream(message) >> (*r);
-    (*r)["playerId"] = playerId;
+    (*r)["playerId"] = connection_id;
     recv_queue_mutex.lock();
     recv_queue.push(r);
     recv_queue_mutex.unlock();
@@ -118,8 +149,43 @@ int NetworkManager::add_connection()
     new_connections_mutex.lock();
     connections_mutex.lock();
     ++highest_connection_id;
-    connections.emplace(highest_connection_id, highest_connection_id);
-    new_connections.push(&connections[highest_connection_id]);
+    connections[highest_connection_id] = new Connection(highest_connection_id);
+    new_connections.push(connections[highest_connection_id]);
     connections_mutex.unlock();
     new_connections_mutex.unlock();
+}
+
+Connection *NetworkManager::get_connection(int id)
+{
+    connections_mutex.lock();
+    Connection *c = NULL;
+    if(connections.find(id) != connections.end())
+    {
+        c = connections[id];
+    }
+    connections_mutex.unlock();
+    return c;
+}
+
+void NetworkManager::kill_connection(int id)
+{
+    connections_mutex.lock();
+    if(get_connection(id) != NULL)
+    {
+        connections.erase(id);
+    }
+    connections_mutex.unlock();
+}
+
+Connection *NetworkManager::pop_new_connection()
+{
+    new_connections_mutex.lock();
+    Connection *c = NULL;
+    if(!new_connections.empty())
+    {
+        c = new_connections.front();
+        new_connections.pop();
+    }
+    new_connections_mutex.unlock();
+    return c;
 }
