@@ -378,6 +378,12 @@ function fighterMoveOptions(currTile){
         attackTiles.push(map.getTile(x-n, y+m, background));
         m--;
     }
+
+    attackTiles.push(map.getTile(x+5, y, background));
+    attackTiles.push(map.getTile(x-5, y, background));
+    attackTiles.push(map.getTile(x, y+5, background));
+    attackTiles.push(map.getTile(x, y-5, background));
+
     possibleTiles = drawOptions(possibleTiles);
 
 
@@ -450,9 +456,21 @@ function archerMoveOptions(currTile){
             attackTiles.push(map.getTile(x-n, y-m-i, background)); //in red to designated a tile that a unit
             attackTiles.push(map.getTile(x+n, y-m-i, background)); //can attack but not actually move to
             attackTiles.push(map.getTile(x-n, y+m+i, background));
+            if(n==6){
+                attackTiles.push(map.getTile(x+7, y+i, background));
+                attackTiles.push(map.getTile(x-7, y+i, background));
+            }
+
+        }
+        if(n==1){
+            attackTiles.push(map.getTile(x, y+7, background));
+            attackTiles.push(map.getTile(x, y-7, background));
         }
         m--;
     }
+
+    attackTiles.push(map.getTile(x+7, y-1, background));
+    attackTiles.push(map.getTile(x-7, y-1, background));
 
     possibleTiles = drawOptions(possibleTiles);
 }
@@ -519,12 +537,27 @@ function mageMoveOptions(currTile){
 
     var m = 5; //just past the movement range
     for(var n=1; n<6; n++){
-        attackTiles.push(map.getTile(x+n, y+m, background)); //these are the tiles that will be highlighted 
-        attackTiles.push(map.getTile(x-n, y-m, background)); //in red to designated a tile that a unit
-        attackTiles.push(map.getTile(x+n, y-m, background)); //can attack but not actually move to
-        attackTiles.push(map.getTile(x-n, y+m, background));
+        for(var i = 0; i<=1; i++){
+            attackTiles.push(map.getTile(x+n, y+m+i, background)); //these are the tiles that will be highlighted 
+            attackTiles.push(map.getTile(x-n, y-m-i, background)); //in red to designated a tile that a unit
+            attackTiles.push(map.getTile(x+n, y-m-i, background)); //can attack but not actually move to
+            attackTiles.push(map.getTile(x-n, y+m+i, background));
+
+            if(n==5){
+                attackTiles.push(map.getTile(x+6, y+i, background));
+                attackTiles.push(map.getTile(x-6, y+i, background));
+            }
+
+        }
+        if(n==1){
+            attackTiles.push(map.getTile(x, y+6, background));
+            attackTiles.push(map.getTile(x, y-6, background));
+        }
         m--;
     }
+
+    attackTiles.push(map.getTile(x+6, y-1, background));
+    attackTiles.push(map.getTile(x-6, y-1, background));
 
     possibleTiles = drawOptions(possibleTiles);
 }
