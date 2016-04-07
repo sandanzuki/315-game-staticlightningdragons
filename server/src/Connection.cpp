@@ -1,8 +1,11 @@
 #include "Connection.hpp"
 
-Connection::Connection(int _playerId)
+#include <iostream>
+
+Connection::Connection(int _playerId, lws *_socket_info)
 {
     playerId = _playerId;
+    socket_info = _socket_info;
 }
 
 Connection::~Connection()
@@ -17,9 +20,13 @@ Connection::~Connection()
 
 void Connection::submit_outgoing_event(Event &event)
 {
-    string *s = new string(event.asString());
+    string *s = new string(event.toStyledString());
     send_mutex.lock();
     send_queue.push(s);
+    if(socket_info != NULL)
+    {
+        lws_callback_on_writable(socket_info);
+    }
     send_mutex.unlock();
 }
 

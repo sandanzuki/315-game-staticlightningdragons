@@ -16,6 +16,9 @@ int main(int argc, char **argv)
         if(c != NULL)
         {
             log.write("[MAIN] INFO: A new player connected!");
+            Event out;
+            out["hello"] = std::string("Howdy!");
+            c->submit_outgoing_event(out);
         }
         sleep(1);
     }

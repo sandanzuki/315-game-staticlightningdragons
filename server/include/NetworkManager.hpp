@@ -20,7 +20,7 @@ class NetworkManager
         EventRequest *pop_incoming_request();
 
         // Manage connections.
-        int add_connection();
+        int add_connection(lws *socket_info);
         Connection *get_connection(int id);
         void kill_connection(int id);
 

@@ -20,23 +20,26 @@ thread *primary_network_thread = NULL;
 
 int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
+    // Useful variables for all cases.
     int *id = (int*) user;
+    char output_buffer[1024];
+    memset(output_buffer, 0, 1024);
+
     // Just give me a reason, just a little bit's enough...
     switch(reason)
     {
         // connection has been established
         case LWS_CALLBACK_ESTABLISHED:
-            *id = nm->add_connection();
-            char buffer[2048];
-            memset(buffer, 0, 2048);
-            sprintf(buffer, "[NET] INFO: Player with ID %d has connected.");
-            log->write(buffer);
-            //lws_callback_on_writable(wsi);
+            *id = nm->add_connection(wsi);
+            sprintf(output_buffer, "[NET] INFO: Player with ID %d has connected.", *id);
+            log->write(output_buffer);
             break;
 
         // connection has been closed
         case LWS_CALLBACK_CLOSED:
             nm->kill_connection(*id);
+            sprintf(output_buffer, "[NET] INFO: Player with ID %d has disconnected connected.", *id);
+            log->write(output_buffer);
             return -1;
 
         // data has been received over the connection
@@ -44,30 +47,46 @@ int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
             {
                 string recvst((const char*) in, len);
                 nm->submit_incoming_message(*id, recvst);
-                //lws_callback_on_writable(wsi);
             }
             break;
 
         // the connection can be written to again
         case LWS_CALLBACK_SERVER_WRITEABLE:
 
-            // TODO - make it so that we can automatically write later if there
-            // aren't any outgoing messages right now... unless lws_callback_on_writable
-            // will do this for us - I don't really know
-
-            char response[2048];
-            memset(response, 0, 2048);
-            strcpy(response + LWS_PRE, "Howdy! Please use the `rqs` protocol instead!");
-            unsigned char response_clean[2048];
-            for (int i = 0; i < 2048; ++i) {
-                response_clean[i] = (unsigned char) response[i];
-            }
-            if(lws_write(wsi, response_clean + LWS_PRE, 46, LWS_WRITE_TEXT) == -1)
+            Connection *c = nm->get_connection(*id);
+            if (c == NULL)
             {
-                log->write("[NET] ERROR: Unable to write response, disconnecting player.");
-                return -1;
+                sprintf(output_buffer, "[NET] ERROR: Unable to send to Player ID %d - may have disconnected?", *id);
+                log->write(output_buffer);
+                break;
             }
-            //lws_callback_on_writable(wsi);
+
+            for(string *out = c->pop_outgoing_message(); out != NULL; out = c->pop_outgoing_message())
+            {
+                // Verify that we can send a message this size.
+                if(out->size() > 4000)
+                {
+                    break;
+                }
+
+                // Prepare the response to be sent.
+                unsigned char response[4096];
+                memset(response, 0, 4096);
+                strcpy((char*) response + LWS_PRE, out->c_str());
+
+                log->write("sending message!");
+                // Try to write the message...
+                if(lws_write(wsi, response + LWS_PRE, out->size(), LWS_WRITE_TEXT) == -1)
+                {
+                    sprintf(output_buffer, "[NET] ERROR: Unable to send to Player ID %d - may have disconnected?", *id);
+                    log->write(output_buffer);
+                    delete out;
+                    return -1;
+                }
+
+                // Delete the message.
+                delete out;
+            }
             break;
     }
 
@@ -148,9 +167,25 @@ NetworkManager::~NetworkManager()
 void NetworkManager::submit_incoming_message(int connection_id, std::string &message)
 {
     // TODO - figure out if this throws exceptions
+    // TURNS OUT IT THROWS AN EXCEPTION
     EventRequest *r = new EventRequest();
-    stringstream(message) >> (*r);
-    (*r)["playerId"] = connection_id;
+    try
+    {
+        stringstream(message) >> (*r);
+        (*r)["playerId"] = connection_id;
+    }
+    catch(Json::RuntimeError exp)
+    {
+        delete r;
+        Event *e = new EventRequest();
+        (*e)["type"] = string("InvalidEvent");
+        Connection *c = get_connection(connection_id);
+        if(c != NULL)
+        {
+            c->submit_outgoing_event(*e);
+        }
+        delete e;
+    }
     nm_mutex.lock();
     recv_queue.push(r);
     nm_mutex.unlock();
@@ -170,13 +205,14 @@ EventRequest *NetworkManager::pop_incoming_request()
     return r;
 }
 
-int NetworkManager::add_connection()
+int NetworkManager::add_connection(lws *socket_info)
 {
     nm_mutex.lock();
     ++highest_connection_id;
-    connections[highest_connection_id] = new Connection(highest_connection_id);
+    connections[highest_connection_id] = new Connection(highest_connection_id, socket_info);
     new_connections.push(connections[highest_connection_id]);
     nm_mutex.unlock();
+    return highest_connection_id;
 }
 
 Connection *NetworkManager::get_connection(int id)
