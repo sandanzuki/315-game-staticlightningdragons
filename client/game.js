@@ -11,9 +11,10 @@ game = new Phaser.Game(900, 660, Phaser.AUTO,'', { preload: preload, create: cre
 var cursor,
     tileX,
     tileY,
-    bFighter1, bFighter2, bArcher1, bArcher2, bMage,
+    bFighter1, bFighter2, bArcher1, bArcher2, bMage, //all the global variables
     rFighter1, rFighter2, rArcher1, rArcher2, rMage,
     possibleTiles = [],
+    attackTiles = [],
     coordinates = [],
     isDown,
     graphics,
@@ -38,10 +39,6 @@ function preload() {
 	game.load.image('r_archer', 'MediaAssets/r_archer.png');
 	game.load.image('r_mage', 'MediaAssets/r_mage.png');
 	game.load.image('r_fighter', 'MediaAssets/r_fighter.png');
-
-	// load cursor
-//	game.load.image('cursor', 'MediaAssets/cursor.png');
-
 }
 
 
@@ -93,7 +90,6 @@ function create() {
  	// cursor.body.fixedRotation = true;
 
 	cursors = game.input.keyboard.createCursorKeys();
-	// cursor.body.debug = true;
 }
 
 function update() {
@@ -187,7 +183,7 @@ function loadUnits(){
 
 // functions for moving the cursor around one tile at a time
 function cursorDown() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -202,7 +198,7 @@ function cursorDown() {
 }
 
 function cursorUp() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -217,7 +213,7 @@ function cursorUp() {
 }
 
 function cursorLeft() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -232,7 +228,7 @@ function cursorLeft() {
 }
 
 function cursorRight() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -276,12 +272,12 @@ function moveMenu() {
     //the nexted ifs get a little hairy here.
     if(currTile != null){//is the current tile actually a valid tile on the map?
         if(currTile.properties.unitType != 0){ //if the tile actually holds a unit, carry on
-
-            selected.lineStyle(2, 0xffbf00, 1); //draw a spiffy looking gold square
-            selected.beginFill(0xffbf00, .5);   //to rep the selected unit
-            selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
-
             if(currTile.unit.locked==false){ //if the unit is not locked, figure out what kind it is
+
+                selected.lineStyle(2, 0xffbf00, 1); //draw a spiffy looking gold square
+                selected.beginFill(0xffbf00, .5);   //to rep the selected unit
+                selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
+
                 switch(currTile.properties.unitType){
                     case 1: //the unit is a fighter
                         isDown = 1;
@@ -318,6 +314,7 @@ function moveMenu() {
 //calculates possible tiles for a fighter
 function fighterMoveOptions(currTile){
     possibleTiles = [];
+    attackTiles = [];
     var x = currTile.x;
     var y = currTile.y;
     var i = background.index;
@@ -373,6 +370,14 @@ function fighterMoveOptions(currTile){
         k--;
     }
 
+    var m = 4; //just past the movement range
+    for(var n=1; n<5; n++){
+        attackTiles.push(map.getTile(x+n, y+m, background)); //these are the tiles that will be highlighted 
+        attackTiles.push(map.getTile(x-n, y-m, background)); //in red to designated a tile that a unit
+        attackTiles.push(map.getTile(x+n, y-m, background)); //can attack but not actually move to
+        attackTiles.push(map.getTile(x-n, y+m, background));
+        m--;
+    }
     possibleTiles = drawOptions(possibleTiles);
 
 
@@ -381,6 +386,8 @@ function fighterMoveOptions(currTile){
 //calculates possible tiles for an archer
 function archerMoveOptions(currTile){
     possibleTiles = [];
+    attackTiles = [];
+
     var x = currTile.x;
     var y = currTile.y;
     var i = background.index;
@@ -436,6 +443,16 @@ function archerMoveOptions(currTile){
         k--;
     }
 
+    var m = 6; //just past the movement range
+    for(var n=1; n<7; n++){
+        for(var i = 0; i<=1; i++){
+            attackTiles.push(map.getTile(x+n, y+m+i, background)); //these are the tiles that will be highlighted 
+            attackTiles.push(map.getTile(x-n, y-m-i, background)); //in red to designated a tile that a unit
+            attackTiles.push(map.getTile(x+n, y-m-i, background)); //can attack but not actually move to
+            attackTiles.push(map.getTile(x-n, y+m+i, background));
+        }
+        m--;
+    }
 
     possibleTiles = drawOptions(possibleTiles);
 }
@@ -443,6 +460,8 @@ function archerMoveOptions(currTile){
 //calculates possible tiles for a mage
 function mageMoveOptions(currTile){
     possibleTiles = [];
+    attackTiles = [];
+
     var x = currTile.x;
     var y = currTile.y;
     var i = background.index;
@@ -498,6 +517,14 @@ function mageMoveOptions(currTile){
         k--;
     }
 
+    var m = 5; //just past the movement range
+    for(var n=1; n<6; n++){
+        attackTiles.push(map.getTile(x+n, y+m, background)); //these are the tiles that will be highlighted 
+        attackTiles.push(map.getTile(x-n, y-m, background)); //in red to designated a tile that a unit
+        attackTiles.push(map.getTile(x+n, y-m, background)); //can attack but not actually move to
+        attackTiles.push(map.getTile(x-n, y+m, background));
+        m--;
+    }
 
     possibleTiles = drawOptions(possibleTiles);
 }
@@ -514,12 +541,23 @@ function drawOptions(possibleTiles){
             }
             else{//removes impossible tile locations
                 possibleTiles.splice(j, 1);
-                j-=1;
+                j--;
             }
         }
         else{
             possibleTiles.splice(j, 1);
-            j-=1;
+            j--;
+        }
+    }
+    for(var j=0; j<attackTiles.length; j++){
+        if(attackTiles[j]!=null){
+            graphics.lineStyle(2, 0xff0000, 1); //draw some spiffy looking blue squares for possible movement
+            graphics.beginFill(0xff0000, .5);
+            graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
+        }
+        else{
+            attackTiles.splice(j, 1);
+            j--;
         }
     }
     return possibleTiles;
@@ -550,19 +588,19 @@ function moveComplete(coordinates){
 }
 
 function lockUnit(unit){
-    var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+    var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; //get the tile the unit is on.
     var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
     var currTile = map.getTile(x, y, background);
 
     currTile.unit.locked = true;
 
-    lockGraphics.lineStyle(2, 0xcc0000, 1);
+    lockGraphics.lineStyle(2, 0xcc0000, 1); //draw a dark red square over the unit
     lockGraphics.beginFill(0xcc0000, .25);
     lockGraphics.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
-    lockCounter++;
+    lockCounter++; //increment the number of locked units (in place of turns)
 
-    if(lockCounter == friendlyUnits.length + enemyUnits.length){
-        unlockUnits(friendlyUnits);
+    if(lockCounter == friendlyUnits.length + enemyUnits.length){ //if the the lock counter == total number of units, unlock all
+        unlockUnits(friendlyUnits);                              //this will be replaced with the turn mechanism
         unlockUnits(enemyUnits);
         lockCounter = 0;
     }
@@ -575,7 +613,7 @@ function unlockUnits(unitList){
     lockGraphics.clear();
 }
 
-function output(input){
+function output(input){ //just used to output helpful info to screen
     document.getElementById("stats").innerHTML = input;
 }
 
