@@ -18,11 +18,10 @@ background-color: #000000
 
 #stats {
     color: #ffffff;
-   /* position: absolute;
-    bottom: 10%;
-    left: 20%;*/
-    margin-left: 5%;
-    float: left;
+    position: absolute;
+    bottom: 5%;
+    left: 20%;
+    /*float: right;*/
     font-family: verdana;
 }
 
