@@ -16,4 +16,12 @@ body {
 background-color: #000000
 }
 
+#stats {
+    color: #ffffff;
+    position: absolute;
+    bottom: 10%;
+    left: 20%;
+    font-family: verdana;
+}
+
 * {cursor: none;}
