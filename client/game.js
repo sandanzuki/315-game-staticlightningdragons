@@ -1,3 +1,8 @@
+//var connection = new WebSocket("ws://sld.bitwisehero.com:13337", "rqs");
+//connection.onmessage = function(yas) { console.log(yas); }(edited)
+//conection.send(JSON STUFF AS A STRING)
+//^^^^
+//this is is stuff for connecting to server
 
 var game = game || {},
     map,
@@ -126,10 +131,10 @@ function loadUnits(){
     map.getTileWorldXY(0,0).unit = bFighter1;       //Does a tile have a unit on it?
     bFighter1.maxHealth=100;
 
-    bFighter2 = game.add.sprite(0, 240,'b_fighter');
+    bFighter2 = game.add.sprite(360, 240,'b_fighter');
     friendlyUnits.push(bFighter2);
-    map.getTileWorldXY(0,240).properties.unitType = 1;
-    map.getTileWorldXY(0,240).unit = bFighter2;
+    map.getTileWorldXY(360,240).properties.unitType = 1;
+    map.getTileWorldXY(360,240).unit = bFighter2;
 
     bArcher1 = game.add.sprite(0, 60,'b_archer');
     friendlyUnits.push(bArcher1);
@@ -277,24 +282,25 @@ function moveMenu() {
                 selected.lineStyle(2, 0xffbf00, 1); //draw a spiffy looking gold square
                 selected.beginFill(0xffbf00, .5);   //to rep the selected unit
                 selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
+                possibleTiles = [];
 
                 switch(currTile.properties.unitType){
                     case 1: //the unit is a fighter
                         isDown = 1;
                         output("Friendly Fighter");
-                        fighterMoveOptions(currTile);
+                        getMoveOptions(currTile, 1);
                         return currTile;
                         break;
                     case 2: //the unit is an archer
                         isDown = 1;
                         output("Friendly Archer");
-                        archerMoveOptions(currTile);
+                        getMoveOptions(currTile, 2);
                         return currTile;
                         break;
                     case 3: //the unit is a mage
                         isDown = 1;
                         output("Friendly Mage");
-                        mageMoveOptions(currTile);
+                        getMoveOptions(currTile, 3);
                         return currTile;
                         break;
                     default:
@@ -312,254 +318,172 @@ function moveMenu() {
 }
 
 //calculates possible tiles for a fighter
-function fighterMoveOptions(currTile){
-    possibleTiles = [];
+function getMoveOptions(currTile, unitType){
     attackTiles = [];
+    var adjacent = [];
+
+    var queue1 = [];
+    var queue2 = [];
+
     var x = currTile.x;
     var y = currTile.y;
-    var i = background.index;
+    var moves = 5; //designates the max possible range of movement
 
-    for(var n=1; n<5; n++){//tiles to the right
-        possibleTiles.push(map.getTile(x+n, y, background));
+    queue1.push(currTile);
+    queue1.push.apply(queue1, getAdjacent(currTile));
 
-        if(map.getTileRight(i, x+n, y) != null){//prevent unit from moving through blocked tiles
-            if(map.getTileRight(i, x+n, y).index == -1){
-                break;
+    console.log(possibleTiles.length);
+
+    for(var i = 1; i<=5; i++){
+        for(var j = 0; j<queue1.length; j++){
+            currTile = queue1.shift();
+            adjacent = getAdjacent(currTile);
+
+            if(queue2.indexOf(currTile) == -1){
+                queue2.push(currTile);
             }
-        }
-    }
 
-    for(var n=1; n<5; n++){//tiles to the left
-        possibleTiles.push(map.getTile(x-n,y,background));
-
-        if(map.getTileLeft(i, x-n, y) != null){
-            if(map.getTileLeft(i, x-n, y).index == -1){
-                break;
+            for(var k = 0; k<adjacent.length; k++){
+                if(queue2.indexOf(adjacent[k]) == -1){
+                    queue2.push(adjacent[k]);
+                }
             }
+            //queue2.push.apply(queue2, adjacent);
         }
-    }
 
-    for(var n=1; n<5; n++){//tiles above
-        possibleTiles.push(map.getTile(x,y-n,background));
-
-        if(map.getTileAbove(i, x, y-n) != null){
-            if(map.getTileAbove(i, x, y-n).index == -1){
-                break;
-            }
+        //queue1.push.apply(queue1, queue2);
+        for(var j = 0; j<queue2.length; j++){
+            queue1.push(queue2[j]);
         }
+        queue2 = [];
     }
 
-    for(var n=1; n<5; n++){//tiles below
-        possibleTiles.push(map.getTile(x,y+n,background));
-
-        if(map.getTileBelow(i, x, y+n) != null){
-            if(map.getTileBelow(i, x, y+n).index == -1){
-                break;
-            }
-        }
-    }
-
-    var k = 3;
-    for(var n=1; n<4; n++){ //all tiles in a diamond shape around the x/y axis
-        for(var m=1; m<=k; m++){
-            possibleTiles.push(map.getTile(x+n,y-m,background));
-            possibleTiles.push(map.getTile(x-n,y+m,background));
-            possibleTiles.push(map.getTile(x+n,y+m,background));
-            possibleTiles.push(map.getTile(x-n,y-m,background));
-        }
-        k--;
-    }
-
-    var m = 4; //just past the movement range
-    for(var n=1; n<5; n++){
-        attackTiles.push(map.getTile(x+n, y+m, background)); //these are the tiles that will be highlighted 
-        attackTiles.push(map.getTile(x-n, y-m, background)); //in red to designated a tile that a unit
-        attackTiles.push(map.getTile(x+n, y-m, background)); //can attack but not actually move to
-        attackTiles.push(map.getTile(x-n, y+m, background));
-        m--;
-    }
-
-    attackTiles.push(map.getTile(x+5, y, background));
-    attackTiles.push(map.getTile(x-5, y, background));
-    attackTiles.push(map.getTile(x, y+5, background));
-    attackTiles.push(map.getTile(x, y-5, background));
-
-    possibleTiles = drawOptions(possibleTiles);
+    //queue1;
 
 
+    possibleTiles = drawOptions(queue1);
+    // for(var n=1; n<6; n++){//tiles to the right
+    //     possibleTiles.push(map.getTile(x+n, y, background));
+
+    //     if(map.getTileRight(i, x+n, y) != null){//prevent unit from moving through blocked tiles
+    //         if(map.getTileRight(i, x+n, y).index == -1){
+    //             break;
+    //         }
+    //     }
+    // }
+
+    // for(var n=1; n<6; n++){//tiles to the left
+    //     possibleTiles.push(map.getTile(x-n,y,background));
+
+    //     if(map.getTileLeft(i, x-n, y) != null){
+    //         if(map.getTileLeft(i, x-n, y).index == -1){
+    //             break;
+    //         }
+    //     }
+    // }
+
+    // for(var n=1; n<6; n++){//tiles above
+    //     possibleTiles.push(map.getTile(x,y-n,background));
+
+    //     if(map.getTileAbove(i, x, y-n) != null){
+    //         if(map.getTileAbove(i, x, y-n).index == -1){
+    //             break;
+    //         }
+    //     }
+    // }
+
+    // for(var n=1; n<6; n++){//tiles below
+    //     possibleTiles.push(map.getTile(x,y+n,background));
+
+    //     if(map.getTileBelow(i, x, y+n) != null){
+    //         if(map.getTileBelow(i, x, y+n).index == -1){
+    //             break;
+    //         }
+    //     }
+    // }
+
+    // var k = 4;
+    // for(var n=1; n<5; n++){ //all tiles in a diamond shape around the x/y axis
+    //     for(var m=1; m<=k; m++){
+    //         possibleTiles.push(map.getTile(x+n,y-m,background));
+    //         possibleTiles.push(map.getTile(x-n,y+m,background));
+    //         possibleTiles.push(map.getTile(x+n,y+m,background));
+    //         possibleTiles.push(map.getTile(x-n,y-m,background));
+    //     }
+    //     k--;
+    // }
+
+    // var m = 5; //just past the movement range
+    // for(var n=1; n<6; n++){ //gathering all the possible attack tiles around the edge of movement range to color red
+
+    //     if(unitType == 1){
+    //         attackTiles.push(map.getTile(x+n, y+m, background)); //these are the tiles that will be highlighted 
+    //         attackTiles.push(map.getTile(x-n, y-m, background)); //in red to designated a tile that a unit
+    //         attackTiles.push(map.getTile(x+n, y-m, background)); //can attack but not actually move to
+    //         attackTiles.push(map.getTile(x-n, y+m, background));
+    //     }
+    //     else if(unitType == 2 || unitType == 3){
+    //         for(var i = 0; i<=1; i++){
+    //             attackTiles.push(map.getTile(x+n, y+m+i, background)); //these are the tiles that will be highlighted 
+    //             attackTiles.push(map.getTile(x-n, y-m-i, background)); //in red to designated a tile that a unit
+    //             attackTiles.push(map.getTile(x+n, y-m-i, background)); //can attack but not actually move to
+    //             attackTiles.push(map.getTile(x-n, y+m+i, background));
+            
+    //             if(n==5){
+    //                 attackTiles.push(map.getTile(x+6, y+i, background));
+    //                 attackTiles.push(map.getTile(x-6, y+i, background));
+    //             }
+    //         }
+    //         if(n==1){
+    //             attackTiles.push(map.getTile(x, y+6, background));
+    //             attackTiles.push(map.getTile(x, y-6, background));
+    //         }
+    //     }
+    //     m--;
+    // }
+
+    // if(unitType == 1){
+    //     attackTiles.push(map.getTile(x+6, y, background));
+    //     attackTiles.push(map.getTile(x-6, y, background));
+    //     attackTiles.push(map.getTile(x, y+6, background));
+    //     attackTiles.push(map.getTile(x, y-6, background));
+    // }
+    // else{
+    //     attackTiles.push(map.getTile(x+6, y-1, background));
+    //     attackTiles.push(map.getTile(x-6, y-1, background));
+    // }
+    
+    // possibleTiles = drawOptions(possibleTiles);
 }
 
-//calculates possible tiles for an archer
-function archerMoveOptions(currTile){
-    possibleTiles = [];
-    attackTiles = [];
-
+function getAdjacent(currTile){
+    var adjacent = [];
     var x = currTile.x;
     var y = currTile.y;
     var i = background.index;
 
-    for(var n=1; n<7; n++){
-        possibleTiles.push(map.getTile(x+n, y, background));
+    var right = map.getTileRight(i,x,y);
+    var left = map.getTileLeft(i,x,y);
+    var above = map.getTileAbove(i,x,y);
+    var below = map.getTileBelow(i,x,y);
 
-        if(map.getTileRight(i, x+n, y) != null){
-            if(map.getTileRight(i, x+n, y).index == -1){
-                break;
-            }
-        }
+    if(right){
+        adjacent.push(right);
     }
 
-    for(var n=1; n<7; n++){
-        possibleTiles.push(map.getTile(x-n,y,background));
-
-        if(map.getTileLeft(i, x-n, y) != null){
-            if(map.getTileLeft(i, x-n, y).index == -1){
-                break;
-            }
-        }
+    if(left){
+        adjacent.push(left);
     }
 
-    for(var n=1; n<7; n++){
-        possibleTiles.push(map.getTile(x,y-n,background));
-
-        if(map.getTileAbove(i, x, y-n) != null){
-            if(map.getTileAbove(i, x, y-n).index == -1){
-                break;
-            }
-        }
+    if(above){
+        adjacent.push(above);
     }
 
-    for(var n=1; n<7; n++){
-        possibleTiles.push(map.getTile(x,y+n,background));
-
-        if(map.getTileBelow(i, x, y+n) != null){
-            if(map.getTileBelow(i, x, y+n).index == -1){
-                break;
-            }
-        }
+    if(below){
+        adjacent.push(below);
     }
 
-    var k = 5;
-    for(var n=1; n<6; n++){ //all tiles in a diamond shape around the x/y axis
-        for(var m=1; m<=k; m++){
-            possibleTiles.push(map.getTile(x+n,y-m,background));
-            possibleTiles.push(map.getTile(x-n,y+m,background));
-            possibleTiles.push(map.getTile(x+n,y+m,background));
-            possibleTiles.push(map.getTile(x-n,y-m,background));
-        }
-        k--;
-    }
-
-    var m = 6; //just past the movement range
-    for(var n=1; n<7; n++){
-        for(var i = 0; i<=1; i++){
-            attackTiles.push(map.getTile(x+n, y+m+i, background)); //these are the tiles that will be highlighted 
-            attackTiles.push(map.getTile(x-n, y-m-i, background)); //in red to designated a tile that a unit
-            attackTiles.push(map.getTile(x+n, y-m-i, background)); //can attack but not actually move to
-            attackTiles.push(map.getTile(x-n, y+m+i, background));
-            if(n==6){
-                attackTiles.push(map.getTile(x+7, y+i, background));
-                attackTiles.push(map.getTile(x-7, y+i, background));
-            }
-
-        }
-        if(n==1){
-            attackTiles.push(map.getTile(x, y+7, background));
-            attackTiles.push(map.getTile(x, y-7, background));
-        }
-        m--;
-    }
-
-    attackTiles.push(map.getTile(x+7, y-1, background));
-    attackTiles.push(map.getTile(x-7, y-1, background));
-
-    possibleTiles = drawOptions(possibleTiles);
-}
-
-//calculates possible tiles for a mage
-function mageMoveOptions(currTile){
-    possibleTiles = [];
-    attackTiles = [];
-
-    var x = currTile.x;
-    var y = currTile.y;
-    var i = background.index;
-
-    for(var n=1; n<6; n++){
-        possibleTiles.push(map.getTile(x+n, y, background));
-
-        if(map.getTileRight(i, x+n, y) != null){
-            if(map.getTileRight(i, x+n, y).index == -1){
-                break;
-            }
-        }
-    }
-
-    for(var n=1; n<6; n++){
-        possibleTiles.push(map.getTile(x-n,y,background));
-
-        if(map.getTileLeft(i, x-n, y) != null){
-            if(map.getTileLeft(i, x-n, y).index == -1){
-                break;
-            }
-        }
-    }
-
-    for(var n=1; n<6; n++){
-        possibleTiles.push(map.getTile(x,y-n,background));
-
-        if(map.getTileAbove(i, x, y-n) != null){
-            if(map.getTileAbove(i, x, y-n).index == -1){
-                break;
-            }
-        }
-    }
-
-    for(var n=1; n<6; n++){
-        possibleTiles.push(map.getTile(x,y+n,background));
-
-        if(map.getTileBelow(i, x, y+n) != null){
-            if(map.getTileBelow(i, x, y+n).index == -1){
-                break;
-            }
-        }
-    }
-
-    var k = 4;
-    for(var n=1; n<5; n++){ //all tiles in a diamond shape around the x/y axis
-        for(var m=1; m<=k; m++){
-            possibleTiles.push(map.getTile(x+n,y-m,background));
-            possibleTiles.push(map.getTile(x-n,y+m,background));
-            possibleTiles.push(map.getTile(x+n,y+m,background));
-            possibleTiles.push(map.getTile(x-n,y-m,background));
-        }
-        k--;
-    }
-
-    var m = 5; //just past the movement range
-    for(var n=1; n<6; n++){
-        for(var i = 0; i<=1; i++){
-            attackTiles.push(map.getTile(x+n, y+m+i, background)); //these are the tiles that will be highlighted 
-            attackTiles.push(map.getTile(x-n, y-m-i, background)); //in red to designated a tile that a unit
-            attackTiles.push(map.getTile(x+n, y-m-i, background)); //can attack but not actually move to
-            attackTiles.push(map.getTile(x-n, y+m+i, background));
-
-            if(n==5){
-                attackTiles.push(map.getTile(x+6, y+i, background));
-                attackTiles.push(map.getTile(x-6, y+i, background));
-            }
-
-        }
-        if(n==1){
-            attackTiles.push(map.getTile(x, y+6, background));
-            attackTiles.push(map.getTile(x, y-6, background));
-        }
-        m--;
-    }
-
-    attackTiles.push(map.getTile(x+6, y-1, background));
-    attackTiles.push(map.getTile(x-6, y-1, background));
-
-    possibleTiles = drawOptions(possibleTiles);
+    return adjacent;
 }
 
 //function that actually overlays the possible movement for selected unit
