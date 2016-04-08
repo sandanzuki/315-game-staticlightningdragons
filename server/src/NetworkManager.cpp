@@ -173,18 +173,32 @@ void NetworkManager::submit_incoming_message(int connection_id, std::string &mes
     {
         stringstream(message) >> (*r);
         (*r)["playerId"] = connection_id;
+
+        // message must include a request_id
+        if(!r->isMember("request_id") || !(*r)["request_id"].isInt() ||
+            !r->isMember("game_id") || !(*r)["game_id"].isInt() ||
+            !r->isMember("type") || !(*r)["type"].isString())
+        {
+            delete r;
+            Event e;
+            e["type"] = string("InvalidEvent");
+            Connection *c = get_connection(connection_id);
+            if(c != NULL)
+            {
+                c->submit_outgoing_event(e);
+            }
+        }
     }
     catch(Json::RuntimeError exp)
     {
         delete r;
-        Event *e = new EventRequest();
-        (*e)["type"] = string("InvalidEvent");
+        Event e;
+        e["type"] = string("InvalidEvent");
         Connection *c = get_connection(connection_id);
         if(c != NULL)
         {
-            c->submit_outgoing_event(*e);
+            c->submit_outgoing_event(e);
         }
-        delete e;
     }
     nm_mutex.lock();
     recv_queue.push(r);
