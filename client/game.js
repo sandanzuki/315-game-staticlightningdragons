@@ -322,138 +322,55 @@ function getMoveOptions(currTile, unitType){
     attackTiles = [];
     var adjacent = [];
 
-    var queue1 = [];
-    var queue2 = [];
-
     var x = currTile.x;
     var y = currTile.y;
-    var moves = 5; //designates the max possible range of movement
 
-    queue1.push(currTile);
-    queue1.push.apply(queue1, getAdjacent(currTile));
+    var maxMoves;
 
-    console.log(possibleTiles.length);
-
-    for(var i = 1; i<=5; i++){
-        for(var j = 0; j<queue1.length; j++){
-            currTile = queue1.shift();
-            adjacent = getAdjacent(currTile);
-
-            if(queue2.indexOf(currTile) == -1){
-                queue2.push(currTile);
-            }
-
-            for(var k = 0; k<adjacent.length; k++){
-                if(queue2.indexOf(adjacent[k]) == -1){
-                    queue2.push(adjacent[k]);
-                }
-            }
-            //queue2.push.apply(queue2, adjacent);
-        }
-
-        //queue1.push.apply(queue1, queue2);
-        for(var j = 0; j<queue2.length; j++){
-            queue1.push(queue2[j]);
-        }
-        queue2 = [];
+    switch(unitType){
+        case 1:
+            maxMoves = 4;
+            break;
+        case 2:
+            maxMoves = 6;
+            break;
+        case 3: 
+            maxMoves = 5;
+            break;
+        default:
+            break; 
     }
 
+    //Breadth-first Search Algorithm for finding appropriate tiles
+    var queue = [];
+    var set = [];
+    var tile;
+
+    queue.push(currTile);
+    set.push(currTile);
+
+    while(queue.length>0){
+        tile = queue.shift();
+        adjacent = [];
+
+        if(Math.abs(tile.x-currTile.x) >= maxMoves || Math.abs(tile.y-currTile.y) >= maxMoves){//has the distance of searching outreached the maximum allowed movement?
+            break;
+        }
+
+        adjacent = getAdjacent(tile);
+        for(var i = 0; i<adjacent.length; i++){
+            if(adjacent[i] != null){
+                if(set.indexOf(adjacent[i]) == -1){
+                    set.push(adjacent[i]);
+                    queue.push(adjacent[i]);
+                }
+            }
+        }
+    }
     //queue1;
 
-
-    possibleTiles = drawOptions(queue1);
-    // for(var n=1; n<6; n++){//tiles to the right
-    //     possibleTiles.push(map.getTile(x+n, y, background));
-
-    //     if(map.getTileRight(i, x+n, y) != null){//prevent unit from moving through blocked tiles
-    //         if(map.getTileRight(i, x+n, y).index == -1){
-    //             break;
-    //         }
-    //     }
-    // }
-
-    // for(var n=1; n<6; n++){//tiles to the left
-    //     possibleTiles.push(map.getTile(x-n,y,background));
-
-    //     if(map.getTileLeft(i, x-n, y) != null){
-    //         if(map.getTileLeft(i, x-n, y).index == -1){
-    //             break;
-    //         }
-    //     }
-    // }
-
-    // for(var n=1; n<6; n++){//tiles above
-    //     possibleTiles.push(map.getTile(x,y-n,background));
-
-    //     if(map.getTileAbove(i, x, y-n) != null){
-    //         if(map.getTileAbove(i, x, y-n).index == -1){
-    //             break;
-    //         }
-    //     }
-    // }
-
-    // for(var n=1; n<6; n++){//tiles below
-    //     possibleTiles.push(map.getTile(x,y+n,background));
-
-    //     if(map.getTileBelow(i, x, y+n) != null){
-    //         if(map.getTileBelow(i, x, y+n).index == -1){
-    //             break;
-    //         }
-    //     }
-    // }
-
-    // var k = 4;
-    // for(var n=1; n<5; n++){ //all tiles in a diamond shape around the x/y axis
-    //     for(var m=1; m<=k; m++){
-    //         possibleTiles.push(map.getTile(x+n,y-m,background));
-    //         possibleTiles.push(map.getTile(x-n,y+m,background));
-    //         possibleTiles.push(map.getTile(x+n,y+m,background));
-    //         possibleTiles.push(map.getTile(x-n,y-m,background));
-    //     }
-    //     k--;
-    // }
-
-    // var m = 5; //just past the movement range
-    // for(var n=1; n<6; n++){ //gathering all the possible attack tiles around the edge of movement range to color red
-
-    //     if(unitType == 1){
-    //         attackTiles.push(map.getTile(x+n, y+m, background)); //these are the tiles that will be highlighted 
-    //         attackTiles.push(map.getTile(x-n, y-m, background)); //in red to designated a tile that a unit
-    //         attackTiles.push(map.getTile(x+n, y-m, background)); //can attack but not actually move to
-    //         attackTiles.push(map.getTile(x-n, y+m, background));
-    //     }
-    //     else if(unitType == 2 || unitType == 3){
-    //         for(var i = 0; i<=1; i++){
-    //             attackTiles.push(map.getTile(x+n, y+m+i, background)); //these are the tiles that will be highlighted 
-    //             attackTiles.push(map.getTile(x-n, y-m-i, background)); //in red to designated a tile that a unit
-    //             attackTiles.push(map.getTile(x+n, y-m-i, background)); //can attack but not actually move to
-    //             attackTiles.push(map.getTile(x-n, y+m+i, background));
-            
-    //             if(n==5){
-    //                 attackTiles.push(map.getTile(x+6, y+i, background));
-    //                 attackTiles.push(map.getTile(x-6, y+i, background));
-    //             }
-    //         }
-    //         if(n==1){
-    //             attackTiles.push(map.getTile(x, y+6, background));
-    //             attackTiles.push(map.getTile(x, y-6, background));
-    //         }
-    //     }
-    //     m--;
-    // }
-
-    // if(unitType == 1){
-    //     attackTiles.push(map.getTile(x+6, y, background));
-    //     attackTiles.push(map.getTile(x-6, y, background));
-    //     attackTiles.push(map.getTile(x, y+6, background));
-    //     attackTiles.push(map.getTile(x, y-6, background));
-    // }
-    // else{
-    //     attackTiles.push(map.getTile(x+6, y-1, background));
-    //     attackTiles.push(map.getTile(x-6, y-1, background));
-    // }
+    possibleTiles = drawOptions(set);
     
-    // possibleTiles = drawOptions(possibleTiles);
 }
 
 function getAdjacent(currTile){
@@ -468,19 +385,27 @@ function getAdjacent(currTile){
     var below = map.getTileBelow(i,x,y);
 
     if(right){
-        adjacent.push(right);
+        if(right.index != -1){
+            adjacent.push(right);
+        }
     }
 
     if(left){
-        adjacent.push(left);
+        if(left.index != -1){
+            adjacent.push(left);
+        }
     }
 
     if(above){
-        adjacent.push(above);
+        if(above.index != -1){
+            adjacent.push(above);
+        }
     }
 
     if(below){
-        adjacent.push(below);
+        if(below.index != -1){
+            adjacent.push(below);
+        }
     }
 
     return adjacent;
