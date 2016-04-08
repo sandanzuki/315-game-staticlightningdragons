@@ -159,6 +159,8 @@ int main(int argc, char **argv)
             }
         }
 
+        // TODO - tick all GameStates - culling ones that aren't active anymore
+
         // Sleep for a bit. Don't want our poor server to die.
         usleep(250);
     }
