@@ -32,18 +32,18 @@ var friendlyUnits = [],
 
 function preload() {
 	// load map
-	game.load.tilemap('Map', 'MediaAssets/tileMaps/map1.json', null, Phaser.Tilemap.TILED_JSON);
-	game.load.image('gameTiles', 'MediaAssets/mapTiles.png');
+	game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);
+	game.load.image('gameTiles', './assets/images/mapTiles.png');
 
     // blue units
-    game.load.image('b_archer', 'MediaAssets/b_archer.png');
-    game.load.image('b_mage', 'MediaAssets/b_mage.png');
-    game.load.image('b_fighter', 'MediaAssets/b_fighter.png');
+    game.load.image('b_archer', './assets/images/b_archer.png');
+    game.load.image('b_mage', './assets/images/b_mage.png');
+    game.load.image('b_fighter', './assets/images/b_fighter.png');
 
 	// red units
-	game.load.image('r_archer', 'MediaAssets/r_archer.png');
-	game.load.image('r_mage', 'MediaAssets/r_mage.png');
-	game.load.image('r_fighter', 'MediaAssets/r_fighter.png');
+	game.load.image('r_archer', './assets/images/r_archer.png');
+	game.load.image('r_mage', './assets/images/r_mage.png');
+	game.load.image('r_fighter', './assets/images/r_fighter.png');
 }
 
 
@@ -334,11 +334,11 @@ function getMoveOptions(currTile, unitType){
         case 2:
             maxMoves = 6;
             break;
-        case 3: 
+        case 3:
             maxMoves = 5;
             break;
         default:
-            break; 
+            break;
     }
 
     //Breadth-first Search Algorithm for finding appropriate tiles
@@ -370,7 +370,7 @@ function getMoveOptions(currTile, unitType){
     //queue1;
 
     possibleTiles = drawOptions(set);
-    
+
 }
 
 function getAdjacent(currTile){
@@ -504,4 +504,3 @@ function pauseGame() {
    // if (pause == false)
 
 }
-
