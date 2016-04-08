@@ -19,6 +19,8 @@ class Connection
         void submit_outgoing_event(Event &event);
         string *pop_outgoing_message();         // Grab a pointer to the string. Don't forget to delete it. Null on none.
 
+        int get_id() { return playerId; }
+
     private:
         int playerId;               // ID of the Player this Connection is associated with
         queue<string*> send_queue;  // queue of outgoing events, already as strings

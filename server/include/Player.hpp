@@ -10,12 +10,12 @@ using namespace std;
 class Player
 {
     public:
-        Player(int _player_id, int _game_id, string _name, Connection *_conn);
+        Player(int _player_id, Connection *_conn);
 
         // Getters
         int get_player_id() { return player_id; }
         int get_game_id() { return game_id; }
-        string get_name() { return name; }
+        //string get_name() { return name; }
         Connection *get_connection() { return connection; }
 
         // Setters
@@ -24,7 +24,7 @@ class Player
     private:
         int player_id;
         int game_id;
-        string name;
+        //string name;
         Connection *connection;
 };
 
