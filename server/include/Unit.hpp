@@ -1,8 +1,10 @@
 #ifndef UNIT_H
 #define UNIT_H
 
+#include <cstdlib>
 #include <vector>
 #include <string>
+#include <utility>
 #include "Effect.hpp"
 
 using namespace std;
@@ -20,8 +22,12 @@ class Unit {
         int get_max_health() { return max_health; }
         vector<Effect> get_effects() const { return effects; }
         string get_name() const { return name; }
-        void add_effects(vector<Effect> add_effect);
-        void remove_effects(vector<Effect> remove_effect);
+        void set_remaining_health(int _health);
+        void add_effects(vector<Effect> _add_effect);
+        void remove_effects(vector<Effect> _remove_effect);
+        pair<int, int> calculate_hit(Unit _attacker);
+        int calculate_damage(Unit _attacker, bool _counter);
+        int calculate_heal();
         
     private:
         int unit_id;
