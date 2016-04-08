@@ -40,7 +40,7 @@ class GameState
         bool tick(double time_in_seconds);
 
         // Handle an EventRequest bound for this GameState.
-        void handle_request(EventRequest *req);
+        void handle_request(Player *p, EventRequest *req);
 
         // Used for initially setting up the game.
         void add_player(Player *p);

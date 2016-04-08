@@ -22,14 +22,23 @@ GameState::~GameState()
 
 bool GameState::tick(double time_in_seconds)
 {
+    // If the state is GAME_OVER, just return FALSE.
     if(current_gamestate == State::GAME_OVER)
     {
         return false;
     }
+
+    // If the state is GAME_PLAYING, deduct the seconds.
+    if(current_gamestate == State::GAME_PLAYING)
+    {
+        // TODO - actually keep track of time maybe
+    }
+
+    // Otherwise, we should just return TRUE.
     return true;
 }
 
-void GameState::handle_request(EventRequest *r)
+void GameState::handle_request(Player *p, EventRequest *r)
 {
     // After everything is done, delete the EventRequest.
     delete r;

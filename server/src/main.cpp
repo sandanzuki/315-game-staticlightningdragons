@@ -144,7 +144,7 @@ int main(int argc, char **argv)
             else if(type.compare("PlayerQuitRequest") == 0)
             {
                 // First notify the GameState.
-                games[p->get_game_id()]->handle_request(r);
+                games[p->get_game_id()]->handle_request(p, r);
 
                 // Then disconnect/delete the Player.
                 nm.kill_connection(p->get_player_id());
@@ -155,7 +155,7 @@ int main(int argc, char **argv)
             // All other requests just go straight to the GameState.
             else
             {
-                games[p->get_game_id()]->handle_request(r);
+                games[p->get_game_id()]->handle_request(p, r);
             }
         }
 
