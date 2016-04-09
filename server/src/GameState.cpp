@@ -91,11 +91,13 @@ void GameState::build_map_from_file(string &map_filename)
            break;
         }
     for (int index = 0; index < blocked_data.size(); ++index)
+    {
         int tile_data = blocked_data[index].asInt();
         if(tile_data != 0)
         {
             tiles.insert(make_pair(index, new TileInfo(x, y, true)));
         }
+    }
     Json::Value next_object_id = map_data["nextobjectid"];
     Json::Value orientation = map_data["orientation"];
     Json::Value render_order = map_data["renderorder"];
