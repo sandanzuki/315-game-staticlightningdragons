@@ -1,7 +1,5 @@
 #include "GameState.hpp"
 
-#include "GenericResponses.hpp"
-
 GameState::GameState(int _game_id, string _map_file)
 {
     current_gamestate = State::WAITING_FOR_PLAYERS;
@@ -71,46 +69,4 @@ void GameState::build_map_from_file(string &map_filename)
 {
     // If we weren't able to load the map, don't start the game.
     current_gamestate = State::GAME_OVER;
-}
-
-/***
- *  EVENT NOTIFICATION
- **/
-
-void GameState::send_all_players(Event &e)
-{
-    if(player_one != NULL)
-    {
-        player_one->get_connection()->submit_outgoing_event(e);
-    }
-    if(player_two != NULL)
-    {
-        player_two->get_connection()->submit_outgoing_event(e);
-    }
-}
-
-void GameState::notify_assign_game(EventRequest *r)
-{
-    // First get the Player IDs
-    int pid1 = -1;
-    int pid2 = -1;
-    if(player_one != NULL)
-    {
-        pid1 = player_one->get_player_id();
-    }
-    if(player_two != NULL)
-    {
-        pid2 = player_two->get_player_id();
-    }
-
-    // Build the Event
-    Event notify;
-    notify["type"] = string("AssignGameEvent");
-    notify["game_id"] = game_id;
-    notify["message_id"] = (*r)["message_id"];
-    notify["player_one_id"] = pid1;
-    notify["player_two_id"] = pid2;
-
-    // Send to all connected players.
-    send_all_players(notify);
 }
