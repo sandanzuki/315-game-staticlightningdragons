@@ -71,6 +71,39 @@ void GameState::build_map_from_file(string &map_filename)
 {
     // If we weren't able to load the map, don't start the game.
     current_gamestate = State::GAME_OVER;
+    
+    Json::Value map_data;
+    Json::Reader reader;
+    bool parsingSuccessful = reader.parse(map_filename, map_data);
+    if(!parsingSuccessful)
+    {
+        // report failure and their locations in the document to the user
+        cout << "Failed to parse configuration\n" << reader.getFormattedErrorMessages();
+        return;
+    }    
+    
+    Json::Value height = map_data["height"];
+    Json::Value width = map_data["width"];
+    const Json::Value layers = map_data["layers"];
+    for (int index = 0; index < layers.size(); ++index)
+        if(layer[i]["name"].asString().compare("blockedLayer") == 0)
+        {
+           const Json::value blocked_data = layer[i]["data"];
+           break;
+        }
+    for (int index = 0; index < blocked_data.size(); ++index)
+        int tile_data = layer[i].asInt();
+        if(tile_data != 0)
+        {
+            tiles[i] = tile_data;
+        }
+    Json::Value next_object_id = map_data["nextobjectid"];
+    Json::Value orientation = map_data["orientation"];
+    Json::Value render_order = map_data["renderorder"];
+    Json::Value tile_height = map_data["tileheight"];
+    Json::Value tile_width = map_data["tilewidth"];
+    Json::Value tile_sets = map_data["tilesets"];
+    Json::Value version = map_data["version"];    
 }
 
 /***
