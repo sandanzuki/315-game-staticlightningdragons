@@ -2,6 +2,7 @@
 #define GAMESTATE_H
 
 #include "Event.hpp"
+#include "LogWriter.hpp"
 #include "Player.hpp"
 #include "TileInfo.hpp"
 #include "Unit.hpp"
@@ -9,6 +10,7 @@
 #include <map>
 #include <string>
 #include <vector>
+#include <utility>
 
 #include "json/json.h"
 
@@ -26,7 +28,7 @@ class GameState
 {
     public:
         // Constructor and Destructor
-        GameState(int _game_id, string _map_file);
+        GameState(int _game_id, std::string _map_file);
         ~GameState();
 
         // Getters
@@ -49,15 +51,6 @@ class GameState
     private:
         // Build the map (this->tiles) from a JSON file.
         void build_map_from_file(string &map_filename);
-
-        // Send notifications of events to Players.
-        void send_all_players(Event &e);
-        void notify_assign_game(EventRequest *r);
-        void notify_select_units(EventRequest *r, Player *p);
-        void notify_state_change(EventRequest *r);
-        void notify_turn_change(EventRequest *r);
-        void notify_unit_interact(EventRequest *r, Unit *first, Unit *second);
-        void notify_unit_move(EventRequest *r, Unit *target);
 
         int game_id;        // ID of the Game
         int map_width;      // width of the map in tiles

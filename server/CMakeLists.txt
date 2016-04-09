@@ -10,7 +10,6 @@ set(RQSERVER_SOURCES
     ./src/Connection.cpp
     ./src/Effect.cpp
     ./src/GameState.cpp
-    ./src/GenericResponses.cpp
     ./src/LogWriter.cpp
     ./src/main.cpp
     ./src/NetworkManager.cpp
