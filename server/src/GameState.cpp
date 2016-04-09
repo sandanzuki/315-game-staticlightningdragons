@@ -83,7 +83,7 @@ void GameState::build_map_from_file(string &map_filename)
     Json::Value height = map_data["height"];
     Json::Value width = map_data["width"];
     const Json::Value layers = map_data["layers"];
-    const Json::value blocked_data
+    const Json::Value blocked_data;
     for (int index = 0; index < layers.size(); ++index)
         if(layers[index]["name"].asString().compare("blockedLayer") == 0)
         {
@@ -91,10 +91,10 @@ void GameState::build_map_from_file(string &map_filename)
            break;
         }
     for (int index = 0; index < blocked_data.size(); ++index)
-        int tile_data = layers[index].asInt();
+        int tile_data = blocked_data[index].asInt();
         if(tile_data != 0)
         {
-            tiles[index] = tile_data;
+            tiles.insert(make_pair(index, new TileInfo(x, y, true)));
         }
     Json::Value next_object_id = map_data["nextobjectid"];
     Json::Value orientation = map_data["orientation"];
