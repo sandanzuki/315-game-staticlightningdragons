@@ -1,22 +1,53 @@
+/*
+ * Project Radical Quest
+ * Authors
+ *      - Chung, Eric
+ *      - Dolifka, Randall
+ *      - Fang, Jessica
+ *      - Phelan, Alexander
+ *
+ *
+ *
+ *  
+ * --------------------------------------------------------------------------------  */
+
+
+// Wut does this do?
 //var connection = new WebSocket("ws://sld.bitwisehero.com:13337", "rqs");
 //connection.onmessage = function(yas) { console.log(yas); }(edited)
 //conection.send(JSON STUFF AS A STRING)
 //^^^^
 //this is is stuff for connecting to server
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// global variables
+// -------------------------------------------------------------------------------- 
 var game = game || {},
     map,
     background,
     graphics,
     blocked;
-    var GRAVITY = 900;
 
-game = new Phaser.Game(900, 660, Phaser.AUTO,'', { preload: preload, create: create, update: update });
+var GRAVITY = 900;
 
 var cursor,
     tileX,
     tileY,
-    bFighter1, bFighter2, bArcher1, bArcher2, bMage, //all the global variables
+    bFighter1, bFighter2, bArcher1, bArcher2, bMage, 
     rFighter1, rFighter2, rArcher1, rArcher2, rMage,
     possibleTiles = [],
     attackTiles = [],
@@ -30,20 +61,42 @@ var cursor,
 var friendlyUnits = [],
     enemyUnits = [];
 
+var pause = false;
+
+// game state init
+game = new Phaser.Game(900, 660, Phaser.AUTO,'', { preload: preload, create: create, update: update });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// init functions 
+// -------------------------------------------------------------------------------- 
 function preload() {
 	// load map
-	game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);
-	game.load.image('gameTiles', './assets/images/mapTiles.png');
+	game.load.tilemap('Map', './js/jsons/map1.json', null, Phaser.Tilemap.TILED_JSON);
+	game.load.image('gameTiles', './imgs/mapTiles.png');
 
     // blue units
-    game.load.image('b_archer', './assets/images/b_archer.png');
-    game.load.image('b_mage', './assets/images/b_mage.png');
-    game.load.image('b_fighter', './assets/images/b_fighter.png');
+    game.load.image('b_archer', './imgs/b_archer.png');
+    game.load.image('b_mage', './imgs/b_mage.png');
+    game.load.image('b_fighter', './imgs/b_fighter.png');
 
 	// red units
-	game.load.image('r_archer', './assets/images/r_archer.png');
-	game.load.image('r_mage', './assets/images/r_mage.png');
-	game.load.image('r_fighter', './assets/images/r_fighter.png');
+	game.load.image('r_archer', './imgs/r_archer.png');
+	game.load.image('r_mage', './imgs/r_mage.png');
+	game.load.image('r_fighter', './imgs/r_fighter.png');
 }
 
 
@@ -97,6 +150,7 @@ function create() {
 	cursors = game.input.keyboard.createCursorKeys();
 }
 
+
 function update() {
     downButton = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
     upButton = game.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -122,6 +176,7 @@ function update() {
     enterButton.onDown.add(choosingMove, this);
 }
 
+
 //function for loading units to tilemap
 function loadUnits(){
     // add all blue sprites to the map
@@ -131,7 +186,7 @@ function loadUnits(){
     map.getTileWorldXY(0,0).unit = bFighter1;       //Does a tile have a unit on it?
     bFighter1.maxHealth=100;
 
-    bFighter2 = game.add.sprite(360, 240,'b_fighter');
+    bFighter2 = game.add.sprite(0, 240,'b_fighter');
     friendlyUnits.push(bFighter2);
     map.getTileWorldXY(360,240).properties.unitType = 1;
     map.getTileWorldXY(360,240).unit = bFighter2;
@@ -186,6 +241,23 @@ function loadUnits(){
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// movement functions 
+// -------------------------------------------------------------------------------- 
 // functions for moving the cursor around one tile at a time
 function cursorDown() {
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
@@ -201,6 +273,9 @@ function cursorDown() {
     cursor.x = nextTile.worldX;
     cursor.y = nextTile.worldY;
 }
+
+
+
 
 function cursorUp() {
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
@@ -469,6 +544,23 @@ function moveComplete(coordinates){
 
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// et al functions 
+// -------------------------------------------------------------------------------- 
 function lockUnit(unit){
     var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; //get the tile the unit is on.
     var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
@@ -488,6 +580,7 @@ function lockUnit(unit){
     }
 }
 
+
 function unlockUnits(unitList){
     for(var i = 0; i<unitList.length; i++){
         unitList[i].locked = false;
@@ -495,11 +588,12 @@ function unlockUnits(unitList){
     lockGraphics.clear();
 }
 
+
 function output(input){ //just used to output helpful info to screen
     document.getElementById("stats").innerHTML = input;
 }
 
-var pause = false;
+
 function pauseGame() {
    // if (pause == false)
 
