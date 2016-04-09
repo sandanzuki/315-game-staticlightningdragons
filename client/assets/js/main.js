@@ -1,12 +1,5 @@
 /*
- * Radical Quest
- * Authors
- *      - Chung, Eric
- *      - Dolifka, Randall
- *      - Fang, Jessica
- *      - Phelan, Alexander
- *
- *
+ * Project Radical Quest
  * File: main.js
  *
  *  
@@ -19,5 +12,6 @@ game = new Phaser.Game(900, 660, Phaser.AUTO,'');   // Init instance of game
 // Second parameter is an object containing the needed methods for state functionality
 
 game.state.add('Menu', Menu);                       // Add state Menu
+game.state.add('Load', Load);                       // Add state Load 
 game.state.add('Game', Game);                       // Add state Game 
 game.state.start('Menu');                           // This state first 
