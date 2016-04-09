@@ -11,9 +11,11 @@ var Load = {
         game.scale.pageAlignVertically = true; // aligns canvas
     },
 
+
     create : function() {
         this.add.button(0, 0, 'load', this.startGame, this);
     },
+
 
     startGame : function() {
         // start the game and change the game state

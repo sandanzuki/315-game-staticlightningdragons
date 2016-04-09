@@ -11,9 +11,11 @@ var Menu = {
         game.scale.pageAlignVertically = true; // aligns canvas
     },
 
+
     create : function() {
         this.add.button(0, 0, 'menu', this.startLoad, this);
     },
+
 
     startLoad : function() {
         // start the game and change the game state

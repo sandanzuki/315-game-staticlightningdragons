@@ -4,6 +4,12 @@
  *
  *  
  * -------------------------------------------------------------------------------- */
+
+
+
+
+// global variables 
+// -------------------------------------------------------------------------------- 
 var game = game || {},
     map,
     background,
@@ -24,8 +30,8 @@ var game = game || {},
     selected,
     lockCounter = 0,
     friendlyUnits = [],
-    enemyUnits = [];
-
+    enemyUnits = [],
+    pause = false;
 
 
 
@@ -284,7 +290,6 @@ window.getMoveOptions = function(currTile, unitType){
         }
     }
     //queue1;
-
     possibleTiles = drawOptions(set);
 }
 
@@ -362,6 +367,7 @@ window.drawOptions = function(possibleTiles){
     return possibleTiles;
 }
 
+
 //function that completes the movement of the unit
 window.moveComplete = function(coordinates){
     isDown = 0;
@@ -419,7 +425,7 @@ window.output = function(input){ //just used to output helpful info to screen
 }
 
 
-var pause = false;
+
 
 window.pauseGame = function() {
     // if (pause == false)
@@ -428,6 +434,8 @@ window.pauseGame = function() {
 
 
 
+// main game state
+// -------------------------------------------------------------------------------- 
 var Game = { 
     preload : function() {
         // load map
@@ -496,6 +504,7 @@ var Game = {
         cursors = game.input.keyboard.createCursorKeys();
     },
 
+
     update : function() {
         downButton = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         upButton = game.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -503,7 +512,6 @@ var Game = {
         rightButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-
 
         downButton.onDown.add(cursorDown, this);
         // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
@@ -517,7 +525,6 @@ var Game = {
         leftButton.onDown.add(cursorLeft, this);
         rightButton.onDown.add(cursorRight, this);
         pauseButton.onDown.add(pauseGame, this);
-
         enterButton.onDown.add(choosingMove, this);
     }
 };
