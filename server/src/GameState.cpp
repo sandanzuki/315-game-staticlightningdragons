@@ -114,3 +114,75 @@ void GameState::notify_assign_game(EventRequest *r)
     // Send to all connected players.
     send_all_players(notify);
 }
+
+void GameState::notify_select_units(EventRequest *r, Player *p)
+{
+
+}
+
+void GameState::notify_state_change(EventRequest *r)
+{
+
+}
+
+void GameState::notify_turn_change(EventRequest *r)
+{
+    // Build the Event
+    Event notify;
+    notify["type"] = string("TurnChangeEvent");
+    notify["game_id"] = game_id;
+    notify["message_id"] = (*r)["message_id"];
+
+    // Send to all connected players.
+    send_all_players(notify);
+}
+
+void GameState::notify_unit_interact(EventRequest *r, Unit *first, Unit *second)
+{
+    // First get the Unit IDs
+    int uid1 = -1;
+    int uid2 = -1;
+    if(first != NULL)
+    {
+        uid1 = first->get_unit_id();
+    }
+    if(second != NULL)
+    {
+        uid2 = second->get_unit_id();
+    }
+
+    // Build the Event
+    Event notify;
+    notify["type"] = string("UnitInteractEvent");
+    notify["game_id"] = game_id;
+    notify["message_id"] = (*r)["message_id"];
+    notify["unit_one_id"] = uid1;
+    notify["unit_two_id"] = uid2;
+    notify["unit_one_hp"] = first->get_remaining_health();
+    notify["unit_two_hp"] = second->get_remaining_health();
+
+    // Send to all connected players.
+    send_all_players(notify);
+}
+
+void GameState::notify_unit_move(EventRequest *r, Unit *target)
+{
+    // First get the Player IDs
+    int uid = -1;
+    if(target != NULL)
+    {
+        uid = target->get_unit_id();
+    }
+
+    // Build the Event
+    Event notify;
+    notify["type"] = string("UnitMoveEvent");
+    notify["game_id"] = game_id;
+    notify["message_id"] = (*r)["message_id"];
+    notify["unit_id"] = uid;
+    //notify["unit_x"] = x; // TODO - actually keep track of unit X position
+    //notify["unit_y"] = y; // TODO - actually keep track of unit Y position
+
+    // Send to all connected players.
+    send_all_players(notify);
+}
