@@ -83,7 +83,7 @@ void GameState::build_map_from_file(string &map_filename)
     Json::Value height = map_data["height"];
     Json::Value width = map_data["width"];
     const Json::Value layers = map_data["layers"];
-    const Json::Value blocked_data;
+    Json::Value blocked_data;
     for (int index = 0; index < layers.size(); ++index)
         if(layers[index]["name"].asString().compare("blockedLayer") == 0)
         {
