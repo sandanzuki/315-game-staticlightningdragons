@@ -2,6 +2,7 @@
 #define GAMESTATE_H
 
 #include "Event.hpp"
+#include "LogWriter.hpp"
 #include "Player.hpp"
 #include "TileInfo.hpp"
 #include "Unit.hpp"
