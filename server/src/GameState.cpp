@@ -1,5 +1,7 @@
 #include "GameState.hpp"
 
+#include "GenericResponses.hpp"
+
 GameState::GameState(int _game_id, string _map_file)
 {
     current_gamestate = State::WAITING_FOR_PLAYERS;
