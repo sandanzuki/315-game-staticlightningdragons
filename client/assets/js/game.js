@@ -1,15 +1,3 @@
-/*
- * Project Radical Quest
- * File: game.js
- *
- *  
- * -------------------------------------------------------------------------------- */
-
-
-
-
-// global variables 
-// -------------------------------------------------------------------------------- 
 var game = game || {},
     map,
     background,
@@ -17,8 +5,6 @@ var game = game || {},
     blocked,
     GRAVITY = 900,
     cursor,
-    tileX,
-    tileY,
     bFighter1, bFighter2, bArcher1, bArcher2, bMage, //all the global variables
     rFighter1, rFighter2, rArcher1, rArcher2, rMage,
     possibleTiles = [],
@@ -33,23 +19,18 @@ var game = game || {},
     enemyUnits = [],
     pause = false;
 
-
-
-// helper functions
-// -------------------------------------------------------------------------------- 
-//function for loading units to tilemap
 window.loadUnits = function(){
     // add all blue sprites to the map
     bFighter1 = game.add.sprite(0, 0,'b_fighter');
-    friendlyUnits.push(bFighter1);                  //information about the unit and its tile for movment
-    map.getTileWorldXY(0,0).properties.unitType = 1;//Is the unit done moving this turn?
-    map.getTileWorldXY(0,0).unit = bFighter1;       //Does a tile have a unit on it?
+    friendlyUnits.push(bFighter1);
+    map.getTileWorldXY(0,0).properties.unitType = 1;
+    map.getTileWorldXY(0,0).unit = bFighter1; // put the unit into a tile
     bFighter1.maxHealth=100;
 
     bFighter2 = game.add.sprite(0, 240,'b_fighter');
     friendlyUnits.push(bFighter2);
-    map.getTileWorldXY(360,240).properties.unitType = 1;
-    map.getTileWorldXY(360,240).unit = bFighter2;
+    map.getTileWorldXY(0,240).properties.unitType = 1;
+    map.getTileWorldXY(0,240).unit = bFighter2;
 
     bArcher1 = game.add.sprite(0, 60,'b_archer');
     friendlyUnits.push(bArcher1);
@@ -101,10 +82,10 @@ window.loadUnits = function(){
     }
 }
 
-
-// functions for moving the cursor around one tile at a time
+// moving cursor tile by tile
 window.cursorDown = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
+    // calculate (x, y) coordinates of the tile the cursor is on
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -118,9 +99,8 @@ window.cursorDown = function() {
     cursor.y = nextTile.worldY;
 }
 
-
 window.cursorUp = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -134,9 +114,8 @@ window.cursorUp = function() {
     cursor.y = nextTile.worldY;
 }
 
-
 window.cursorLeft = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -150,9 +129,8 @@ window.cursorLeft = function() {
     cursor.y = nextTile.worldY;
 }
 
-
 window.cursorRight = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -167,10 +145,10 @@ window.cursorRight = function() {
 
 }
 
-
-//function that decides the actual functionality of pressing 'enter'
+// function of 'enter'
 window.choosingMove = function(){
-    if (document.getElementById("stats").childNodes.length != 0){//remove the text below the game screen
+    if (document.getElementById("stats").childNodes.length != 0){
+        // remove the text below the game screen
         document.getElementById("stats").innerHTML = "";
     }
 
@@ -183,42 +161,43 @@ window.choosingMove = function(){
     }
 }
 
-
-//function that decides on which unit is actually moving
+// unit movement
 window.moveMenu = function() {
     coordinates = [];
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
 
-    coordinates[0] = x;//because phaser is being dumb and wont let me do someTile = tile
-    coordinates[1] = y;//so saved the x,y coords in an array for my convienience.
+    // save the (x,y) coords in array for convenience
+    // because phaser won't set equal someTile = tile
+    coordinates[0] = x;
+    coordinates[1] = y;
 
     var currTile = map.getTile(x,y, background);
 
-    //the nexted ifs get a little hairy here.
-    if(currTile != null){//is the current tile actually a valid tile on the map?
-        if(currTile.properties.unitType != 0){ //if the tile actually holds a unit, carry on
-            if(currTile.unit.locked==false){ //if the unit is not locked, figure out what kind it is
+    if(currTile != null){ // check if current tile is valid (exists on map)
+        if(currTile.properties.unitType != 0){ // if the tile actually holds a unit, carry on
+            if(currTile.unit.locked == false){ // if the unit is not locked, figure out what kind it is
 
-                selected.lineStyle(2, 0xffbf00, 1); //draw a spiffy looking gold square
-                selected.beginFill(0xffbf00, .5);   //to rep the selected unit
+                // draw a spiffy looking gold square to represent a selected unit
+                selected.lineStyle(2, 0xffbf00, 1);
+                selected.beginFill(0xffbf00, .5);
                 selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
                 possibleTiles = [];
 
                 switch(currTile.properties.unitType){
-                    case 1: //the unit is a fighter
+                    case 1: // unit is fighter
                         isDown = 1;
                         output("Friendly Fighter");
                         getMoveOptions(currTile, 1);
                         return currTile;
                         break;
-                    case 2: //the unit is an archer
+                    case 2: // unit is archer
                         isDown = 1;
                         output("Friendly Archer");
                         getMoveOptions(currTile, 2);
                         return currTile;
                         break;
-                    case 3: //the unit is a mage
+                    case 3: // unit is mage
                         isDown = 1;
                         output("Friendly Mage");
                         getMoveOptions(currTile, 3);
@@ -229,17 +208,14 @@ window.moveMenu = function() {
                 }
             }
         }
-        else{
+        else
             output("No Unit Here");
-        }
     }
-    else{
+    else
         output("Invalid Tile Selection");
-    }
 }
 
-
-//calculates possible tiles for a fighter
+// calculates possible tiles to move to
 window.getMoveOptions = function(currTile, unitType){
     attackTiles = [];
     var adjacent = [];
@@ -263,7 +239,7 @@ window.getMoveOptions = function(currTile, unitType){
             break;
     }
 
-    //Breadth-first Search Algorithm for finding appropriate tiles
+    // Breadth-first Search Algorithm for finding appropriate tiles
     var queue = [];
     var set = [];
     var tile;
@@ -275,7 +251,8 @@ window.getMoveOptions = function(currTile, unitType){
         tile = queue.shift();
         adjacent = [];
 
-        if(Math.abs(tile.x-currTile.x) >= maxMoves || Math.abs(tile.y-currTile.y) >= maxMoves){//has the distance of searching outreached the maximum allowed movement?
+        // check if within the maximum allowed movement
+        if(Math.abs(tile.x-currTile.x) >= maxMoves || Math.abs(tile.y-currTile.y) >= maxMoves){
             break;
         }
 
@@ -289,10 +266,9 @@ window.getMoveOptions = function(currTile, unitType){
             }
         }
     }
-    //queue1;
+
     possibleTiles = drawOptions(set);
 }
-
 
 window.getAdjacent = function(currTile){
     var adjacent = [];
@@ -305,45 +281,34 @@ window.getAdjacent = function(currTile){
     var above = map.getTileAbove(i,x,y);
     var below = map.getTileBelow(i,x,y);
 
-    if(right){
-        if(right.index != -1){
-            adjacent.push(right);
-        }
-    }
+    if(right && right.index != -1)
+        adjacent.push(right);
 
-    if(left){
-        if(left.index != -1){
-            adjacent.push(left);
-        }
-    }
+    if(left && left.index != -1)
+        adjacent.push(left);
 
-    if(above){
-        if(above.index != -1){
-            adjacent.push(above);
-        }
-    }
+    if(above && above.index != -1)
+        adjacent.push(above);
 
-    if(below){
-        if(below.index != -1){
-            adjacent.push(below);
-        }
-    }
+    if(below && below.index != -1)
+        adjacent.push(below);
 
     return adjacent;
 }
 
-
-//function that actually overlays the possible movement for selected unit
+// overlay possible movement for selected unit
 window.drawOptions = function(possibleTiles){
     graphics = game.add.graphics();
-    for(var j=0; j<possibleTiles.length; j++){
-        if(possibleTiles[j]!=null){
+    for(var j = 0; j < possibleTiles.length; j++){
+        if(possibleTiles[j] != null){
             if(possibleTiles[j].unit == null){
-                graphics.lineStyle(2, 0x0066ff, 1); //draw some spiffy looking blue squares for possible movement
+                //draw some spiffy looking blue squares for possible movement
+                graphics.lineStyle(2, 0x0066ff, 1);
                 graphics.beginFill(0x0066ff, .5);
                 graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
             }
-            else{//removes impossible tile locations
+            else{
+                //removes impossible tile locations
                 possibleTiles.splice(j, 1);
                 j--;
             }
@@ -353,9 +318,10 @@ window.drawOptions = function(possibleTiles){
             j--;
         }
     }
-    for(var j=0; j<attackTiles.length; j++){
+    for(var j = 0; j < attackTiles.length; j++){
         if(attackTiles[j]!=null){
-            graphics.lineStyle(2, 0xff0000, 1); //draw some spiffy looking blue squares for possible movement
+            //draw some spiffy looking red squares for attack range
+            graphics.lineStyle(2, 0xff0000, 1);
             graphics.beginFill(0xff0000, .5);
             graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
         }
@@ -367,8 +333,7 @@ window.drawOptions = function(possibleTiles){
     return possibleTiles;
 }
 
-
-//function that completes the movement of the unit
+// end move phase
 window.moveComplete = function(coordinates){
     isDown = 0;
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
@@ -376,41 +341,43 @@ window.moveComplete = function(coordinates){
     var currTile = map.getTile(x,y, background);
     var oldTile = map.getTile(coordinates[0], coordinates[1], background);
 
-    if(possibleTiles.indexOf(currTile) != -1){
-        if(!oldTile.unit.locked){
-            oldTile.unit.x = currTile.worldX; //set the unit's location to new tile
-            oldTile.unit.y = currTile.worldY;
-            currTile.unit = oldTile.unit;
-            currTile.properties.unitType = oldTile.properties.unitType; //give the new tile all of the old tile's properties
-            oldTile.properties.unitType = 0;
-            oldTile.unit = null;
+    if(possibleTiles.indexOf(currTile) != -1 && !oldTile.unit.locked){
+        //set the unit's location to new tile
+        oldTile.unit.x = currTile.worldX;
+        oldTile.unit.y = currTile.worldY;
+        currTile.unit = oldTile.unit;
 
-            lockUnit(currTile.unit);//show the user that this unit is now locked, and cannot be moved again
-        }
+        // give the new tile all of the old tile's properties
+        currTile.properties.unitType = oldTile.properties.unitType;
+        oldTile.properties.unitType = 0;
+        oldTile.unit = null;
+
+        // show the user that this unit is now locked, and cannot be moved again
+        lockUnit(currTile.unit);
     }
     graphics.clear();
 }
 
-
 window.lockUnit = function(unit){
-    var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; //get the tile the unit is on.
+    var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; // get the tile the unit is on.
     var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
     var currTile = map.getTile(x, y, background);
 
     currTile.unit.locked = true;
 
-    lockGraphics.lineStyle(2, 0xcc0000, 1); //draw a dark red square over the unit
+    lockGraphics.lineStyle(2, 0xcc0000, 1); // draw a dark red square over the unit
     lockGraphics.beginFill(0xcc0000, .25);
     lockGraphics.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
-    lockCounter++; //increment the number of locked units (in place of turns)
+    lockCounter++; // increment the number of locked units (in place of turns)
 
-    if(lockCounter == friendlyUnits.length + enemyUnits.length){ //if the the lock counter == total number of units, unlock all
-        unlockUnits(friendlyUnits);                              //this will be replaced with the turn mechanism
+    // if the the lock counter == total number of units, unlock all
+    // TODO replace this with turn mechanism
+    if(lockCounter == friendlyUnits.length + enemyUnits.length){
+        unlockUnits(friendlyUnits);
         unlockUnits(enemyUnits);
         lockCounter = 0;
     }
 }
-
 
 window.unlockUnits = function (unitList){
     for(var i = 0; i<unitList.length; i++){
@@ -419,24 +386,16 @@ window.unlockUnits = function (unitList){
     lockGraphics.clear();
 }
 
-
-window.output = function(input){ //just used to output helpful info to screen
+// output helpful info to screen
+window.output = function(input){
     document.getElementById("stats").innerHTML = input;
 }
-
-
-
 
 window.pauseGame = function() {
     // if (pause == false)
 }
 
-
-
-
-// main game state
-// -------------------------------------------------------------------------------- 
-var Game = { 
+var Game = {
     preload : function() {
         // load map
         game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);
@@ -453,14 +412,15 @@ var Game = {
         game.load.image('r_fighter', './assets/images/r_fighter.png');
     },
 
-
     create : function() {
         //this.physics.startSystem(Phaser.Physics.ARCADE);
         //this.physics.arcade.gravity.y = GRAVITY;
         // show map
         isDown = 0;
-        game.scale.pageAlignHorizontally = true; // aligns canvas
-        game.scale.pageAlignVertically = true; // aligns canvas
+
+        // align canvas
+        game.scale.pageAlignHorizontally = true;
+        game.scale.pageAlignVertically = true;
         game.scale.refresh();
         //game.stage.backgroundColor = "#000000";
         map = game.add.tilemap('Map');
@@ -487,8 +447,8 @@ var Game = {
 
         loadUnits();
 
-        lockGraphics = game.add.graphics();//used to identify a locked unit
-        selected = game.add.graphics();//used to identify the user's selected unit
+        lockGraphics = game.add.graphics(); // for identifying locked unit
+        selected = game.add.graphics(); // for identifying selected unit
 
         cursor = game.add.graphics();
         cursor.lineStyle(2, 0xffffff, 1);
@@ -497,13 +457,13 @@ var Game = {
         background.resizeWorld();
         game.physics.startSystem(Phaser.Physics.P2JS);
 
-        map.setCollisionBetween(1, 2000, true, 'blockedLayer'); //need to figure out how to set 'collisions' between cursor and blocked layer
-        // game.physics.p2.enable(cursor);                         //which includes the walls and water
+        map.setCollisionBetween(1, 2000, true, 'blockedLayer');
+        // need to figure out how to set 'collisions' between cursor and blocked layer
+        // game.physics.p2.enable(cursor);
         // cursor.body.fixedRotation = true;
 
         cursors = game.input.keyboard.createCursorKeys();
     },
-
 
     update : function() {
         downButton = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
@@ -528,4 +488,3 @@ var Game = {
         enterButton.onDown.add(choosingMove, this);
     }
 };
-
