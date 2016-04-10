@@ -280,7 +280,6 @@ window.getMoveOptions = function(currTile, unitType) {
         tile = queue.shift();
         adjacent = [];
         //has the distance of searching outreached the maximum allowed movement?
-        console.log(Math.abs(tile.x-currTile.x) + Math.abs(tile.y-currTile.y));
         if (Math.abs(tile.x-currTile.x) + Math.abs(tile.y-currTile.y) >= maxMoves){
             break;
         }
