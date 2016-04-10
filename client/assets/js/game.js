@@ -16,6 +16,7 @@
 var game = game || {},
     map,
     option,
+    arrow,
     background,
     graphics,
     blocked,
@@ -113,81 +114,155 @@ window.loadUnits = function() { // function for loading units to tilemap
 // unit movement 
 // -------------------------------------------------------------------------------- 
 window.cursorDown = function() { // functions for moving the cursor around one tile at a time
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
-    var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
-    var i = background.index;
-    var nextTile;
+    if(!pause){
+        var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
+        var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
+        var i = background.index;
+        var nextTile;
 
-    if(y == map.height - 1)
-        nextTile = map.getTileAbove(i, x, 1);
-    else
-        nextTile = map.getTileBelow(i, x, y);
+        if(y == map.height - 1)
+            nextTile = map.getTileAbove(i, x, 1);
+        else
+            nextTile = map.getTileBelow(i, x, y);
 
-    cursor.x = nextTile.worldX;
-    cursor.y = nextTile.worldY;
+        cursor.x = nextTile.worldX;
+        cursor.y = nextTile.worldY;
+    }
+    else{
+        if(arrow.y + 60 > 440){
+            arrow.y = 320;
+        }
+        else{
+            arrow.y += 60;
+        }
+
+        switch(arrow.y){
+            case(320):
+                arrow.x = 330;
+                break;
+            case(380):
+                arrow.x = 360;
+                break;
+            case(440):
+                arrow.x = 350;
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 
 window.cursorUp = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
-    var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
-    var i = background.index;
-    var nextTile;
+    if(!pause){
+        var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
+        var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
+        var i = background.index;
+        var nextTile;
 
-    if(y == 0)
-        nextTile = map.getTileBelow(i, x, 8);
-    else
-        nextTile = map.getTileAbove(i, x, y);
+        if(y == 0)
+            nextTile = map.getTileBelow(i, x, 8);
+        else
+            nextTile = map.getTileAbove(i, x, y);
 
-    cursor.x = nextTile.worldX;
-    cursor.y = nextTile.worldY;
+        cursor.x = nextTile.worldX;
+        cursor.y = nextTile.worldY;
+    }
+    else{
+        if(arrow.y - 60<320){
+            arrow.y = 440;
+        }
+        else{
+            arrow.y -= 60;
+        }
+
+        switch(arrow.y){
+            case(320):
+                arrow.x = 330;
+                break;
+            case(380):
+                arrow.x = 360;
+                break;
+            case(440):
+                arrow.x = 350;
+                break;
+            default:
+                break;
+        }
+    }
 }
 
 
 window.cursorLeft = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
-    var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
-    var i = background.index;
-    var nextTile;
+    if(!pause){
+        var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
+        var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
+        var i = background.index;
+        var nextTile;
 
-    if(x == 0)
-        nextTile = map.getTileRight(i, 13, y);
-    else
-        nextTile = map.getTileLeft(i, x, y);
+        if(x == 0)
+            nextTile = map.getTileRight(i, 13, y);
+        else
+            nextTile = map.getTileLeft(i, x, y);
 
-    cursor.x = nextTile.worldX;
-    cursor.y = nextTile.worldY;
+        cursor.x = nextTile.worldX;
+        cursor.y = nextTile.worldY;
+    }
 }
 
 
 window.cursorRight = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
-    var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
-    var i = background.index;
-    var nextTile;
+    if(!pause){
+        var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
+        var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
+        var i = background.index;
+        var nextTile;
 
-    if(x == map.width-1)
-        nextTile = map.getTileLeft(i, 1, y);
-    else
-        nextTile = map.getTileRight(i, x, y);
+        if(x == map.width-1)
+            nextTile = map.getTileLeft(i, 1, y);
+        else
+            nextTile = map.getTileRight(i, x, y);
 
-    cursor.x = nextTile.worldX;
-    cursor.y = nextTile.worldY;
+        cursor.x = nextTile.worldX;
+        cursor.y = nextTile.worldY;
+    }
 }
 
 
 // function that decides the actual functionality of pressing 'enter'
 window.choosingMove = function(){
-    if (document.getElementById("stats").childNodes.length != 0){// remove the text below the game screen
-        document.getElementById("stats").innerHTML = "";
-    }
+    if(!pause){
+        if (document.getElementById("stats").childNodes.length != 0){// remove the text below the game screen
+            output("");
+        }
 
-    if(isDown == 0){
-        oldTile = moveMenu();
+        if(isDown == 0){
+            oldTile = moveMenu();
+        }
+        else{
+            selected.clear();
+            moveComplete(coordinates);
+        }
     }
     else{
-        selected.clear();
-        moveComplete(coordinates);
+        switch(arrow.y){
+            case(320):
+                output("Resumed");
+                pause = false;
+                option.destroy();
+                arrow.destroy();
+                break;
+            case(380):
+                output("Opened settings menu");
+                break;
+            case(440):
+                output("");
+                pause = false;
+                this.state.start('GameOver');
+                break;
+            default:
+                break;
+        }
     }
 }
 
@@ -427,16 +502,17 @@ window.output = function(input){ // just used to output helpful info to screen
 
 
 window.pauseGame = function() {
+    output("");
     if(!pause){
         option = game.add.sprite(0,0, 'option');
+        arrow = game.add.sprite(330,320, 'arrow');
         pause = true;
     }
     else{
         option.destroy();
+        arrow.destroy();
         pause = false;
     }
-    // document.getElementById("stats").innerHTML = "";
-    // this.state.start('GameOver');
 }
 
 
@@ -458,6 +534,7 @@ var Game = {
         game.load.image('r_fighter', './assets/images/r_fighter.png');
 
         game.load.image('option', './assets/images/option.png');
+        game.load.image('arrow', './assets/images/arrow.png');
     },
 
 
@@ -512,16 +589,12 @@ var Game = {
         pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
 
-        if(!pause){
-            downButton.onDown.add(cursorDown, this);
-            upButton.onDown.add(cursorUp, this);
-            leftButton.onDown.add(cursorLeft, this);
-            rightButton.onDown.add(cursorRight, this);
-            enterButton.onDown.add(choosingMove, this);
-        }
-        else{
+        downButton.onDown.add(cursorDown, this);
+        upButton.onDown.add(cursorUp, this);
+        leftButton.onDown.add(cursorLeft, this);
+        rightButton.onDown.add(cursorRight, this);
+        enterButton.onDown.add(choosingMove, this);
 
-        }
         pauseButton.onDown.add(pauseGame, this);
     }
 };
