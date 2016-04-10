@@ -393,6 +393,7 @@ window.output = function(input){
 
 window.pauseGame = function() {
     // if (pause == false)
+    this.state.start(GameOver);
 }
 
 var Game = {
