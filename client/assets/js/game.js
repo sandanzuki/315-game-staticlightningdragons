@@ -53,8 +53,8 @@ window.loadUnits = function() { // function for loading units to tilemap
 
     bFighter2 = game.add.sprite(0, 240,'b_fighter');
     friendlyUnits.push(bFighter2);
-    map.getTileWorldXY(360,240).properties.unitType = 1;
-    map.getTileWorldXY(360,240).unit = bFighter2;
+    map.getTileWorldXY(0,240).properties.unitType = 1;
+    map.getTileWorldXY(0,240).unit = bFighter2;
 
     bArcher1 = game.add.sprite(0, 60,'b_archer');
     friendlyUnits.push(bArcher1);
@@ -280,7 +280,8 @@ window.getMoveOptions = function(currTile, unitType) {
         tile = queue.shift();
         adjacent = [];
         //has the distance of searching outreached the maximum allowed movement?
-        if (Math.abs(tile.x-currTile.x) >= maxMoves || Math.abs(tile.y-currTile.y) >= maxMoves){
+        console.log(Math.abs(tile.x-currTile.x) + Math.abs(tile.y-currTile.y));
+        if (Math.abs(tile.x-currTile.x) + Math.abs(tile.y-currTile.y) >= maxMoves){
             break;
         }
         adjacent = getAdjacent(tile);
@@ -450,14 +451,11 @@ var Game = {
 
 
     create : function() {
-        //this.physics.startSystem(Phaser.Physics.ARCADE);
-        //this.physics.arcade.gravity.y = GRAVITY;
         // show map
         isDown = 0;
         game.scale.pageAlignHorizontally = true; // aligns canvas
         game.scale.pageAlignVertically = true; // aligns canvas
         game.scale.refresh();
-        //game.stage.backgroundColor = "#000000";
         map = game.add.tilemap('Map');
 
         // building the map as intended in Tiled
@@ -471,14 +469,10 @@ var Game = {
         background.fixedToCamera = false;
         background.scrollFactorX = 0;
         background.scrollFactorY = 0;
-        //background.position.set(window.innerWidth, window.innerHeight);
 
         blocked.fixedToCamera = false;
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
-        //blocked.position.set(window.innerWidth, window.innerHeight);
-
-        //blocked.position.set(this.world.centerX, this.world.centerY);
 
         loadUnits();
 
@@ -493,8 +487,7 @@ var Game = {
         game.physics.startSystem(Phaser.Physics.P2JS);
 
         map.setCollisionBetween(1, 2000, true, 'blockedLayer'); //need to figure out how to set 'collisions' between cursor and blocked layer
-        // game.physics.p2.enable(cursor);                         //which includes the walls and water
-        // cursor.body.fixedRotation = true;
+                                                                //which includes the walls and water
 
         cursors = game.input.keyboard.createCursorKeys();
     },
@@ -509,13 +502,6 @@ var Game = {
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
 
         downButton.onDown.add(cursorDown, this);
-        // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-
-        //         //game.time.events.add(Phaser.Timer.SECOND * 3000, cursorDown(), this);
-
-        //     cursorDown();
-        //     //cursor.y +=4;
-        // }
         upButton.onDown.add(cursorUp, this);
         leftButton.onDown.add(cursorLeft, this);
         rightButton.onDown.add(cursorRight, this);
