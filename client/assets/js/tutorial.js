@@ -1,6 +1,6 @@
 /*
  * Project Radical Quest
- * File: load.js
+ * File: tutorial.js
  *
  *  
  * -------------------------------------------------------------------------------- */
@@ -12,9 +12,9 @@
 
 
 
-var Load = {
+var Tutorial = {
     preload : function() {
-        game.load.image('load', './assets/images/load.png'); // load image; call it 'load'
+        game.load.image('load', './assets/images/tutorial.png'); // load image; call it 'load'
         game.scale.pageAlignHorizontally = true; // aligns canvas
         game.scale.pageAlignVertically = true; // aligns canvas 
     },
@@ -22,10 +22,10 @@ var Load = {
     create : function() {
         this.add.button(0, 0, 'load', this.toSelect, this); // make 'load' a button
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        enterButton.onDown.add(this.toTutorial, this);
+        enterButton.onDown.add(this.toSelect, this);
     },
 
-    toTutorial : function() {
-        this.state.start('Tutorial'); // go to the next game state
+    toSelect : function() {
+        this.state.start('Select'); // go to the next game state
     }
 };

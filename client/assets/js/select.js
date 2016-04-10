@@ -34,9 +34,15 @@ var Select = {
     create : function() {
         // this.add.sprite(0, 0, 'select'); // make 'select' a background 
         background = this.add.button(0, 0, 'select', this.toGame, this); // make 'button' a button
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        enterButton.onDown.add(this.toGame, this);
         //enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         //enterButton.onDown.add(this.startLoad, this);
-        this.add.button(330, 50, 'button', doOnClick, this); // make 'button' a button
+        //this.add.button(330, 50, 'button', doOnClick, this); // make 'button' a button
+        //
+        //
+        enterButton2 = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        enterButton2.onDown.add(doOnClick, this);
     },
 
     toGame : function() {
