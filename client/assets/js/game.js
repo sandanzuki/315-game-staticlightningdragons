@@ -4,6 +4,9 @@
  *
  *  
  * -------------------------------------------------------------------------------- */
+/* Comments here
+ * needs to talk to server for commands, etc. 
+ */
 
 
 
@@ -19,7 +22,7 @@ var game = game || {},
     cursor,
     tileX,
     tileY,
-    bFighter1, bFighter2, bArcher1, bArcher2, bMage, //all the global variables
+    bFighter1, bFighter2, bArcher1, bArcher2, bMage, 
     rFighter1, rFighter2, rArcher1, rArcher2, rMage,
     possibleTiles = [],
     attackTiles = [],
@@ -35,15 +38,17 @@ var game = game || {},
 
 
 
+
 // helper functions
 // -------------------------------------------------------------------------------- 
-//function for loading units to tilemap
-window.loadUnits = function(){
+// loading things
+// -------------------------------------------------------------------------------- 
+window.loadUnits = function() { // function for loading units to tilemap
     // add all blue sprites to the map
     bFighter1 = game.add.sprite(0, 0,'b_fighter');
-    friendlyUnits.push(bFighter1);                  //information about the unit and its tile for movment
-    map.getTileWorldXY(0,0).properties.unitType = 1;//Is the unit done moving this turn?
-    map.getTileWorldXY(0,0).unit = bFighter1;       //Does a tile have a unit on it?
+    friendlyUnits.push(bFighter1); // information about the unit and its tile for movment
+    map.getTileWorldXY(0,0).properties.unitType = 1; // is the unit done moving this turn?
+    map.getTileWorldXY(0,0).unit = bFighter1; // does a tile have a unit on it?
     bFighter1.maxHealth=100;
 
     bFighter2 = game.add.sprite(0, 240,'b_fighter');
@@ -66,7 +71,8 @@ window.loadUnits = function(){
     map.getTileWorldXY(0, 120).properties.unitType = 3;
     map.getTileWorldXY(0, 120).unit = bMage;
 
-    // add all red sprites
+
+    // add all red sprites to the map
     var x = map.widthInPixels-60;
     rFighter1 = game.add.sprite(x, 180, 'r_fighter');
     enemyUnits.push(rFighter1);
@@ -102,9 +108,11 @@ window.loadUnits = function(){
 }
 
 
-// functions for moving the cursor around one tile at a time
-window.cursorDown = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
+
+// unit movement 
+// -------------------------------------------------------------------------------- 
+window.cursorDown = function() { // functions for moving the cursor around one tile at a time
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -120,7 +128,7 @@ window.cursorDown = function() {
 
 
 window.cursorUp = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -136,7 +144,7 @@ window.cursorUp = function() {
 
 
 window.cursorLeft = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -152,7 +160,7 @@ window.cursorLeft = function() {
 
 
 window.cursorRight = function() {
-    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
+    var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; // finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
     var nextTile;
@@ -164,13 +172,12 @@ window.cursorRight = function() {
 
     cursor.x = nextTile.worldX;
     cursor.y = nextTile.worldY;
-
 }
 
 
-//function that decides the actual functionality of pressing 'enter'
+// function that decides the actual functionality of pressing 'enter'
 window.choosingMove = function(){
-    if (document.getElementById("stats").childNodes.length != 0){//remove the text below the game screen
+    if (document.getElementById("stats").childNodes.length != 0){// remove the text below the game screen
         document.getElementById("stats").innerHTML = "";
     }
 
@@ -184,24 +191,24 @@ window.choosingMove = function(){
 }
 
 
-//function that decides on which unit is actually moving
+// function that decides on which unit is actually moving
 window.moveMenu = function() {
     coordinates = [];
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
 
-    coordinates[0] = x;//because phaser is being dumb and wont let me do someTile = tile
-    coordinates[1] = y;//so saved the x,y coords in an array for my convienience.
+    coordinates[0] = x; // because phaser is being dumb and wont let me do someTile = tile
+    coordinates[1] = y; // so saved the x,y coords in an array for my convienience.
 
     var currTile = map.getTile(x,y, background);
 
-    //the nexted ifs get a little hairy here.
-    if(currTile != null){//is the current tile actually a valid tile on the map?
-        if(currTile.properties.unitType != 0){ //if the tile actually holds a unit, carry on
-            if(currTile.unit.locked==false){ //if the unit is not locked, figure out what kind it is
+    // the nexted ifs get a little hairy here.
+    if(currTile != null){ // is the current tile actually a valid tile on the map?
+        if(currTile.properties.unitType != 0){ // if the tile actually holds a unit, carry on
+            if(currTile.unit.locked==false){ // if the unit is not locked, figure out what kind it is
 
-                selected.lineStyle(2, 0xffbf00, 1); //draw a spiffy looking gold square
-                selected.beginFill(0xffbf00, .5);   //to rep the selected unit
+                selected.lineStyle(2, 0xffbf00, 1); // draw a spiffy looking gold square
+                selected.beginFill(0xffbf00, .5);   // to rep the selected unit
                 selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
                 possibleTiles = [];
 
@@ -229,27 +236,25 @@ window.moveMenu = function() {
                 }
             }
         }
-        else{
+        else {
             output("No Unit Here");
         }
     }
-    else{
+    else {
         output("Invalid Tile Selection");
     }
 }
 
 
-//calculates possible tiles for a fighter
-window.getMoveOptions = function(currTile, unitType){
+// calculates possible tiles for a fighter
+window.getMoveOptions = function(currTile, unitType) {
     attackTiles = [];
     var adjacent = [];
-
     var x = currTile.x;
     var y = currTile.y;
-
     var maxMoves;
 
-    switch(unitType){
+    switch(unitType) {
         case 1:
             maxMoves = 4;
             break;
@@ -271,14 +276,13 @@ window.getMoveOptions = function(currTile, unitType){
     queue.push(currTile);
     set.push(currTile);
 
-    while(queue.length>0){
+    while (queue.length>0) {
         tile = queue.shift();
         adjacent = [];
-
-        if(Math.abs(tile.x-currTile.x) >= maxMoves || Math.abs(tile.y-currTile.y) >= maxMoves){//has the distance of searching outreached the maximum allowed movement?
+        //has the distance of searching outreached the maximum allowed movement?
+        if (Math.abs(tile.x-currTile.x) >= maxMoves || Math.abs(tile.y-currTile.y) >= maxMoves){
             break;
         }
-
         adjacent = getAdjacent(tile);
         for(var i = 0; i<adjacent.length; i++){
             if(adjacent[i] != null){
@@ -294,7 +298,7 @@ window.getMoveOptions = function(currTile, unitType){
 }
 
 
-window.getAdjacent = function(currTile){
+window.getAdjacent = function(currTile) {
     var adjacent = [];
     var x = currTile.x;
     var y = currTile.y;
@@ -310,40 +314,36 @@ window.getAdjacent = function(currTile){
             adjacent.push(right);
         }
     }
-
     if(left){
         if(left.index != -1){
             adjacent.push(left);
         }
     }
-
     if(above){
         if(above.index != -1){
             adjacent.push(above);
         }
     }
-
     if(below){
         if(below.index != -1){
             adjacent.push(below);
         }
     }
-
     return adjacent;
 }
 
 
-//function that actually overlays the possible movement for selected unit
+// function that actually overlays the possible movement for selected unit
 window.drawOptions = function(possibleTiles){
     graphics = game.add.graphics();
     for(var j=0; j<possibleTiles.length; j++){
         if(possibleTiles[j]!=null){
             if(possibleTiles[j].unit == null){
-                graphics.lineStyle(2, 0x0066ff, 1); //draw some spiffy looking blue squares for possible movement
+                graphics.lineStyle(2, 0x0066ff, 1); // draw some spiffy looking blue squares for possible movement
                 graphics.beginFill(0x0066ff, .5);
                 graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
             }
-            else{//removes impossible tile locations
+            else{ //removes impossible tile locations
                 possibleTiles.splice(j, 1);
                 j--;
             }
@@ -355,7 +355,7 @@ window.drawOptions = function(possibleTiles){
     }
     for(var j=0; j<attackTiles.length; j++){
         if(attackTiles[j]!=null){
-            graphics.lineStyle(2, 0xff0000, 1); //draw some spiffy looking blue squares for possible movement
+            graphics.lineStyle(2, 0xff0000, 1); // draw some spiffy looking blue squares for possible movement
             graphics.beginFill(0xff0000, .5);
             graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
         }
@@ -368,7 +368,7 @@ window.drawOptions = function(possibleTiles){
 }
 
 
-//function that completes the movement of the unit
+// function that completes the movement of the unit
 window.moveComplete = function(coordinates){
     isDown = 0;
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
@@ -378,14 +378,14 @@ window.moveComplete = function(coordinates){
 
     if(possibleTiles.indexOf(currTile) != -1){
         if(!oldTile.unit.locked){
-            oldTile.unit.x = currTile.worldX; //set the unit's location to new tile
+            oldTile.unit.x = currTile.worldX; // set the unit's location to new tile
             oldTile.unit.y = currTile.worldY;
             currTile.unit = oldTile.unit;
-            currTile.properties.unitType = oldTile.properties.unitType; //give the new tile all of the old tile's properties
+            currTile.properties.unitType = oldTile.properties.unitType; // give the new tile all of the old tile's properties
             oldTile.properties.unitType = 0;
             oldTile.unit = null;
 
-            lockUnit(currTile.unit);//show the user that this unit is now locked, and cannot be moved again
+            lockUnit(currTile.unit); // show the user that this unit is now locked, and cannot be moved again
         }
     }
     graphics.clear();
@@ -393,19 +393,19 @@ window.moveComplete = function(coordinates){
 
 
 window.lockUnit = function(unit){
-    var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; //get the tile the unit is on.
+    var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; // get the tile the unit is on.
     var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
     var currTile = map.getTile(x, y, background);
 
     currTile.unit.locked = true;
 
-    lockGraphics.lineStyle(2, 0xcc0000, 1); //draw a dark red square over the unit
+    lockGraphics.lineStyle(2, 0xcc0000, 1); // draw a dark red square over the unit
     lockGraphics.beginFill(0xcc0000, .25);
     lockGraphics.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
-    lockCounter++; //increment the number of locked units (in place of turns)
+    lockCounter++; // increment the number of locked units (in place of turns)
 
-    if(lockCounter == friendlyUnits.length + enemyUnits.length){ //if the the lock counter == total number of units, unlock all
-        unlockUnits(friendlyUnits);                              //this will be replaced with the turn mechanism
+    if(lockCounter == friendlyUnits.length + enemyUnits.length){ // if the the lock counter == total number of units, unlock all
+        unlockUnits(friendlyUnits);                              // this will be replaced with the turn mechanism
         unlockUnits(enemyUnits);
         lockCounter = 0;
     }
@@ -420,11 +420,9 @@ window.unlockUnits = function (unitList){
 }
 
 
-window.output = function(input){ //just used to output helpful info to screen
+window.output = function(input){ // just used to output helpful info to screen
     document.getElementById("stats").innerHTML = input;
 }
-
-
 
 
 window.pauseGame = function() {
@@ -438,17 +436,14 @@ window.pauseGame = function() {
 // -------------------------------------------------------------------------------- 
 var Game = { 
     preload : function() {
-        // load map
-        game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);
-        game.load.image('gameTiles', './assets/images/mapTiles.png');
+        game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON); // load map from json 
+        game.load.image('gameTiles', './assets/images/mapTiles.png'); // load image; call it 'gameTiles'
 
-        // blue units
-        game.load.image('b_archer', './assets/images/b_archer.png');
+        game.load.image('b_archer', './assets/images/b_archer.png'); // blue units
         game.load.image('b_mage', './assets/images/b_mage.png');
         game.load.image('b_fighter', './assets/images/b_fighter.png');
 
-        // red units
-        game.load.image('r_archer', './assets/images/r_archer.png');
+        game.load.image('r_archer', './assets/images/r_archer.png'); // red units
         game.load.image('r_mage', './assets/images/r_mage.png');
         game.load.image('r_fighter', './assets/images/r_fighter.png');
     },

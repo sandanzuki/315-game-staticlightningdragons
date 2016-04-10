@@ -4,21 +4,25 @@
  *
  *  
  * -------------------------------------------------------------------------------- */
+/* Comments here
+ *
+ */
+
+
+
+
 var Menu = {
     preload : function() {
-        game.load.image('menu', './assets/images/menu.png');
+        game.load.image('menu', './assets/images/menu.png'); // load image; call it 'menu'
         game.scale.pageAlignHorizontally = true; // aligns canvas
         game.scale.pageAlignVertically = true; // aligns canvas
     },
 
-
     create : function() {
-        this.add.button(0, 0, 'menu', this.startLoad, this);
+        this.add.button(0, 0, 'menu', this.toLoad, this); // make 'menu' a button
     },
 
-
-    startLoad : function() {
-        // start the game and change the game state
-        this.state.start('Load');
+    toLoad : function() {
+        this.state.start('Load'); // go to the next game state
     }
 };

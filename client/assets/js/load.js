@@ -4,22 +4,26 @@
  *
  *  
  * -------------------------------------------------------------------------------- */
+/* Comments here
+ * needs to talk to Server to verify unit selection
+ *
+ */
+
+
+
+
 var Load = {
     preload : function() {
-        game.load.image('load', './assets/images/load.png');
+        game.load.image('load', './assets/images/load.png'); // load image; call it 'load'
         game.scale.pageAlignHorizontally = true; // aligns canvas
-        game.scale.pageAlignVertically = true; // aligns canvas
+        game.scale.pageAlignVertically = true; // aligns canvas 
     },
-
 
     create : function() {
-        this.add.button(0, 0, 'load', this.startGame, this);
+        this.add.button(0, 0, 'load', this.toSelect, this); // make 'load' a button
     },
 
-
-    startGame : function() {
-        // start the game and change the game state
-        this.state.start('Game');
+    toSelect : function() {
+        this.state.start('Select'); // go to the next game state
     }
-
 };
