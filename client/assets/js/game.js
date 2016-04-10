@@ -104,8 +104,10 @@ window.loadUnits = function() { // function for loading units to tilemap
     for(var i = 0; i<friendlyUnits.length; i++){
         friendlyUnits[i].maxHealth = 100;
         friendlyUnits[i].locked = false;
+        friendlyUnits[i].friendly = true;
         enemyUnits[i].maxHealth = 100;
         enemyUnits[i].locked = false;
+        enemyUnits[i].friendly = false;
     }
 }
 
@@ -420,6 +422,13 @@ window.drawOptions = function(possibleTiles){
                 graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
             }
             else{ //removes impossible tile locations
+                if(enemyUnits.indexOf(possibleTiles[j].unit) != -1){//enemy unit is in range of movement, will implement something to do with that
+                    graphics.lineStyle(2, 0xff0000, 1);
+                    graphics.beginFill(0xff0000, .5);
+                    graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
+
+                    attackTiles.push(possibleTiles[j]);
+                }
                 possibleTiles.splice(j, 1);
                 j--;
             }
@@ -464,9 +473,33 @@ window.moveComplete = function(coordinates){
             lockUnit(currTile.unit); // show the user that this unit is now locked, and cannot be moved again
         }
     }
+    else if(attackTiles.indexOf(currTile) != -1){
+        if(!oldTile.unit.locked){
+            if(!currTile.friendly){
+                attack(oldTile, currTile);
+            }
+        }
+    }
     graphics.clear();
 }
 
+window.attack = function(oldTile, currTile){
+    var targetedUnit = currTile.unit;
+    targetedUnit.kill();
+    enemyUnits.splice(enemyUnits.indexOf(targetedUnit), 1);
+
+    output("Killed: " + targetedUnit.name)    
+
+    oldTile.unit.x = currTile.worldX;
+    oldTile.unit.y = currTile.worldY;
+    currTile.unit = oldTile.unit;
+
+    currTile.properties.unitType = oldTile.properties.unitType; // give the new tile all of the old tile's properties
+    oldTile.properties.unitType = 0;
+    oldTile.unit = null;
+
+    lockUnit(currTile.unit); // show the user that this unit is now locked, and cannot be moved again
+}
 
 window.lockUnit = function(unit){
     var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; // get the tile the unit is on.
@@ -475,8 +508,8 @@ window.lockUnit = function(unit){
 
     currTile.unit.locked = true;
 
-    lockGraphics.lineStyle(2, 0xcc0000, 1); // draw a dark red square over the unit
-    lockGraphics.beginFill(0xcc0000, .25);
+    lockGraphics.lineStyle(2, 0x4d4d4d, 1); // draw a dark red square over the unit
+    lockGraphics.beginFill(0x4d4d4d, .5);
     lockGraphics.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
     lockCounter++; // increment the number of locked units (in place of turns)
 
@@ -515,7 +548,11 @@ window.pauseGame = function() {
     }
 }
 
-
+window.skip = function(){//this function is just to make Alex's life easier
+        unlockUnits(friendlyUnits);
+        unlockUnits(enemyUnits);
+        lockCounter = 0;
+}
 
 
 // main game state
@@ -580,7 +617,6 @@ var Game = {
         cursors = game.input.keyboard.createCursorKeys();
     },
 
-
     update : function() {
         downButton = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         upButton = game.input.keyboard.addKey(Phaser.Keyboard.UP);
@@ -588,14 +624,15 @@ var Game = {
         rightButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        skipButton = game.input.keyboard.addKey(Phaser.Keyboard.S);
 
         downButton.onDown.add(cursorDown, this);
         upButton.onDown.add(cursorUp, this);
         leftButton.onDown.add(cursorLeft, this);
         rightButton.onDown.add(cursorRight, this);
         enterButton.onDown.add(choosingMove, this);
-
         pauseButton.onDown.add(pauseGame, this);
+        skipButton.onDown.add(skip, this);
     }
 };
 
