@@ -21,4 +21,5 @@ game.state.add('Load', Load); // add state Load
 game.state.add('Tutorial', Tutorial); // add state Tutorial 
 game.state.add('Select', Select); // add state Select 
 game.state.add('Game', Game); // add state Game 
+game.state.add('GameOver', GameOver);
 game.state.start('Menu'); // call Menu state first 
