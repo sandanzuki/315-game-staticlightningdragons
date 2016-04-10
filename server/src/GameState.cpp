@@ -228,8 +228,8 @@ void GameState::notify_unit_move(EventRequest *r, Unit *target)
     notify["game_id"] = game_id;
     notify["message_id"] = (*r)["message_id"];
     notify["unit_id"] = uid;
-    //notify["unit_x"] = x; // TODO - actually keep track of unit X position
-    //notify["unit_y"] = y; // TODO - actually keep track of unit Y position
+    notify["unit_x"] = target->get_x();
+    notify["unit_y"] = target->get_y();
 
     // Send to all connected players.
     send_all_players(notify);

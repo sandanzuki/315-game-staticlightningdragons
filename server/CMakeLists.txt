@@ -16,7 +16,6 @@ set(RQSERVER_SOURCES
     ./src/NetworkManager.cpp
     ./src/Player.cpp
     ./src/Unit.cpp
-    ./src/UnitFactory.cpp
 
     ./src/jsoncpp.cpp
 )
