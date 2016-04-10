@@ -10,7 +10,7 @@ var GameOver = {
         this.add.sprite(0, 0, 'gameover'); // add background
 
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        enterButton.onDown.add(this.restart, this);
+        enterButton.onDown.add(this.start, this);
     },
 
     start : function() {

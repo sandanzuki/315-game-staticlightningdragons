@@ -427,6 +427,7 @@ window.output = function(input){ // just used to output helpful info to screen
 
 window.pauseGame = function() {
     // if (pause == false)
+    document.getElementById("stats").innerHTML = "";
     this.state.start('GameOver');
 }
 
