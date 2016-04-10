@@ -1,5 +1,7 @@
 #include "GameState.hpp"
 
+#include "GenericResponses.hpp"
+
 GameState::GameState(int _game_id, string _map_file)
 {
     current_gamestate = State::WAITING_FOR_PLAYERS;
@@ -69,7 +71,7 @@ void GameState::build_map_from_file(string &map_filename)
 {
     // If we weren't able to load the map, don't start the game.
     current_gamestate = State::GAME_OVER;
-    
+
     Json::Value map_data;
     Json::Reader reader;
     bool parsingSuccessful = reader.parse(map_filename, map_data);
@@ -79,7 +81,7 @@ void GameState::build_map_from_file(string &map_filename)
         cout << "Failed to parse configuration\n" << reader.getFormattedErrorMessages();
         return;
     }    
-    
+
     Json::Value height = map_data["height"];
     Json::Value width = map_data["width"];
     const Json::Value layers = map_data["layers"];
@@ -87,15 +89,15 @@ void GameState::build_map_from_file(string &map_filename)
     for (int index = 0; index < layers.size(); ++index)
         if(layers[index]["name"].asString().compare("blockedLayer") == 0)
         {
-           blocked_data = layers[index]["data"];
-           break;
+            blocked_data = layers[index]["data"];
+            break;
         }
     for (int index = 0; index < blocked_data.size(); ++index)
     {
         int tile_data = blocked_data[index].asInt();
         if(tile_data != 0)
         {
-            tiles.insert(make_pair(index, new TileInfo(x, y, true)));
+            //tiles.insert(make_pair(index, new TileInfo(x, y, true)));
         }
     }
     Json::Value next_object_id = map_data["nextobjectid"];
@@ -105,4 +107,111 @@ void GameState::build_map_from_file(string &map_filename)
     Json::Value tile_width = map_data["tilewidth"];
     Json::Value tile_sets = map_data["tilesets"];
     Json::Value version = map_data["version"];    
+}
+
+void GameState::send_all_players(Event &e)
+{
+    if(player_one != NULL)
+    {
+        player_one->get_connection()->submit_outgoing_event(e);
+    }
+    if(player_two != NULL)
+    {
+        player_two->get_connection()->submit_outgoing_event(e);
+    }
+}
+
+void GameState::notify_assign_game(EventRequest *r)
+{
+    // First get the Player IDs.
+    int pid1 = -1;
+    int pid2 = -1;
+    if(player_one != NULL)
+    {
+        pid1 = player_one->get_player_id();
+    }
+    if(player_two != NULL)
+    {
+        pid2 = player_two->get_player_id();
+    }
+
+    // Next build the event.
+    Event notify;
+    notify["type"] = string("AssignGameEvent");
+    notify["game_id"] = game_id;
+    notify["message_id"] = (*r)["message_id"];
+    notify["player_one_id"] = pid1;
+    notify["player_two_id"] = pid2;
+}
+
+void GameState::notify_select_units(EventRequest *r, Player *p)
+{
+
+}
+
+void GameState::notify_state_change(EventRequest *r)
+{
+
+}
+
+void GameState::notify_turn_change(EventRequest *r)
+{
+    // Build the Event
+    Event notify;
+    notify["type"] = string("TurnChangeEvent");
+    notify["game_id"] = game_id;
+    notify["message_id"] = (*r)["message_id"];
+
+    // Send to all connected players.
+    send_all_players(notify);
+}
+
+void GameState::notify_unit_interact(EventRequest *r, Unit *first, Unit *second)
+{
+    // First get the Unit IDs
+    int uid1 = -1;
+    int uid2 = -1;
+    if(first != NULL)
+    {
+        uid1 = first->get_unit_id();
+    }
+    if(second != NULL)
+    {
+        uid2 = second->get_unit_id();
+    }
+
+    // Build the Event
+    Event notify;
+    notify["type"] = string("UnitInteractEvent");
+    notify["game_id"] = game_id;
+    notify["message_id"] = (*r)["message_id"];
+    notify["unit_one_id"] = uid1;
+    notify["unit_two_id"] = uid2;
+    notify["unit_one_hp"] = first->get_remaining_health();
+    notify["unit_two_hp"] = second->get_remaining_health();
+
+    // Send to all connected players.
+    send_all_players(notify);
+}
+
+void GameState::notify_unit_move(EventRequest *r, Unit *target)
+{
+    // First get the Player IDs
+    int uid = -1;
+    if(target != NULL)
+    {
+        uid = target->get_unit_id();
+    }
+
+    // Build the Event
+    Event notify;
+    notify["type"] = string("UnitMoveEvent");
+    notify["game_id"] = game_id;
+    notify["message_id"] = (*r)["message_id"];
+    notify["unit_id"] = uid;
+    //notify["unit_x"] = x; // TODO - actually keep track of unit X position
+    //notify["unit_y"] = y; // TODO - actually keep track of unit Y position
+
+    // Send to all connected players.
+    send_all_players(notify);
 }

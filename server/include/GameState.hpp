@@ -47,10 +47,19 @@ class GameState
         // Used for initially setting up the game.
         void add_player(Player *p);
         bool needs_player();
-    
+
     private:
         // Build the map (this->tiles) from a JSON file.
         void build_map_from_file(string &map_filename);
+
+        // Send notifications of Events to Players.
+        void send_all_players(Event &e);
+        void notify_assign_game(EventRequest *r);
+        void notify_select_units(EventRequest *r, Player *p);
+        void notify_state_change(EventRequest *r);
+        void notify_turn_change(EventRequest *r);
+        void notify_unit_interact(EventRequest *r, Unit *first, Unit *second);
+        void notify_unit_move(EventRequest *r, Unit *target);
 
         int game_id;        // ID of the Game
         int map_width;      // width of the map in tiles

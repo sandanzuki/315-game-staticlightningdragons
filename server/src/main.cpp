@@ -1,5 +1,6 @@
 #include "Connection.hpp"
 #include "GameState.hpp"
+#include "GenericResponses.hpp"
 #include "LogWriter.hpp"
 #include "NetworkManager.hpp"
 #include "Player.hpp"
