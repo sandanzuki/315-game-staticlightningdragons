@@ -7,10 +7,12 @@ var Tutorial = {
     },
 
     create : function() {
+        this.add.sprite(0, 0, 'tutorial'); // add background
+
         // flip between pages of tutorial
         leftButton = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
         rightButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-        
+
         // skip tutorial
         escapeButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         escapeButton.onDown.add(this.startGame, this);

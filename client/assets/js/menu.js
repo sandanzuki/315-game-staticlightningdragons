@@ -7,6 +7,7 @@ var Menu = {
     },
 
     create : function() {
+        this.add.sprite(0, 0, 'menu'); // add background
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.startLoad, this);
     },
