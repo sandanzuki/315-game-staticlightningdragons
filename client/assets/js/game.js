@@ -1,19 +1,22 @@
-//var connection = new WebSocket("ws://sld.bitwisehero.com:13337", "rqs");
-//connection.onmessage = function(yas) { console.log(yas); }(edited)
-//conection.send(JSON STUFF AS A STRING)
-//^^^^
-//this is is stuff for connecting to server
+/*
+ * Project Radical Quest
+ * File: game.js
+ *
+ *  
+ * -------------------------------------------------------------------------------- */
 
+
+
+
+// global variables 
+// -------------------------------------------------------------------------------- 
 var game = game || {},
     map,
     background,
     graphics,
-    blocked;
-    var GRAVITY = 900;
-
-game = new Phaser.Game(900, 660, Phaser.AUTO,'', { preload: preload, create: create, update: update });
-
-var cursor,
+    blocked,
+    GRAVITY = 900,
+    cursor,
     tileX,
     tileY,
     bFighter1, bFighter2, bArcher1, bArcher2, bMage, //all the global variables
@@ -25,105 +28,17 @@ var cursor,
     graphics,
     lockGraphics,
     selected,
-    lockCounter = 0;
-
-var friendlyUnits = [],
-    enemyUnits = [];
-
-function preload() {
-	// load map
-	game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);
-	game.load.image('gameTiles', './assets/images/mapTiles.png');
-
-    // blue units
-    game.load.image('b_archer', './assets/images/b_archer.png');
-    game.load.image('b_mage', './assets/images/b_mage.png');
-    game.load.image('b_fighter', './assets/images/b_fighter.png');
-
-	// red units
-	game.load.image('r_archer', './assets/images/r_archer.png');
-	game.load.image('r_mage', './assets/images/r_mage.png');
-	game.load.image('r_fighter', './assets/images/r_fighter.png');
-}
+    lockCounter = 0,
+    friendlyUnits = [],
+    enemyUnits = [],
+    pause = false;
 
 
-function create() {
-    //this.physics.startSystem(Phaser.Physics.ARCADE);
-    //this.physics.arcade.gravity.y = GRAVITY;
-	// show map
-	isDown = 0;
-	game.scale.pageAlignHorizontally = true; // aligns canvas
-	game.scale.pageAlignVertically = true; // aligns canvas
-	game.scale.refresh();
-    //game.stage.backgroundColor = "#000000";
-    map = game.add.tilemap('Map');
 
-    // building the map as intended in Tiled
-    map.addTilesetImage('mapTiles', 'gameTiles');
-
-    // create layers
-    background = map.createLayer('backgroundLayer');
-    blocked = map.createLayer('blockedLayer');
-
-    // position layers
-    background.fixedToCamera = false;
-    background.scrollFactorX = 0;
-    background.scrollFactorY = 0;
-    //background.position.set(window.innerWidth, window.innerHeight);
-
-    blocked.fixedToCamera = false;
-    blocked.scrollFactorX = 0;
-    blocked.scrollFactorY = 0;
-    //blocked.position.set(window.innerWidth, window.innerHeight);
-
-    //blocked.position.set(this.world.centerX, this.world.centerY);
-
-    loadUnits();
-
-    lockGraphics = game.add.graphics();//used to identify a locked unit
-    selected = game.add.graphics();//used to identify the user's selected unit
-
-    cursor = game.add.graphics();
-    cursor.lineStyle(2, 0xffffff, 1);
-    cursor.drawRect(1, 1, 58, 58);
-
-	background.resizeWorld();
-    game.physics.startSystem(Phaser.Physics.P2JS);
-
-    map.setCollisionBetween(1, 2000, true, 'blockedLayer'); //need to figure out how to set 'collisions' between cursor and blocked layer
-    // game.physics.p2.enable(cursor);                         //which includes the walls and water
- 	// cursor.body.fixedRotation = true;
-
-	cursors = game.input.keyboard.createCursorKeys();
-}
-
-function update() {
-    downButton = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
-    upButton = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-    leftButton = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
-    rightButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
-    pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-    enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-
-
-    downButton.onDown.add(cursorDown, this);
-    // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
-
-    //         //game.time.events.add(Phaser.Timer.SECOND * 3000, cursorDown(), this);
-
-    //     cursorDown();
-    //     //cursor.y +=4;
-    // }
-    upButton.onDown.add(cursorUp, this);
-    leftButton.onDown.add(cursorLeft, this);
-    rightButton.onDown.add(cursorRight, this);
-    pauseButton.onDown.add(pauseGame, this);
-
-    enterButton.onDown.add(choosingMove, this);
-}
-
+// helper functions
+// -------------------------------------------------------------------------------- 
 //function for loading units to tilemap
-function loadUnits(){
+window.loadUnits = function(){
     // add all blue sprites to the map
     bFighter1 = game.add.sprite(0, 0,'b_fighter');
     friendlyUnits.push(bFighter1);                  //information about the unit and its tile for movment
@@ -131,7 +46,7 @@ function loadUnits(){
     map.getTileWorldXY(0,0).unit = bFighter1;       //Does a tile have a unit on it?
     bFighter1.maxHealth=100;
 
-    bFighter2 = game.add.sprite(360, 240,'b_fighter');
+    bFighter2 = game.add.sprite(0, 240,'b_fighter');
     friendlyUnits.push(bFighter2);
     map.getTileWorldXY(360,240).properties.unitType = 1;
     map.getTileWorldXY(360,240).unit = bFighter2;
@@ -166,7 +81,7 @@ function loadUnits(){
     rArcher1 = game.add.sprite(x, 240, 'r_archer');
     enemyUnits.push(rArcher1);
     map.getTileWorldXY(x, 240).properties.unitType = 2
-    map.getTileWorldXY(x, 240).unit = rArcher1;
+        map.getTileWorldXY(x, 240).unit = rArcher1;
 
     rArcher2 = game.add.sprite(x, 360, 'r_archer');
     enemyUnits.push(rArcher2);
@@ -186,8 +101,9 @@ function loadUnits(){
     }
 }
 
+
 // functions for moving the cursor around one tile at a time
-function cursorDown() {
+window.cursorDown = function() {
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
@@ -202,7 +118,8 @@ function cursorDown() {
     cursor.y = nextTile.worldY;
 }
 
-function cursorUp() {
+
+window.cursorUp = function() {
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
@@ -217,7 +134,8 @@ function cursorUp() {
     cursor.y = nextTile.worldY;
 }
 
-function cursorLeft() {
+
+window.cursorLeft = function() {
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
@@ -232,7 +150,8 @@ function cursorLeft() {
     cursor.y = nextTile.worldY;
 }
 
-function cursorRight() {
+
+window.cursorRight = function() {
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; //finds the x,y coorinates of the tile the cursor is sitting on
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
     var i = background.index;
@@ -248,8 +167,9 @@ function cursorRight() {
 
 }
 
+
 //function that decides the actual functionality of pressing 'enter'
-function choosingMove(){
+window.choosingMove = function(){
     if (document.getElementById("stats").childNodes.length != 0){//remove the text below the game screen
         document.getElementById("stats").innerHTML = "";
     }
@@ -263,8 +183,9 @@ function choosingMove(){
     }
 }
 
+
 //function that decides on which unit is actually moving
-function moveMenu() {
+window.moveMenu = function() {
     coordinates = [];
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
@@ -317,8 +238,9 @@ function moveMenu() {
     }
 }
 
+
 //calculates possible tiles for a fighter
-function getMoveOptions(currTile, unitType){
+window.getMoveOptions = function(currTile, unitType){
     attackTiles = [];
     var adjacent = [];
 
@@ -368,12 +290,11 @@ function getMoveOptions(currTile, unitType){
         }
     }
     //queue1;
-
     possibleTiles = drawOptions(set);
-
 }
 
-function getAdjacent(currTile){
+
+window.getAdjacent = function(currTile){
     var adjacent = [];
     var x = currTile.x;
     var y = currTile.y;
@@ -411,8 +332,9 @@ function getAdjacent(currTile){
     return adjacent;
 }
 
+
 //function that actually overlays the possible movement for selected unit
-function drawOptions(possibleTiles){
+window.drawOptions = function(possibleTiles){
     graphics = game.add.graphics();
     for(var j=0; j<possibleTiles.length; j++){
         if(possibleTiles[j]!=null){
@@ -445,8 +367,9 @@ function drawOptions(possibleTiles){
     return possibleTiles;
 }
 
+
 //function that completes the movement of the unit
-function moveComplete(coordinates){
+window.moveComplete = function(coordinates){
     isDown = 0;
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
@@ -466,10 +389,10 @@ function moveComplete(coordinates){
         }
     }
     graphics.clear();
-
 }
 
-function lockUnit(unit){
+
+window.lockUnit = function(unit){
     var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; //get the tile the unit is on.
     var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
     var currTile = map.getTile(x, y, background);
@@ -488,19 +411,121 @@ function lockUnit(unit){
     }
 }
 
-function unlockUnits(unitList){
+
+window.unlockUnits = function (unitList){
     for(var i = 0; i<unitList.length; i++){
         unitList[i].locked = false;
     }
     lockGraphics.clear();
 }
 
-function output(input){ //just used to output helpful info to screen
+
+window.output = function(input){ //just used to output helpful info to screen
     document.getElementById("stats").innerHTML = input;
 }
 
-var pause = false;
-function pauseGame() {
-   // if (pause == false)
 
+
+
+window.pauseGame = function() {
+    // if (pause == false)
 }
+
+
+
+
+// main game state
+// -------------------------------------------------------------------------------- 
+var Game = { 
+    preload : function() {
+        // load map
+        game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);
+        game.load.image('gameTiles', './assets/images/mapTiles.png');
+
+        // blue units
+        game.load.image('b_archer', './assets/images/b_archer.png');
+        game.load.image('b_mage', './assets/images/b_mage.png');
+        game.load.image('b_fighter', './assets/images/b_fighter.png');
+
+        // red units
+        game.load.image('r_archer', './assets/images/r_archer.png');
+        game.load.image('r_mage', './assets/images/r_mage.png');
+        game.load.image('r_fighter', './assets/images/r_fighter.png');
+    },
+
+
+    create : function() {
+        //this.physics.startSystem(Phaser.Physics.ARCADE);
+        //this.physics.arcade.gravity.y = GRAVITY;
+        // show map
+        isDown = 0;
+        game.scale.pageAlignHorizontally = true; // aligns canvas
+        game.scale.pageAlignVertically = true; // aligns canvas
+        game.scale.refresh();
+        //game.stage.backgroundColor = "#000000";
+        map = game.add.tilemap('Map');
+
+        // building the map as intended in Tiled
+        map.addTilesetImage('mapTiles', 'gameTiles');
+
+        // create layers
+        background = map.createLayer('backgroundLayer');
+        blocked = map.createLayer('blockedLayer');
+
+        // position layers
+        background.fixedToCamera = false;
+        background.scrollFactorX = 0;
+        background.scrollFactorY = 0;
+        //background.position.set(window.innerWidth, window.innerHeight);
+
+        blocked.fixedToCamera = false;
+        blocked.scrollFactorX = 0;
+        blocked.scrollFactorY = 0;
+        //blocked.position.set(window.innerWidth, window.innerHeight);
+
+        //blocked.position.set(this.world.centerX, this.world.centerY);
+
+        loadUnits();
+
+        lockGraphics = game.add.graphics();//used to identify a locked unit
+        selected = game.add.graphics();//used to identify the user's selected unit
+
+        cursor = game.add.graphics();
+        cursor.lineStyle(2, 0xffffff, 1);
+        cursor.drawRect(1, 1, 58, 58);
+
+        background.resizeWorld();
+        game.physics.startSystem(Phaser.Physics.P2JS);
+
+        map.setCollisionBetween(1, 2000, true, 'blockedLayer'); //need to figure out how to set 'collisions' between cursor and blocked layer
+        // game.physics.p2.enable(cursor);                         //which includes the walls and water
+        // cursor.body.fixedRotation = true;
+
+        cursors = game.input.keyboard.createCursorKeys();
+    },
+
+
+    update : function() {
+        downButton = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
+        upButton = game.input.keyboard.addKey(Phaser.Keyboard.UP);
+        leftButton = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+        rightButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
+        pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+
+        downButton.onDown.add(cursorDown, this);
+        // if (game.input.keyboard.isDown(Phaser.Keyboard.DOWN)) {
+
+        //         //game.time.events.add(Phaser.Timer.SECOND * 3000, cursorDown(), this);
+
+        //     cursorDown();
+        //     //cursor.y +=4;
+        // }
+        upButton.onDown.add(cursorUp, this);
+        leftButton.onDown.add(cursorLeft, this);
+        rightButton.onDown.add(cursorRight, this);
+        pauseButton.onDown.add(pauseGame, this);
+        enterButton.onDown.add(choosingMove, this);
+    }
+};
+

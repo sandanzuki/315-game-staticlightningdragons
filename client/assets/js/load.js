@@ -1,24 +1,25 @@
 /*
  * Project Radical Quest
- * File: menu.js
+ * File: load.js
  *
  *  
  * -------------------------------------------------------------------------------- */
-var Menu = {
+var Load = {
     preload : function() {
-        game.load.image('menu', './assets/images/menu.png');
+        game.load.image('load', './assets/images/load.png');
         game.scale.pageAlignHorizontally = true; // aligns canvas
         game.scale.pageAlignVertically = true; // aligns canvas
     },
 
 
     create : function() {
-        this.add.button(0, 0, 'menu', this.startLoad, this);
+        this.add.button(0, 0, 'load', this.startGame, this);
     },
 
 
-    startLoad : function() {
+    startGame : function() {
         // start the game and change the game state
-        this.state.start('Load');
+        this.state.start('Game');
     }
+
 };

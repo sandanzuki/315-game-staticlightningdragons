@@ -1,3 +1,9 @@
+/*
+ * Project Radical Quest
+ * File: style.css 
+ *
+ *  
+ * -------------------------------------------------------------------------------- */
 .dim {
     height:100%;
     width:100%;
@@ -8,12 +14,12 @@
     background-color:black;
     filter: alpha(opacity=75); /* internet explorer */
     -khtml-opacity: 0.75;      /* khtml, old safari */
-      -moz-opacity: 0.75;      /* mozilla, netscape */
-           opacity: 0.75;      /* fx, safari, opera */
+    -moz-opacity: 0.75;      /* mozilla, netscape */
+    opacity: 0.75;      /* fx, safari, opera */
 }
 
 body {
-background-color: #000000
+    background-color: #000000
 }
 
 #stats {
@@ -25,4 +31,4 @@ background-color: #000000
     font-family: verdana;
 }
 
-* {cursor: none;}
+/* * {cursor: none;} */
