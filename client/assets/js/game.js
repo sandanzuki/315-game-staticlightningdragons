@@ -15,6 +15,7 @@
 // -------------------------------------------------------------------------------- 
 var game = game || {},
     map,
+    option,
     background,
     graphics,
     blocked,
@@ -426,9 +427,16 @@ window.output = function(input){ // just used to output helpful info to screen
 
 
 window.pauseGame = function() {
-    // if (pause == false)
-    document.getElementById("stats").innerHTML = "";
-    this.state.start('GameOver');
+    if(!pause){
+        option = game.add.sprite(0,0, 'option');
+        pause = true;
+    }
+    else{
+        option.destroy();
+        pause = false;
+    }
+    // document.getElementById("stats").innerHTML = "";
+    // this.state.start('GameOver');
 }
 
 
@@ -448,6 +456,8 @@ var Game = {
         game.load.image('r_archer', './assets/images/r_archer.png'); // red units
         game.load.image('r_mage', './assets/images/r_mage.png');
         game.load.image('r_fighter', './assets/images/r_fighter.png');
+
+        game.load.image('option', './assets/images/option.png');
     },
 
 
@@ -502,12 +512,17 @@ var Game = {
         pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
 
-        downButton.onDown.add(cursorDown, this);
-        upButton.onDown.add(cursorUp, this);
-        leftButton.onDown.add(cursorLeft, this);
-        rightButton.onDown.add(cursorRight, this);
+        if(!pause){
+            downButton.onDown.add(cursorDown, this);
+            upButton.onDown.add(cursorUp, this);
+            leftButton.onDown.add(cursorLeft, this);
+            rightButton.onDown.add(cursorRight, this);
+            enterButton.onDown.add(choosingMove, this);
+        }
+        else{
+
+        }
         pauseButton.onDown.add(pauseGame, this);
-        enterButton.onDown.add(choosingMove, this);
     }
 };
 
