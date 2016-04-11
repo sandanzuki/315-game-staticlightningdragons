@@ -48,10 +48,10 @@ var Tutorial = {
         
         // skip tutorial
         escapeButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        escapeButton.onDown.add(this.toSelect, this);
+        escapeButton.onDown.add(this.startSelect, this);
     },
 
-    toSelect : function() {
+    startSelect : function() {
         // start unit selection, change game state
         this.state.start('Select');
     }

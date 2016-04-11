@@ -27,7 +27,7 @@ var Select = {
         //enterButton2.onDown.add(doOnClick, this);
     },
 
-    StartGame : function() {
+    startGame : function() {
         // start game, change game state
         this.state.start('Game');
     }
