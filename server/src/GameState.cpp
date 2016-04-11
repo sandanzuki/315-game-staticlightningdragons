@@ -1,6 +1,7 @@
 #include "GameState.hpp"
 
 #include "GenericResponses.hpp"
+#include "RequestVerification.hpp"
 
 GameState::GameState(int _game_id, string _map_file)
 {
@@ -52,12 +53,34 @@ void GameState::handle_request(Player *p, EventRequest *r)
 
 void GameState::handle_unit_interact(Player *p, EventRequest *r)
 {
-    // Get both Units.
-    // Verify second is within range of first.
-    //if(!first->is_within_range(second))
-    //{
-        //notify_illegal_request(p, r); 
-    //}
+    // Verify that both units exist and get them.
+    if(!verify_unit_interact(r))
+    {
+        notify_invalid_request(p->get_connection(), r);
+        return;
+    }
+    int unit_id = (*r)["unit_id"].asInt();
+    int target_id = (*r)["target_id"].asInt();
+    if(unit_id >= units.size() || target_id >= units.size())
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+    Unit *unit = units[unit_id];
+    Unit *target = units[target_id];
+    if(unit == NULL || target == NULL)
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+
+    // Cause the interaction and send off an event.
+    if(!unit->interact(target))
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+    notify_unit_interact(r, unit, target);
 }
 
 void GameState::add_player(Player *p)

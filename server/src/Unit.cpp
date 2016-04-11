@@ -11,91 +11,109 @@ Unit::Unit(int _unit_id, UnitType _type, int _player_id)
     y = 0;
 }
 
-pair<int, int> Unit::calculate_hit(Unit _attacker)
+bool Unit::interact(Unit *target)
 {
-    int def_before = this->get_remaining_health();
-    int atk_before = _attacker.get_remaining_health();
-    int damage = calculate_damage(_attacker, false);
-    int counter_dmg = calculate_damage(_attacker, true);
-    int def_after = def_before - damage;
-    int atk_after = def_before - counter_dmg;
+    // Verify second is within range of first.
+    if(is_within_range(target))
+    {
+        return false;
+    }
+
+    // If this Unit is a healer, calculate heals. First verify target is friendly.
+    if(type == HEALER)
+    {
+        if(player_id != target->get_player_id())
+        {
+            return false;
+        }
+        target->apply_heal();
+        return true;
+    }
+
+    // If we're not healing, verify the unit we're attacking isn't friendly.
+    if(player_id == target->get_player_id())
+    {
+        return false;
+    }
+
+    // Let's see if it hits. There's a 25% chance of missing.
     if(rand() % 4 == 0)
     {
-        return make_pair(0,0); // miss
+        // Even though we aren't applying damage, this was still a valid outcome.
+        return true;
     }
-    else {
-        if(def_after <= 0)
-        {
-            this->set_remaining_health(0);
-            return make_pair(def_before, 0);
-        }
-        else if(atk_after <= 0)
-        {
-            this->set_remaining_health(def_after);
-            _attacker.set_remaining_health(0);
-            return make_pair(damage, atk_before);
-        }
-        else
-        {
-            this->set_remaining_health(def_after);
-            _attacker.set_remaining_health(atk_after);
-        }
+
+    // Time to attack the target!
+    target->apply_damage(this, false);
+
+    // There's also a chance that the defender can counterattack.
+    if(target->is_within_range(this))
+    {
+        apply_damage(this, true);
     }
-    return make_pair(damage, counter_dmg);
+
+    // If we've gotten here, everything was successful!
+    return true;
 }
 
-int Unit::calculate_damage(Unit _attacker, bool _counter)
+void Unit::apply_damage(Unit *attacker, bool counter)
 {
-    double base_dmg = rand() % 10 + 16;
-    if(_counter)
+    // Initially determine the damage dealt.
+    int base_dmg = rand() % 10 + 16;
+
+    // Fighters take less damage, so factor this in.
+    if(type == FIGHTER)
+    {
+        base_dmg *= 0.75;
+    }
+
+    // If this is a counter attack, cut the damage in half.
+    if(counter)
     {
         base_dmg *= 0.5;
     }
-    if(this->type == FIGHTER)
+
+    // Add in bonus if this was a "super-effective" attack.
+    int bonus = rand() % 10 + 1;
+    switch(type)
     {
-        if(_attacker.get_type() == FIGHTER)
-        {
-            base_dmg *= 0.75;
-        }
-        else if(_attacker.get_type() == FIGHTER)
-        {
-            base_dmg += rand() % 10 + 1; //number between 1 and 10
-        }
+        case FIGHTER:
+            if(attacker->get_type() == MAGE)
+            {
+                base_dmg += bonus;
+            }
+            break;
+        case ARCHER:
+            if(attacker->get_type() == FIGHTER)
+            {
+                base_dmg += bonus;
+            }
+            break;
+        case MAGE:
+            if(attacker->get_type() == ARCHER)
+            {
+                base_dmg += bonus;
+            }
+            break;
     }
-    else if(this->type == ARCHER)
+    
+    // Actually apply this damage to the unit.
+    remaining_health -= base_dmg;
+    if(remaining_health < 0)
     {
-        if (_attacker.get_type() == ARCHER)
-        {
-            base_dmg += rand() % 10 + 1; //number between 1 and 10
-        }
+        remaining_health = 0;
     }
-    else if(this->type == MAGE)
-    {
-        if(_attacker.get_type() == ARCHER)
-        {
-            base_dmg += rand() % 10 + 1; //number between 1 and 10
-        }
-    }
-    return (int) base_dmg;
 }
 
-int Unit::calculate_heal()
+void Unit::apply_heal()
 {
     int amount = rand() % 20 + 1;
-    int before_heal = this->get_remaining_health();
-    int after_heal = amount + before_heal;
-    int max_health = this->get_max_health();
-    
-    if(after_heal >= max_health)
+    if(amount + remaining_health < max_health)
     {
-        this->set_remaining_health(max_health);
-        return max_health - before_heal;
+        remaining_health += amount;
+        return;
     }
-    else
-    {
-        this->set_remaining_health(after_heal);
-        return amount;
-    }
+    remaining_health = max_health;
 }
 
 bool Unit::is_within_range(Unit *target)

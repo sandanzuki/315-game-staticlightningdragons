@@ -33,13 +33,15 @@ class Unit
         int get_y() { return y; }
 
         // Setters
-        void set_remaining_health(int _health) { remaining_health = _health; }
         void set_position(int _x, int _y) {x = _x; y = _y; }
 
         // Hit/Damage/Heal Calculations
-        pair<int, int> calculate_hit(Unit _attacker);
-        int calculate_damage(Unit _attacker, bool _counter);
-        int calculate_heal();
+        bool interact(Unit *target);    // TRUE if successful, FALSE if illegal
+        void apply_damage(Unit *attacker, bool counter);
+        void apply_heal();
+
+        // Status
+        bool is_alive() { return remaining_health > 0; }
         bool is_within_range(Unit *target);
         
     private:
