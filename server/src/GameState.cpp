@@ -71,11 +71,43 @@ void GameState::build_map_from_file(string &map_filename)
 {
     // If we weren't able to load the map, don't start the game.
     current_gamestate = State::GAME_OVER;
-}
 
-/***
- *  EVENT NOTIFICATION
- **/
+    Json::Value map_data;
+    Json::Reader reader;
+    bool parsingSuccessful = reader.parse(map_filename, map_data);
+    if(!parsingSuccessful)
+    {
+        // report failure and their locations in the document to the user
+        cout << "Failed to parse configuration\n" << reader.getFormattedErrorMessages();
+        return;
+    }    
+
+    Json::Value height = map_data["height"];
+    Json::Value width = map_data["width"];
+    const Json::Value layers = map_data["layers"];
+    Json::Value blocked_data;
+    for (int index = 0; index < layers.size(); ++index)
+        if(layers[index]["name"].asString().compare("blockedLayer") == 0)
+        {
+            blocked_data = layers[index]["data"];
+            break;
+        }
+    for (int index = 0; index < blocked_data.size(); ++index)
+    {
+        int tile_data = blocked_data[index].asInt();
+        if(tile_data != 0)
+        {
+            //tiles.insert(make_pair(index, new TileInfo(x, y, true)));
+        }
+    }
+    Json::Value next_object_id = map_data["nextobjectid"];
+    Json::Value orientation = map_data["orientation"];
+    Json::Value render_order = map_data["renderorder"];
+    Json::Value tile_height = map_data["tileheight"];
+    Json::Value tile_width = map_data["tilewidth"];
+    Json::Value tile_sets = map_data["tilesets"];
+    Json::Value version = map_data["version"];    
+}
 
 void GameState::send_all_players(Event &e)
 {
@@ -91,7 +123,7 @@ void GameState::send_all_players(Event &e)
 
 void GameState::notify_assign_game(EventRequest *r)
 {
-    // First get the Player IDs
+    // First get the Player IDs.
     int pid1 = -1;
     int pid2 = -1;
     if(player_one != NULL)
@@ -103,16 +135,13 @@ void GameState::notify_assign_game(EventRequest *r)
         pid2 = player_two->get_player_id();
     }
 
-    // Build the Event
+    // Next build the event.
     Event notify;
     notify["type"] = string("AssignGameEvent");
     notify["game_id"] = game_id;
     notify["message_id"] = (*r)["message_id"];
     notify["player_one_id"] = pid1;
     notify["player_two_id"] = pid2;
-
-    // Send to all connected players.
-    send_all_players(notify);
 }
 
 void GameState::notify_select_units(EventRequest *r, Player *p)

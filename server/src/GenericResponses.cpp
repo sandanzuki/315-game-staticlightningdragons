@@ -17,4 +17,3 @@ void notify_invalid_request(Player *p, EventRequest *r)
     p->get_connection()->submit_outgoing_event(invalid_event);
     delete r;
 }
-

@@ -8,6 +8,24 @@
 #include <map>
 #include <unistd.h>
 
+void notify_invalid_request(Player *p, EventRequest *r)
+{
+    Event invalid_event;
+    invalid_event["type"] = string("InvalidEvent");
+    invalid_event["message_id"] = (*r)["message_id"];
+    p->get_connection()->submit_outgoing_event(invalid_event);
+    delete r;
+}
+
+void notify_illegal_request(Player *p, EventRequest *r)
+{
+    Event illegal_event;
+    illegal_event["type"] = string("IllegalEvent");
+    illegal_event["message_id"] = (*r)["message_id"];
+    p->get_connection()->submit_outgoing_event(illegal_event);
+    delete r;
+}
+
 void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*> &games, int &highest_game_id)
 {
     // First, let's make sure they aren't already in a game.
