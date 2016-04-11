@@ -1,20 +1,8 @@
-/*
- * Project Radical Quest
- * File: gameover.js
- *
- *  
- * -------------------------------------------------------------------------------- */
-/* Comments here
- * needs to talk to server for commands, etc. 
- */
-
-
-
-
 var GameOver = {
     preload : function() {
         game.load.image('gameover', './assets/images/gameover.png');
         game.load.image('arrow', './assets/images/arrow.png');
+
         // align canvas
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
@@ -75,14 +63,15 @@ var GameOver = {
     },
 
     start : function() {
-        // go to main menu, change the game state
         switch(arrow.y){
             case(320):
+                // load another game, change game state
                 this.state.start('Load');
                 break;
             case(380):
                 break;
             case(440):
+                // go to main menu, change game state
                 this.state.start('Menu');
                 break;
             default:

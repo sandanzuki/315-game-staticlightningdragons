@@ -1,25 +1,12 @@
-/*
- * Project Radical Quest
- * File: main.js
- *
- *  
- * -------------------------------------------------------------------------------- */
-/* Comments here
- *
- */
+// declare and initialize game
+var game = game || {};
+game = new Phaser.Game(900, 660, Phaser.AUTO,'');
 
-
-
-
-var game = game || {}; // declare var game
-
-game = new Phaser.Game(900, 660, Phaser.AUTO,''); // Init instance of game
-
-// how game states will be called
-game.state.add('Menu', Menu); // add state Menu
-game.state.add('Load', Load); // add state Load 
-game.state.add('Tutorial', Tutorial); // add state Tutorial 
-game.state.add('Select', Select); // add state Select 
-game.state.add('Game', Game); // add state Game 
+// states of game
+game.state.add('Menu', Menu);
+game.state.add('Load', Load);
+game.state.add('Tutorial', Tutorial);
+game.state.add('Select', Select);
+game.state.add('InGame', Game);
 game.state.add('GameOver', GameOver);
-game.state.start('Menu'); // call Menu state first 
+game.state.start('Menu'); // start on 'Menu' state

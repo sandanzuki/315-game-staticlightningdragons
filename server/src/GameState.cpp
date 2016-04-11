@@ -12,14 +12,18 @@ GameState::GameState(int _game_id, string _map_file)
 
 GameState::~GameState()
 {
-    for(pair<int, TileInfo*> tp : tiles)
-    {
-        delete tp.second;
-    }
+    // Delete all Units
     for(Unit *u : units)
     {
         delete u;
     }
+
+    // Delete the blocked_tiles array
+    for(int i = 0; i < map_width; ++i)
+    {
+        delete blocked_tiles[i];
+    }
+    delete blocked_tiles;
 }
 
 bool GameState::tick(double time_in_seconds)
@@ -72,6 +76,17 @@ void GameState::build_map_from_file(string &map_filename)
     // If we weren't able to load the map, don't start the game.
     current_gamestate = State::GAME_OVER;
 
+    // Setup the blocked_tiles array.
+    blocked_tiles = new bool*[map_width];
+    for(int i = 0; i < map_width; ++i)
+    {
+        blocked_tiles[i] = new bool[map_height];
+        for(int j = 0; j < map_height; ++j)
+        {
+            blocked_tiles[i][j] = false;
+        }
+    }
+
     Json::Value map_data;
     Json::Reader reader;
     bool parsingSuccessful = reader.parse(map_filename, map_data);
@@ -82,8 +97,8 @@ void GameState::build_map_from_file(string &map_filename)
         return;
     }    
 
-    Json::Value height = map_data["height"];
-    Json::Value width = map_data["width"];
+    map_height = map_data["height"].asInt();
+    map_width = map_data["width"].asInt();
     const Json::Value layers = map_data["layers"];
     Json::Value blocked_data;
     for (int index = 0; index < layers.size(); ++index)
@@ -97,7 +112,9 @@ void GameState::build_map_from_file(string &map_filename)
         int tile_data = blocked_data[index].asInt();
         if(tile_data != 0)
         {
-            //tiles.insert(make_pair(index, new TileInfo(x, y, true)));
+            int x = index / map_width;
+            int y = index - x * map_width;
+            blocked_tiles[x][y] = true;
         }
     }
     Json::Value next_object_id = map_data["nextobjectid"];
@@ -142,11 +159,13 @@ void GameState::notify_assign_game(EventRequest *r)
     notify["message_id"] = (*r)["message_id"];
     notify["player_one_id"] = pid1;
     notify["player_two_id"] = pid2;
+
+    send_all_players(notify);
 }
 
 void GameState::notify_select_units(EventRequest *r, Player *p)
 {
-
+    
 }
 
 void GameState::notify_state_change(EventRequest *r)
@@ -209,8 +228,8 @@ void GameState::notify_unit_move(EventRequest *r, Unit *target)
     notify["game_id"] = game_id;
     notify["message_id"] = (*r)["message_id"];
     notify["unit_id"] = uid;
-    //notify["unit_x"] = x; // TODO - actually keep track of unit X position
-    //notify["unit_y"] = y; // TODO - actually keep track of unit Y position
+    notify["unit_x"] = target->get_x();
+    notify["unit_y"] = target->get_y();
 
     // Send to all connected players.
     send_all_players(notify);

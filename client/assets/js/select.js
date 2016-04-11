@@ -1,52 +1,34 @@
-/*
- * Project Radical Quest
- * File: select.js
- *
- *  
- * -------------------------------------------------------------------------------- */
-/* Comments here
- * button needs to talk to server to verify unit selection
- * code is messy atm
- *
- */
-
-
-// Testing
-// -------------------------------------------------------------------------------- 
 var background;
 
 window.doOnClick = function() {
     background.visible =! background.visible;
 }
-// -------------------------------------------------------------------------------- 
-
-
-
 
 var Select = {
     preload : function() {
-        game.load.image('select', './assets/images/select.png'); // load image; call it 'select'
-        game.load.image('button', './assets/images/button.png'); // load image; call it 'button'
-        game.scale.pageAlignHorizontally = true; // align canvas
-        game.scale.pageAlignVertically = true; // align canvas
+        game.load.image('select', './assets/images/select.png');
+        game.load.image('button', './assets/images/button.png');
+        
+        // align canvas
+        game.scale.pageAlignHorizontally = true;
+        game.scale.pageAlignVertically = true;
         
     },
 
     create : function() {
-        // this.add.sprite(0, 0, 'select'); // make 'select' a background 
-        background = this.add.button(0, 0, 'select', this.toGame, this); // make 'button' a button
-        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.N); // make 'N/n' key button 
-        //enterButton2 = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        enterButton.onDown.add(this.toGame, this); // trigger next state 
-        //enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        //enterButton.onDown.add(this.startLoad, this);
-        //this.add.button(330, 50, 'button', doOnClick, this); // make 'button' a button
+        // TODO GET RID OF THE BUTTONS. KEYBOARD ONLY NO EXCEPTIONS.
+        // this.add.sprite(0, 0, 'select');
+        //background = this.add.button(0, 0, 'select', this.toGame, this);
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        enterButton.onDown.add(this.startGame, this);
+        //this.add.button(330, 50, 'button', doOnClick, this);
         //
         //
         //enterButton2.onDown.add(doOnClick, this);
     },
 
-    toGame : function() {
-        this.state.start('Game'); // start the game and change the game state
+    StartGame : function() {
+        // start game, change game state
+        this.state.start('Game');
     }
 };

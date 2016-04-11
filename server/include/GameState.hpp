@@ -4,7 +4,6 @@
 #include "Event.hpp"
 #include "LogWriter.hpp"
 #include "Player.hpp"
-#include "TileInfo.hpp"
 #include "Unit.hpp"
 
 #include <map>
@@ -35,7 +34,6 @@ class GameState
         int get_game_id() { return game_id; }
         int get_map_width() { return map_width; }
         int get_map_height() { return map_height; }
-        map<int, TileInfo*> &get_tiles() { return tiles; }
         vector<Unit*> &get_units() { return units; }
 
         // Tick the GameState. Return FALSE if game is over, TRUE otherwise.
@@ -65,9 +63,10 @@ class GameState
         int map_width;      // width of the map in tiles
         int map_height;     // height of the map in tiles
 
+        bool **blocked_tiles;   // an array storing all of the blocked tiles
+
         State current_gamestate;    // the current state of this GameState
 
-        map<int, TileInfo*> tiles;  // all of the non-standard tiles on the map
         vector<Unit*> units;        // all of the units currently in-play
 
         Player *player_one;     // the first Player in the game
