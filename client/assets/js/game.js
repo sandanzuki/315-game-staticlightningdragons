@@ -376,19 +376,21 @@ window.drawOptions = function(possibleTiles) {
     for (var j = 0; j < possibleTiles.length; j++) {
         if (possibleTiles[j] != null) {
             if (possibleTiles[j].unit == null) {
-                //draw some spiffy looking blue squares for possible movement
+                // draw some spiffy looking blue squares for possible movement
                 graphics.lineStyle(2, 0x0066ff, 1);
                 graphics.beginFill(0x0066ff, .5);
                 graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
             } else {
-                if (enemyUnits.indexOf(possibleTiles[j].unit) != -1) { //enemy unit is in range of movement, will implement something to do with that
+                if (enemyUnits.indexOf(possibleTiles[j].unit) != -1) { 
+                    // enemy unit is in range of movement
+                    // TODO implement something to do with that
                     graphics.lineStyle(2, 0xff0000, 1);
                     graphics.beginFill(0xff0000, .5);
                     graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
 
                     attackTiles.push(possibleTiles[j]);
                 }
-                //removes impossible tile locations
+                // removes impossible tile locations
                 possibleTiles.splice(j, 1);
                 j--;
             }
@@ -400,7 +402,7 @@ window.drawOptions = function(possibleTiles) {
     
     for (var j = 0; j < attackTiles.length; j++) {
         if (attackTiles[j] != null) {
-            //draw some spiffy looking red squares for attack range
+            // draw some spiffy looking red squares for attack range
             graphics.lineStyle(2, 0xff0000, 1);
             graphics.beginFill(0xff0000, .5);
             graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
@@ -422,7 +424,7 @@ window.moveComplete = function(coordinates) {
 
     if (possibleTiles.indexOf(currTile) != -1) {
         if (!oldTile.unit.locked) {
-            //set the unit's location to new tile
+            // set the unit's location to new tile
             oldTile.unit.x = currTile.worldX;
             oldTile.unit.y = currTile.worldY;
             currTile.unit = oldTile.unit;
