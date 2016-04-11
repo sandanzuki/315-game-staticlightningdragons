@@ -1,3 +1,16 @@
+/*
+ * Project Radical Quest
+ * File: gameover.js
+ *
+ *  
+ * -------------------------------------------------------------------------------- */
+/* Comments here
+ * needs to talk to server for commands, etc. 
+ */
+
+
+
+
 var GameOver = {
     preload : function() {
         game.load.image('gameover', './assets/images/gameover.png');
@@ -22,13 +35,10 @@ var GameOver = {
     },
 
     moveDown : function() {
-        if(arrow.y + 60 > 440){
+        if(arrow.y + 60 > 440)
             arrow.y = 320;
-        }
-        else{
+        else
             arrow.y += 60;
-        }
-
         switch(arrow.y){
             case(320):
                 arrow.x = 300;
@@ -45,14 +55,11 @@ var GameOver = {
     },
 
     moveUp : function() {
-        if(arrow.y - 60<320){
+        if(arrow.y - 60<320) 
             arrow.y = 440;
-        }
-        else{
+        else 
             arrow.y -= 60;
-        }
-
-        switch(arrow.y){
+        switch(arrow.y) {
             case(320):
                 arrow.x = 300;
                 break;

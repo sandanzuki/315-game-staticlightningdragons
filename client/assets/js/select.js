@@ -6,6 +6,7 @@
  * -------------------------------------------------------------------------------- */
 /* Comments here
  * button needs to talk to server to verify unit selection
+ * code is messy atm
  *
  */
 
@@ -34,9 +35,9 @@ var Select = {
     create : function() {
         // this.add.sprite(0, 0, 'select'); // make 'select' a background 
         background = this.add.button(0, 0, 'select', this.toGame, this); // make 'button' a button
-        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.N); // make 'N/n' key button 
         //enterButton2 = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        enterButton.onDown.add(this.toGame, this);
+        enterButton.onDown.add(this.toGame, this); // trigger next state 
         //enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         //enterButton.onDown.add(this.startLoad, this);
         //this.add.button(330, 50, 'button', doOnClick, this); // make 'button' a button
