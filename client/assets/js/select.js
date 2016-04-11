@@ -4,10 +4,11 @@ window.doOnClick = function() {
     background.visible =! background.visible;
 }
 
+
 var Select = {
     preload : function() {
         game.load.image('select', './assets/images/select.png');
-        game.load.image('button', './assets/images/button.png');
+        //game.load.image('button', './assets/images/button.png');
         
         // align canvas
         game.scale.pageAlignHorizontally = true;

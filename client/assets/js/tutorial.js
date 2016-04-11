@@ -22,6 +22,7 @@ window.prevLayer = function() {
     }
 }
 
+
 var Tutorial = {
     preload : function() {
         // load images
