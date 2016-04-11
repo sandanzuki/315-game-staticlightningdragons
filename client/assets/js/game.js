@@ -76,7 +76,7 @@ window.loadUnits = function() {
     map.getTileWorldXY(x, 300).properties.unitType = 3;
     map.getTileWorldXY(x, 300).unit = rMage;
 
-    if (var i = 0; i<friendlyUnits.length; i++) {
+    for (var i = 0; i < friendlyUnits.length; i++) {
         friendlyUnits[i].maxHealth = 100;
         friendlyUnits[i].locked = false;
         friendlyUnits[i].friendly = true;
@@ -322,7 +322,7 @@ window.getMoveOptions = function(currTile, unitType) {
     queue.push(currTile);
     set.push(currTile);
 
-    while (queue.length>0) {
+    while (queue.length > 0) {
         tile = queue.shift();
         adjacent = [];
 
@@ -332,7 +332,7 @@ window.getMoveOptions = function(currTile, unitType) {
 
         adjacent = getAdjacent(tile);
 
-        if (var i = 0; i<adjacent.length; i++) {
+        for (var i = 0; i < adjacent.length; i++) {
             if (adjacent[i] != null)
                 if (set.indexOf(adjacent[i]) == -1) {
                     set.push(adjacent[i]);
@@ -373,7 +373,7 @@ window.getAdjacent = function(currTile) {
 // overlay possible movement for selected unit
 window.drawOptions = function(possibleTiles) {
     graphics = game.add.graphics();
-    if (var j = 0; j < possibleTiles.length; j++) {
+    for (var j = 0; j < possibleTiles.length; j++) {
         if (possibleTiles[j] != null) {
             if (possibleTiles[j].unit == null) {
                 //draw some spiffy looking blue squares for possible movement
@@ -484,7 +484,7 @@ window.lockUnit = function(unit) {
 }
 
 window.unlockUnits = function(unitList) {
-    if (var i = 0; i < unitList.length; i++) 
+    for (var i = 0; i < unitList.length; i++) 
         unitList[i].locked = false;
 
     lockGraphics.clear();
