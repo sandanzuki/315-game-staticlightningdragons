@@ -1,6 +1,7 @@
 var Load = {
     preload : function() {
         game.load.image('load', './assets/images/load.png');
+        
         // align canvas
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;

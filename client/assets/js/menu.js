@@ -13,7 +13,7 @@ var Menu = {
     },
 
     startLoad : function() {
-        // start game, change game state
+        // start loading, change game state
         this.state.start('Load');
     }
 };
