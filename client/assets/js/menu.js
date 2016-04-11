@@ -21,7 +21,7 @@ var Menu = {
     create : function() {
         //this.add.button(0, 0, 'menu', this.toLoad, this); // make 'menu' a button
         this.add.sprite(0, 0, 'menu'); // make 'select' a background 
-        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.N);
         enterButton.onDown.add(this.toLoad, this);
     },
 

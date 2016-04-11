@@ -21,7 +21,7 @@ var Load = {
 
     create : function() {
         this.add.button(0, 0, 'load', this.toSelect, this); // make 'load' a button
-        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.N);
         enterButton.onDown.add(this.toTutorial, this);
     },
 
