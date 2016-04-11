@@ -97,3 +97,30 @@ int Unit::calculate_heal()
         return amount;
     }
 }
+
+bool Unit::is_within_range(Unit *target)
+{
+    switch(type)
+    {
+        case FIGHTER:
+            if(abs(get_x() - target->get_x()) + abs(get_y() - target->get_y()) == 1)
+            {
+                return true;
+            }
+            break;
+        case ARCHER:
+            if(abs(get_x() - target->get_x()) + abs(get_y() - target->get_y()) == 2)
+            {
+                return true;
+            }
+            break;
+        case MAGE:
+        case HEALER:
+            if(abs(get_x() - target->get_x()) <= 1 && abs(get_y() - target->get_y()) <= 1)
+            {
+                return true;
+            }
+            break;
+    }
+    return false;
+}

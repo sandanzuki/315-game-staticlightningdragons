@@ -4,7 +4,7 @@
 #include "Event.hpp"
 #include "Player.hpp"
 
-void notify_illegal_request(Player *p, EventRequest *r);
-void notify_invalid_request(Player *p, EventRequest *r);
+void notify_illegal_request(Connection *c, EventRequest *r);
+void notify_invalid_request(Connection *c, EventRequest *r);
 
 #endif

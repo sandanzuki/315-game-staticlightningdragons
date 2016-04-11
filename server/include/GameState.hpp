@@ -50,6 +50,12 @@ class GameState
         // Build the map (this->tiles) from a JSON file.
         void build_map_from_file(string &map_filename);
 
+        // Handle EventRequests
+        void handle_unit_interact(Player *p, EventRequest *r);
+        void handle_unit_move(Player *p, EventRequest *r);
+        void handle_unit_selection(Player *p, EventRequest *r);
+        void handle_player_quit(Player *p, EventRequest *r);
+
         // Send notifications of Events to Players.
         void send_all_players(Event &e);
         void notify_assign_game(EventRequest *r);

@@ -40,6 +40,7 @@ class Unit
         pair<int, int> calculate_hit(Unit _attacker);
         int calculate_damage(Unit _attacker, bool _counter);
         int calculate_heal();
+        bool is_within_range(Unit *target);
         
     private:
         // Unit Indentification Information

@@ -1,5 +1,7 @@
+#include "GenericResponses.hpp"
 #include "LogWriter.hpp"
 #include "NetworkManager.hpp"
+#include "RequestVerification.hpp"
 
 #include "json/json.h"
 
@@ -166,39 +168,25 @@ NetworkManager::~NetworkManager()
 
 void NetworkManager::submit_incoming_message(int connection_id, std::string &message)
 {
-    // TODO - figure out if this throws exceptions
-    // TURNS OUT IT THROWS AN EXCEPTION
     EventRequest *r = new EventRequest();
     try
     {
+        // try to create the JSON object and add the playerId
         stringstream(message) >> (*r);
         (*r)["playerId"] = connection_id;
 
-        // message must include a request_id
-        if(!r->isMember("request_id") || !(*r)["request_id"].isInt() ||
-            !r->isMember("game_id") || !(*r)["game_id"].isInt() ||
-            !r->isMember("type") || !(*r)["type"].isString())
+        // Verify that the request is valid.
+        if(!verify_general_request(r))
         {
+            notify_invalid_request(get_connection(connection_id), r);
             delete r;
-            Event e;
-            e["type"] = string("InvalidEvent");
-            Connection *c = get_connection(connection_id);
-            if(c != NULL)
-            {
-                c->submit_outgoing_event(e);
-            }
+            return;
         }
     }
     catch(Json::RuntimeError exp)
     {
         delete r;
-        Event e;
-        e["type"] = string("InvalidEvent");
-        Connection *c = get_connection(connection_id);
-        if(c != NULL)
-        {
-            c->submit_outgoing_event(e);
-        }
+        notify_invalid_request(get_connection(connection_id), NULL);
     }
     nm_mutex.lock();
     recv_queue.push(r);

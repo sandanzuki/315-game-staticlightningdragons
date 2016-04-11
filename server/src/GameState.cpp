@@ -50,6 +50,16 @@ void GameState::handle_request(Player *p, EventRequest *r)
     delete r;
 }
 
+void GameState::handle_unit_interact(Player *p, EventRequest *r)
+{
+    // Get both Units.
+    // Verify second is within range of first.
+    //if(!first->is_within_range(second))
+    //{
+        //notify_illegal_request(p, r); 
+    //}
+}
+
 void GameState::add_player(Player *p)
 {
     if(player_one = NULL)

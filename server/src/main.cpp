@@ -13,7 +13,7 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
     // First, let's make sure they aren't already in a game.
     if(p->get_game_id() != 0)
     {
-        notify_illegal_request(p, r);
+        notify_illegal_request(p->get_connection(), r);
         return;
     }
 
@@ -21,7 +21,7 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
     int game_id = (*r)["game_id"].asInt();
     if(game_id != -1 && game_id != -2 && games.find(game_id) == games.end())
     {
-        notify_illegal_request(p, r);
+        notify_illegal_request(p->get_connection(), r);
         return;
     }
 
@@ -64,7 +64,7 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
         GameState *g = games[game_id];
         if(!g->needs_player())
         {
-            notify_illegal_request(p, r);
+            notify_illegal_request(p->get_connection(), r);
             return;
         }
         g->add_player(p);
@@ -140,6 +140,8 @@ int main(int argc, char **argv)
             {
                 games[p->get_game_id()]->handle_request(p, r);
             }
+
+            delete r;
         }
 
         // TODO - tick all GameStates - culling ones that aren't active anymore
