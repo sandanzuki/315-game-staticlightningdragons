@@ -7,6 +7,6 @@ game.state.add('Menu', Menu);
 game.state.add('Load', Load);
 game.state.add('Tutorial', Tutorial);
 game.state.add('Select', Select);
-game.state.add('InGame', Game);
+game.state.add('Game', Game);
 game.state.add('GameOver', GameOver);
 game.state.start('Menu'); // start on 'Menu' state
