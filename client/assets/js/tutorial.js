@@ -47,8 +47,8 @@ var Tutorial = {
         prevButton.onDown.add(prevLayer, this);
         
         // skip tutorial
-        escapeButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        escapeButton.onDown.add(this.startSelect, this);
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        enterButton.onDown.add(this.startSelect, this);
     },
 
     startSelect : function() {

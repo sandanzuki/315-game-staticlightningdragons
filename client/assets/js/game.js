@@ -31,26 +31,31 @@ window.loadUnits = function() {
     map.getTileWorldXY(0,0).properties.unitType = 1; 
     map.getTileWorldXY(0,0).unit = bFighter1; 
     bFighter1.maxHealth=100;
+    bFighter1.name = "Friendly Fighter";
 
     bFighter2 = game.add.sprite(0, 240,'b_fighter');
     friendlyUnits.push(bFighter2);
     map.getTileWorldXY(0,240).properties.unitType = 1;
     map.getTileWorldXY(0,240).unit = bFighter2;
+    bFighter2.name = "Friendly Fighter";
 
     bArcher1 = game.add.sprite(0, 60,'b_archer');
     friendlyUnits.push(bArcher1);
     map.getTileWorldXY(0, 60).properties.unitType = 2;
     map.getTileWorldXY(0, 60).unit = bArcher1;
+    bArcher1.name = "Friendly Archer";
 
     bArcher2 = game.add.sprite(0, 180,'b_archer');
     friendlyUnits.push(bArcher2);
     map.getTileWorldXY(0, 180).properties.unitType = 2;
     map.getTileWorldXY(0, 180).unit = bArcher2;
+    bArcher2.name = "Friendly Archer";
 
     bMage = game.add.sprite(0, 120,'b_mage');
     friendlyUnits.push(bMage);
     map.getTileWorldXY(0, 120).properties.unitType = 3;
     map.getTileWorldXY(0, 120).unit = bMage;
+    bMage.name = "Friendly Mage";
 
 
     // add all red sprites to the map
@@ -59,26 +64,31 @@ window.loadUnits = function() {
     enemyUnits.push(rFighter1);
     map.getTileWorldXY(x, 180).properties.unitType = 1;
     map.getTileWorldXY(x, 180).unit = rFighter1;
+    rFighter1.name = "Enemy Fighter";
 
     rFighter2 = game.add.sprite(x, 420, 'r_fighter');
     enemyUnits.push(rFighter2);
     map.getTileWorldXY(x, 420).properties.unitType = 1;
     map.getTileWorldXY(x, 420).unit = rFighter2;
+    rFighter2.name = "Enemy Fighter";
 
     rArcher1 = game.add.sprite(x, 240, 'r_archer');
     enemyUnits.push(rArcher1);
     map.getTileWorldXY(x, 240).properties.unitType = 2
-        map.getTileWorldXY(x, 240).unit = rArcher1;
+    map.getTileWorldXY(x, 240).unit = rArcher1;
+    rArcher1.name = "Enemy Archer";
 
     rArcher2 = game.add.sprite(x, 360, 'r_archer');
     enemyUnits.push(rArcher2);
     map.getTileWorldXY(x, 360).properties.unitType = 2;
     map.getTileWorldXY(x, 360).unit = rArcher2;
+    rArcher2.name = "Enemy Archer";
 
     rMage = game.add.sprite(x, 300, 'r_mage');
     enemyUnits.push(rMage);
     map.getTileWorldXY(x, 300).properties.unitType = 3;
     map.getTileWorldXY(x, 300).unit = rMage;
+    rMage.name = "Enemy Mage";
 
     for(var i = 0; i<friendlyUnits.length; i++){
         friendlyUnits[i].maxHealth = 100;
@@ -108,22 +118,26 @@ window.cursorDown = function() {
         cursor.y = nextTile.worldY;
     }
     else{
-        if(arrow.y + 60 > 440)
-            arrow.y = 320;
+        if(arrow.y + 37 > 416)
+            arrow.y = 305;
         else
-            arrow.y += 60;
+            arrow.y += 37;
 
         switch(arrow.y){
-            case(320):
-                arrow.x = 330;
+            case(305):
+                arrow.x = 315;
                 break;
 
-            case(380):
-                arrow.x = 360;
+            case(342):
+                arrow.x = 280;
                 break;
 
-            case(440):
-                arrow.x = 350;
+            case(379):
+                arrow.x = 325;
+                break;
+
+            case(416):
+                arrow.x = 300;
                 break;
 
             default:
@@ -149,23 +163,27 @@ window.cursorUp = function() {
         cursor.y = nextTile.worldY;
     }
     else{
-        if(arrow.y - 60<320)
-            arrow.y = 440;
+        if(arrow.y - 37<305)
+            arrow.y = 416;
         else
-            arrow.y -= 60;
+            arrow.y -= 37;
         
 
         switch(arrow.y){
-            case(320):
-                arrow.x = 330;
+            case(305):
+                arrow.x = 315;
                 break;
 
-            case(380):
-                arrow.x = 360;
+            case(342):
+                arrow.x = 280;
                 break;
 
-            case(440):
-                arrow.x = 350;
+            case(379):
+                arrow.x = 325;
+                break;
+
+            case(416):
+                arrow.x = 300;
                 break;
 
             default:
@@ -228,20 +246,22 @@ window.choosingMove = function(){
     }
     else{
         switch(arrow.y){
-            case(320):
+            case(305):
                 output("Resumed");
                 pause = false;
                 option.destroy();
                 arrow.destroy();
                 break;
 
-            case(380):
-                output("Opened settings menu");
+            case(342):
                 break;
 
-            case(440):
-                output("");
+            case(379):
+                break;
+
+            case(416):
                 pause = false;
+                game.win = false;
                 this.state.start('GameOver');
                 break;
 
@@ -275,24 +295,22 @@ window.moveMenu = function() {
                 selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
                 possibleTiles = [];
 
+                output(currTile.unit.name);
                 switch (currTile.properties.unitType) {
                     case 1: // unit is fighter
                         isDown = 1;
-                        output("Friendly Fighter");
                         getMoveOptions(currTile, 1);
                         return currTile;
                         break;
                         
                     case 2: // unit is archer
                         isDown = 1;
-                        output("Friendly Archer");
                         getMoveOptions(currTile, 2);
                         return currTile;
                         break;
                         
                     case 3: // unit is mage
                         isDown = 1;
-                        output("Friendly Mage");
                         getMoveOptions(currTile, 3);
                         return currTile;
                         break;
@@ -314,19 +332,25 @@ window.getMoveOptions = function(currTile, unitType) {
     var adjacent = [];
     var x = currTile.x;
     var y = currTile.y;
-    var maxMoves;
+    var max;
+
+    //0 for fighters, 1 for other
+    var attackRange; 
 
     switch(unitType) {
         case 1:
-            maxMoves = 4;
+            max = 4;
+            attackRange = 0;
             break;
 
         case 2:
-            maxMoves = 6;
+            max = 6;
+            attackRange = 1;
             break;
 
         case 3:
-            maxMoves = 5;
+            max = 5;
+            attackRange = 1;
             break;
 
         default:
@@ -337,6 +361,7 @@ window.getMoveOptions = function(currTile, unitType) {
     var queue = [];
     var set = [];
     var tile;
+    var distance;
 
     queue.push(currTile);
     set.push(currTile);
@@ -344,18 +369,37 @@ window.getMoveOptions = function(currTile, unitType) {
     while (queue.length>0) {
         tile = queue.shift();
         adjacent = [];
-
+        distance = Math.abs(tile.x-currTile.x) + Math.abs(tile.y-currTile.y);
         // check if within the maximum allowed movement
-        if (Math.abs(tile.x-currTile.x) + Math.abs(tile.y-currTile.y) >= maxMoves)
+        if (distance >= max)
             break;
 
         adjacent = getAdjacent(tile);
 
         for(var i = 0; i<adjacent.length; i++){
             if(adjacent[i] != null){
-                if(set.indexOf(adjacent[i]) == -1){
-                    set.push(adjacent[i]);
-                    queue.push(adjacent[i]);
+                if(distance < max){
+                    if(set.indexOf(adjacent[i]) == -1){
+                        adjacent[i].distance = distance;
+                        set.push(adjacent[i]);
+                        queue.push(adjacent[i]);
+                    }
+                }
+            }
+        }
+    }
+
+
+    for(var i = 0; i<set.length; i++){
+        adjacent = [];
+        tile = set[i];
+
+        if((Math.abs(tile.x-currTile.x) + Math.abs(tile.y-currTile.y)) == max){
+            adjacent = getAdjacent(tile);
+
+            for(var j = 0; j<adjacent.length; j++){
+                if(set.indexOf(adjacent[j]) == -1 && attackTiles.indexOf(adjacent[j]) == -1){
+                    attackTiles.push(adjacent[j]);
                 }
             }
         }
@@ -395,6 +439,17 @@ window.getAdjacent = function(currTile) {
 // function that actually overlays the possible movement for selected unit
 window.drawOptions = function(possibleTiles){
     graphics = game.add.graphics();
+
+    for(var j=0; j<attackTiles.length; j++){
+        if(enemyUnits.indexOf(attackTiles[j].unit) != -1){
+            // enemy unit is in range of attack
+            // TODO implement something to do with that
+            graphics.lineStyle(2, 0xff0000, 1);
+            graphics.beginFill(0xff0000, .5);
+            graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
+        }
+    }
+
     for(var j=0; j<possibleTiles.length; j++){
         if(possibleTiles[j]!=null){
             if(possibleTiles[j].unit == null){
@@ -403,8 +458,8 @@ window.drawOptions = function(possibleTiles){
                 graphics.beginFill(0x0066ff, .5);
                 graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
             }
-            else{ //removes impossible tile locations
-                if(enemyUnits.indexOf(possibleTiles[j].unit) != -1){//enemy unit is in range of movement, will implement something to do with that
+            else{ 
+                if(enemyUnits.indexOf(possibleTiles[j].unit) != -1){
                     // enemy unit is in range of movement
                     // TODO implement something to do with that
                     graphics.lineStyle(2, 0xff0000, 1);
@@ -423,18 +478,7 @@ window.drawOptions = function(possibleTiles){
             j--;
         }
     }
-    for(var j=0; j<attackTiles.length; j++){
-        if(attackTiles[j]!=null){
-            // draw some spiffy looking red squares for attack range
-            graphics.lineStyle(2, 0xff0000, 1);
-            graphics.beginFill(0xff0000, .5);
-            graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
-        }
-        else{
-            attackTiles.splice(j, 1);
-            j--;
-        }
-    }
+    
     return possibleTiles;
 }
 
@@ -463,32 +507,37 @@ window.moveComplete = function(coordinates){
             lockUnit(currTile.unit);
         }
     }
-    else if(attackTiles.indexOf(currTile) != -1){
-        if(!oldTile.unit.locked){
-            if(!currTile.friendly)
-                attack(oldTile, currTile);
-            
-        }
-    }
+    else if(attackTiles.indexOf(currTile) != -1)
+        attack(oldTile, currTile);
+    
     graphics.clear();
 }
 
 window.attack = function(oldTile, currTile){
+    var selectedUnit = oldTile.unit;
     var targetedUnit = currTile.unit;
-    targetedUnit.kill();
-    enemyUnits.splice(enemyUnits.indexOf(targetedUnit), 1);
 
-    output("Killed: " + targetedUnit.name)    
+    if(selectedUnit && targetedUnit){
+        if((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)){
+            targetedUnit.kill();
+            enemyUnits.splice(enemyUnits.indexOf(targetedUnit), 1);
 
-    oldTile.unit.x = currTile.worldX;
-    oldTile.unit.y = currTile.worldY;
-    currTile.unit = oldTile.unit;
+            output("Killed: " + targetedUnit.name)    
 
-    currTile.properties.unitType = oldTile.properties.unitType; // give the new tile all of the old tile's properties
-    oldTile.properties.unitType = 0;
-    oldTile.unit = null;
+            oldTile.unit.x = currTile.worldX;
+            oldTile.unit.y = currTile.worldY;
+            currTile.unit = oldTile.unit;
 
-    lockUnit(currTile.unit); // show the user that this unit is now locked, and cannot be moved again
+            currTile.properties.unitType = oldTile.properties.unitType; // give the new tile all of the old tile's properties
+            oldTile.properties.unitType = 0;
+            oldTile.unit = null;
+
+            lockUnit(currTile.unit); // show the user that this unit is now locked, and cannot be moved again
+        }
+    }
+    else{
+        output("No unit to attack there");
+    }
 }
 
 window.lockUnit = function(unit){
@@ -534,7 +583,7 @@ window.pauseGame = function() {
     output("");
     if(!pause){
         option = game.add.sprite(0,0, 'option');
-        arrow = game.add.sprite(330,320, 'arrow');
+        arrow = game.add.sprite(315,305, 'arrow');
         pause = true;
     }
     else{
@@ -571,7 +620,7 @@ var Game = {
         game.load.image('r_fighter', './assets/images/r_fighter.png');
 
         game.load.image('option', './assets/images/option.png');
-        game.load.image('arrow', './assets/images/arrow.png');
+        game.load.image('arrow', './assets/images/arrow_white.png');
     },
 
 
