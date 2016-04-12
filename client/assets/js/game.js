@@ -242,13 +242,13 @@ window.choosingMove = function() {
                 arrow.destroy();
                 break;
 
-            case(342):
+            case(344):
                 break;
 
-            case(379):
+            case(389):
                 break;
 
-            case(416):
+            case(422):
                 pause = false;
                 game.win = false;
                 this.state.start('GameOver');
