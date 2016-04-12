@@ -4,7 +4,7 @@ var connection = new WebSocket("ws://sld.bitwisehero.com:13337", "rqs");
 // declare and initialize game
 var game = game || {};
 game.win = true;
-game = new Phaser.Game(900, 660, Phaser.AUTO,'');
+game = new Phaser.Game(900, 600, Phaser.AUTO,'');
 
 // states of game
 game.state.add('Menu', Menu);
