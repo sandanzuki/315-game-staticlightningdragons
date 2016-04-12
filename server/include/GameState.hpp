@@ -50,6 +50,9 @@ class GameState
         // Build the map (this->tiles) from a JSON file.
         void build_map_from_file(string &map_filename);
 
+        // Check if a given location is within reach of a Unit.
+        bool tile_reachable(int distance, int x, int y, int to_x, int to_y);
+
         // Handle EventRequests
         void handle_unit_interact(Player *p, EventRequest *r);
         void handle_unit_move(Player *p, EventRequest *r);

@@ -9,6 +9,21 @@ Unit::Unit(int _unit_id, UnitType _type, int _player_id)
     max_health = 100;
     x = 0;
     y = 0;
+
+    // Set the move_distance based on type.
+    switch(type)
+    {
+        case FIGHTER:
+            move_distance = 4;
+            break;
+        case MAGE:
+            move_distance = 5;
+            break;
+        case ARCHER:
+        case HEALER:
+            move_distance = 6;
+            break;
+    }
 }
 
 bool Unit::interact(Unit *target)

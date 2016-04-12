@@ -27,6 +27,7 @@ class Unit
         int get_unit_id() const { return unit_id; }
         UnitType get_type() const { return type; }
         int get_player_id() const { return player_id; }
+        int get_move_distance() const { return move_distance; }
         int get_remaining_health() const { return remaining_health; }
         int get_max_health() { return max_health; }
         int get_x() { return x; }
@@ -49,6 +50,7 @@ class Unit
         int unit_id;
         UnitType type;
         int player_id;
+        int move_distance;
 
         // Unit Gameplay Information
         int remaining_health;

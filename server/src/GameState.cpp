@@ -51,6 +51,37 @@ void GameState::handle_request(Player *p, EventRequest *r)
     delete r;
 }
 
+bool GameState::tile_reachable(int distance, int x, int y, int to_x, int to_y)
+{
+    // Verify that the current (x,y) are not outside the map.
+    if(x < 0 || y < 0 || x >= map_width || y >= map_height)
+    {
+        return false;
+    }
+
+    // Verify that this location isn't blocked.
+    if(blocked_tiles[x][y] == true)
+    {
+        return false;
+    }
+
+    // If we can't go any farther...
+    if(distance < 1)
+    {
+        if(x == to_x && y == to_y)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    // However, if we can go further, let's try.
+    return tile_reachable(distance - 1, x + 1, y, to_x, to_y)
+        || tile_reachable(distance - 1, x - 1, y, to_x, to_y)
+        || tile_reachable(distance - 1, x, y + 1, to_x, to_y)
+        || tile_reachable(distance - 1, x, y - 1, to_x, to_y);
+}
+
 void GameState::handle_unit_interact(Player *p, EventRequest *r)
 {
     // Verify that both units exist and get them.
@@ -68,7 +99,7 @@ void GameState::handle_unit_interact(Player *p, EventRequest *r)
     }
     Unit *unit = units[unit_id];
     Unit *target = units[target_id];
-    if(unit == NULL || target == NULL)
+    if(!unit->is_alive() || !target->is_alive())
     {
         notify_illegal_request(p->get_connection(), r);
         return;
@@ -81,6 +112,43 @@ void GameState::handle_unit_interact(Player *p, EventRequest *r)
         return;
     }
     notify_unit_interact(r, unit, target);
+}
+
+void GameState::handle_unit_move(Player *p, EventRequest *r)
+{
+    // First verify that the event is valid.
+    if(!verify_unit_move(r))
+    {
+        notify_invalid_request(p->get_connection(), r);
+        return;
+    }
+
+    // Since it's valid, let's grab the Unit and its intended destination.
+    int unit_id = (*r)["unit_id"].asInt();
+    int x = (*r)["x"].asInt();
+    int y = (*r)["y"].asInt();
+    if(unit_id >= units.size())
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+    Unit *unit = units[unit_id];
+    if(!unit->is_alive())
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+
+    // See if the Unit can move to that tile.
+    if(!tile_reachable(unit->get_move_distance(), unit->get_x(), unit->get_y(), x, y))
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+
+    // If we can move, go ahead annd move then!
+    unit->set_position(x, y);
+    notify_unit_move(r, unit);
 }
 
 void GameState::add_player(Player *p)
@@ -237,10 +305,10 @@ void GameState::notify_unit_interact(EventRequest *r, Unit *first, Unit *second)
     notify["type"] = string("UnitInteractEvent");
     notify["game_id"] = game_id;
     notify["message_id"] = (*r)["message_id"];
-    notify["unit_one_id"] = uid1;
-    notify["unit_two_id"] = uid2;
-    notify["unit_one_hp"] = first->get_remaining_health();
-    notify["unit_two_hp"] = second->get_remaining_health();
+    notify["unit_id"] = uid1;
+    notify["target_id"] = uid2;
+    notify["unit_hp"] = first->get_remaining_health();
+    notify["target_hp"] = second->get_remaining_health();
 
     // Send to all connected players.
     send_all_players(notify);
