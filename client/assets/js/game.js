@@ -21,8 +21,8 @@ var game = game || {},
     enemyUnits = [],
     pause = false;
 
+// load units onto tilemap
 window.loadUnits = function() { 
-    // function for loading units to tilemap
     // add all blue sprites to the map
     bFighter1 = game.add.sprite(0, 0,'b_fighter');
     friendlyUnits.push(bFighter1); 
@@ -87,7 +87,7 @@ window.loadUnits = function() {
     map.getTileWorldXY(x, 300).unit = rMage;
     rMage.name = "Enemy Mage";
 
-    for (var i = 0; i<friendlyUnits.length; i++) {
+    for (var i = 0; i < friendlyUnits.length; i++) {
         friendlyUnits[i].maxHealth = 100;
         friendlyUnits[i].locked = false;
         friendlyUnits[i].friendly = true;
@@ -97,16 +97,16 @@ window.loadUnits = function() {
     }
 }
 
-// move the cursor around one tile at a time
+// move cursor tile by tile
 window.cursorDown = function() { 
     if (!pause) {
-        // finds the x,y coorinates of the tile the cursor is sitting on
+        // calculate (x, y) coordinates of the tile the cursor is on
         var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60; 
         var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
         var i = background.index;
         var nextTile;
 
-        if (y == map.height - 1)
+        if (y == map.height-1)
             nextTile = map.getTileAbove(i, x, 1);
         else
             nextTile = map.getTileBelow(i, x, y);
@@ -114,7 +114,7 @@ window.cursorDown = function() {
         cursor.x = nextTile.worldX;
         cursor.y = nextTile.worldY;
     } else {
-        if (arrow.y + 39 > 422)
+        if (arrow.y+39 > 422)
             arrow.y = 305;
         else
             arrow.y += 39;
@@ -157,7 +157,7 @@ window.cursorUp = function() {
         cursor.x = nextTile.worldX;
         cursor.y = nextTile.worldY;
     } else {
-        if (arrow.y - 39<305)
+        if (arrow.y-39 < 305)
             arrow.y = 422;
         else
             arrow.y -= 39;
@@ -219,14 +219,13 @@ window.cursorRight = function() {
     }
 }
 
-// function that decides the actual functionality of pressing 'enter'
+// functionality of 'enter'
 window.choosingMove = function() {
     if (!pause) {
         // remove the text below the game screen
         if (document.getElementById("stats").childNodes.length != 0)
             output("");
         
-
         if (isDown == 0)
             oldTile = moveMenu();
         else {
@@ -260,7 +259,7 @@ window.choosingMove = function() {
     }
 }
 
-// function that decides on which unit is actually moving
+// show unit movement
 window.moveMenu = function() {
    coordinates = [];
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
@@ -313,7 +312,7 @@ window.moveMenu = function() {
         output("Invalid Tile Selection");
 }
 
-// calculates possible tiles for a fighter
+// calculates possible movement
 window.getMoveOptions = function(currTile, unitType) {
     attackTiles = [];
     var adjacent = [];
@@ -419,11 +418,11 @@ window.getAdjacent = function(currTile) {
     return adjacent;
 }
 
-// function that actually overlays the possible movement for selected unit
+// overlay possible movement for selected unit
 window.drawOptions = function(possibleTiles) {
     graphics = game.add.graphics();
 
-    for (var j=0; j<attackTiles.length; j++) {
+    for (var j = 0; j < attackTiles.length; j++) {
         if (enemyUnits.indexOf(attackTiles[j].unit) != -1) {
             // enemy unit is in range of attack
             // TODO implement something to do with that
@@ -433,7 +432,7 @@ window.drawOptions = function(possibleTiles) {
         }
     }
 
-    for (var j=0; j < possibleTiles.length; j++) {
+    for (var j = 0; j < possibleTiles.length; j++) {
         if (possibleTiles[j] != null) {
             if (possibleTiles[j].unit == null) {
                 // draw some spiffy looking blue squares for possible movement
