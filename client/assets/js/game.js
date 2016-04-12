@@ -118,25 +118,25 @@ window.cursorDown = function() {
         cursor.y = nextTile.worldY;
     }
     else{
-        if(arrow.y + 37 > 416)
+        if(arrow.y + 39 > 422)
             arrow.y = 305;
         else
-            arrow.y += 37;
+            arrow.y += 39;
 
         switch(arrow.y){
             case(305):
                 arrow.x = 315;
                 break;
 
-            case(342):
+            case(344):
                 arrow.x = 280;
                 break;
 
-            case(379):
+            case(383):
                 arrow.x = 325;
                 break;
 
-            case(416):
+            case(422):
                 arrow.x = 300;
                 break;
 
@@ -163,10 +163,10 @@ window.cursorUp = function() {
         cursor.y = nextTile.worldY;
     }
     else{
-        if(arrow.y - 37<305)
-            arrow.y = 416;
+        if(arrow.y - 39<305)
+            arrow.y = 422;
         else
-            arrow.y -= 37;
+            arrow.y -= 39;
         
 
         switch(arrow.y){
@@ -174,15 +174,15 @@ window.cursorUp = function() {
                 arrow.x = 315;
                 break;
 
-            case(342):
+            case(344):
                 arrow.x = 280;
                 break;
 
-            case(379):
+            case(389):
                 arrow.x = 325;
                 break;
 
-            case(416):
+            case(422):
                 arrow.x = 300;
                 break;
 
