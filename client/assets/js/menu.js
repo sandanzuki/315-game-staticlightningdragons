@@ -1,8 +1,5 @@
 var clang, intro_music; 
 
-
-
-
 var Menu = {
     preload : function() {
         game.load.image('menu', './assets/images/menu.png');

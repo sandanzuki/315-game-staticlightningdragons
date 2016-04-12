@@ -5,7 +5,6 @@ var Select = {
         // align canvas
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
-        
     },
 
     create : function() {
@@ -17,6 +16,9 @@ var Select = {
 
     startGame : function() {
         // start game, change game state
+        clang.play();  
+        intro_music.destroy();  
+        game.cache.removeSound('intro');
         this.state.start('Game');
     }
 };
