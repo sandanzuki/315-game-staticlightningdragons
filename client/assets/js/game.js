@@ -251,8 +251,9 @@ window.choosingMove = function() {
             case(422):
                 pause = false;
                 game.win = false;
-                battle_music.destroy();
-                game.cache.removeSound('battle');
+                //turn off battle music here
+                //battle_music.destroy();
+                //game.cache.removeSound('battle');
                 this.state.start('GameOver');
                 break;
 
@@ -598,6 +599,7 @@ var Game = {
         game.load.image('option', './assets/images/option.png');
         game.load.image('arrow', './assets/images/arrow_white.png');
 
+        //load bg music here.. must load in this game state!
         game.load.audio('battle', './assets/audio/music/battle.m4a');
     },
 
