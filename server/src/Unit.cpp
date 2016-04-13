@@ -1,5 +1,26 @@
 #include "Unit.hpp"
 
+UnitType string_to_unit_type(string st)
+{
+    if(st.compare("FIGHTER") == 0)
+    {
+        return FIGHTER;
+    }
+    if(st.compare("ARCHER") == 0)
+    {
+        return ARCHER;
+    }
+    if(st.compare("MAGE") == 0)
+    {
+        return MAGE;
+    }
+    if(st.compare("HEALER") == 0)
+    {
+        return HEALER;
+    }
+    return INVALID;
+}
+
 Unit::Unit(int _unit_id, UnitType _type, int _player_id)
 {
     unit_id = _unit_id;

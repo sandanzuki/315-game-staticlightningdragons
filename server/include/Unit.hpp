@@ -14,8 +14,11 @@ enum UnitType
     FIGHTER,
     ARCHER,
     MAGE,
-    HEALER
+    HEALER,
+    INVALID
 };
+
+UnitType string_to_unit_type(string st);
 
 class Unit
 {

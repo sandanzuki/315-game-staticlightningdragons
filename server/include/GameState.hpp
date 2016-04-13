@@ -35,16 +35,13 @@ class GameState
         int get_map_width() { return map_width; }
         int get_map_height() { return map_height; }
         vector<Unit*> &get_units() { return units; }
+        bool needs_player();
 
         // Tick the GameState. Return FALSE if game is over, TRUE otherwise.
         bool tick(double time_in_seconds);
 
         // Handle an EventRequest bound for this GameState.
         void handle_request(Player *p, EventRequest *req);
-
-        // Used for initially setting up the game.
-        void add_player(Player *p);
-        bool needs_player();
 
     private:
         // Build the map (this->tiles) from a JSON file.
@@ -54,10 +51,12 @@ class GameState
         bool tile_reachable(int distance, int x, int y, int to_x, int to_y);
 
         // Handle EventRequests
+        void handle_assign_game(Player *p, EventRequest *r);
         void handle_unit_interact(Player *p, EventRequest *r);
         void handle_unit_move(Player *p, EventRequest *r);
         void handle_unit_selection(Player *p, EventRequest *r);
         void handle_player_quit(Player *p, EventRequest *r);
+        void handle_turn_change(Player *p, EventRequest *r);
 
         // Send notifications of Events to Players.
         void send_all_players(Event &e);
@@ -80,6 +79,8 @@ class GameState
 
         Player *player_one;     // the first Player in the game
         Player *player_two;     // the second Player in the game
+        int player_turn;        // either 1 or 2
+
 };
 
 #endif

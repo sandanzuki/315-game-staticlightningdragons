@@ -9,6 +9,7 @@ GameState::GameState(int _game_id, string _map_file)
     build_map_from_file(_map_file);
     player_one == NULL;
     player_two == NULL;
+    player_turn = 1;
 }
 
 GameState::~GameState()
@@ -41,14 +42,74 @@ bool GameState::tick(double time_in_seconds)
         // TODO - actually keep track of time maybe
     }
 
+    // TODO - keep track of units that have moved and done stuff
+    // also change turns when all things have been done
+
     // Otherwise, we should just return TRUE.
     return true;
 }
 
 void GameState::handle_request(Player *p, EventRequest *r)
 {
+    // Depending on the type, we do different things.
+    string type = (*r)["type"].asString();
+    if(type.compare("AssignGameRequest") == 0)
+    {
+        handle_assign_game(p, r);
+    }
+    else if(type.compare("UnitSelectionRequest") == 0)
+    {
+        handle_unit_selection(p, r);
+    }
+    else if(type.compare("UnitMoveRequest") == 0)
+    {
+        handle_unit_move(p, r);
+    }
+    else if(type.compare("UnitInteractRequest") == 0)
+    {
+        handle_unit_interact(p, r);
+    }
+    else if(type.compare("PlayerQuitRequest") == 0)
+    {
+        // TODO - actually handle this
+    }
+    else if(type.compare("RematchRequest") == 0)
+    {
+        // TODO - actually handle this
+    }
+    else
+    {
+        notify_invalid_request(p->get_connection(), r);
+    }
+
     // After everything is done, delete the EventRequest.
     delete r;
+}
+
+void GameState::handle_assign_game(Player *p, EventRequest *r)
+{
+    // Make sure we have room for the Player.
+    if(!needs_player())
+    {
+        notify_illegal_request(p->get_connection(), r);
+    }
+
+    // Go ahead and add the Player.
+    if(player_one = NULL)
+    {
+        player_one = p;
+        p->set_game_id(game_id);
+        return;
+    }
+    if(player_two = NULL)
+    {
+        player_two = p;
+        p->set_game_id(game_id);
+        return;
+    }
+
+    // Notify both Players.
+    notify_assign_game(r);
 }
 
 bool GameState::tile_reachable(int distance, int x, int y, int to_x, int to_y)
@@ -151,20 +212,41 @@ void GameState::handle_unit_move(Player *p, EventRequest *r)
     notify_unit_move(r, unit);
 }
 
-void GameState::add_player(Player *p)
+void GameState::handle_unit_selection(Player *p, EventRequest *r)
 {
-    if(player_one = NULL)
+    // Veirfy that the request has all necessary fields.
+    if(!verify_unit_selection(r))
     {
-        player_one = p;
-        p->set_game_id(game_id);
+        notify_invalid_request(p->get_connection(), r);
         return;
     }
-    if(player_two = NULL)
+
+    // Get all Unit types.
+    UnitType types[5];
+    types[0] = string_to_unit_type((*r)["first"].asString());
+    types[1] = string_to_unit_type((*r)["second"].asString());
+    types[2] = string_to_unit_type((*r)["third"].asString());
+    types[3] = string_to_unit_type((*r)["fourth"].asString());
+    types[4] = string_to_unit_type((*r)["fifth"].asString());
+
+    // Verify they're all valid.
+    for(int i = 0; i < 5; ++i)
     {
-        player_two = p;
-        p->set_game_id(game_id);
-        return;
+        if(types[i] == INVALID)
+        {
+            notify_invalid_request(p->get_connection(), r);
+            return;
+        }
     }
+
+    // Go ahead and create the units.
+    for(int i = 0; i < 5; ++i)
+    {
+        units.push_back(new Unit(units.size(), types[i], p->get_player_id()));
+    }
+
+    // And notify the Player that we're all good.
+    notify_select_units(r, p);
 }
 
 bool GameState::needs_player()
@@ -266,21 +348,64 @@ void GameState::notify_assign_game(EventRequest *r)
 
 void GameState::notify_select_units(EventRequest *r, Player *p)
 {
-    
+    // Build the event.
+    Event notify;
+    notify["type"] = string("SelectUnitsEvent");
+    notify["game_id"] = game_id;
+    notify["message_id"] = (*r)["message_id"];
+    notify["player_id"] = p->get_player_id();
+
+    send_all_players(notify);
 }
 
 void GameState::notify_state_change(EventRequest *r)
 {
+    // Determine the state string based on state.
+    string state = "";
+    switch(current_gamestate)
+    {
+        case WAITING_FOR_PLAYERS:
+            state = "WAITING_FOR_PLAYERS";
+            break;
+        case UNIT_SELECTION:
+            state = "UNIT_SELECTION";
+            break;
+        case GAME_PLAYING:
+            state = "GAME_PLAYING";
+            break;
+        case GAME_OVER:
+            state = "GAME_OVER";
+    }
 
+    // Build the Event
+    Event notify;
+    notify["type"] = string("StateChangeEvent");
+    notify["game_id"] = game_id;
+    notify["message_id"] = (*r)["message_id"];
+    notify["state"] = state;
+
+    // Send to all connected players.
+    send_all_players(notify);
 }
 
 void GameState::notify_turn_change(EventRequest *r)
 {
+    // Change the player_turn.
+    if (player_turn == 1)
+    {
+        player_turn = 2;
+    }
+    else
+    {
+        player_turn = 1;
+    }
+
     // Build the Event
     Event notify;
     notify["type"] = string("TurnChangeEvent");
     notify["game_id"] = game_id;
     notify["message_id"] = (*r)["message_id"];
+    notify["player_turn"] = player_turn;
 
     // Send to all connected players.
     send_all_players(notify);

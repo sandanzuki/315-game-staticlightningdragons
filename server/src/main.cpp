@@ -31,7 +31,6 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
         ++highest_game_id;
         games[highest_game_id] = new GameState(highest_game_id, "test.map");
         game_id = highest_game_id;
-        games[game_id]->add_player(p);
     }
 
     // If game_id is -1, they want a random existing game. Otherwise we'll make a game for them.
@@ -42,7 +41,6 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
         {
             if(pi.second->needs_player())
             {
-                pi.second->add_player(p);
                 game_id = p->get_game_id();
                 break;
             }
@@ -54,7 +52,6 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
             ++highest_game_id;
             games[highest_game_id] = new GameState(highest_game_id, "test.map");
             game_id = highest_game_id;
-            games[game_id]->add_player(p);
         }
     }
 
@@ -62,24 +59,11 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
     else
     {
         GameState *g = games[game_id];
-        if(!g->needs_player())
-        {
-            notify_illegal_request(p->get_connection(), r);
-            return;
-        }
-        g->add_player(p);
         game_id = p->get_game_id();
     }
 
-    // Finally, now that they're in a game, notify them of this.
-    Event assign_game;
-    assign_game["type"] = string("AssignGameEvent");
-    assign_game["request_id"] = (*r)["request_id"];
-    assign_game["game_id"] = game_id;
-    p->get_connection()->submit_outgoing_event(assign_game);
-
-    // Go ahead and delete the request now that we've handled it.
-    delete r;
+    // Notify the game to add the Player
+    games[game_id]->handle_request(p, r);
 }
 
 int main(int argc, char **argv)

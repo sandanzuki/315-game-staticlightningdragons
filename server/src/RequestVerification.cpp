@@ -69,23 +69,23 @@ bool verify_unit_move(EventRequest *r)
 bool verify_unit_selection(EventRequest *r)
 {
     // Must specify a type for units one-five
-    if(!r->isMember("first") || !(*r)["first"].isInt())
+    if(!r->isMember("first") || !(*r)["first"].isString())
     {
         return false;
     }
-    if(!r->isMember("second") || !(*r)["second"].isInt())
+    if(!r->isMember("second") || !(*r)["second"].isString())
     {
         return false;
     }
-    if(!r->isMember("third") || !(*r)["third"].isInt())
+    if(!r->isMember("third") || !(*r)["third"].isString())
     {
         return false;
     }
-    if(!r->isMember("fourth") || !(*r)["fourth"].isInt())
+    if(!r->isMember("fourth") || !(*r)["fourth"].isString())
     {
         return false;
     }
-    if(!r->isMember("fifth") || !(*r)["fifth"].isInt())
+    if(!r->isMember("fifth") || !(*r)["fifth"].isString())
     {
         return false;
     }
