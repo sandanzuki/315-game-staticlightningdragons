@@ -16,8 +16,7 @@ var Select = {
 
     startGame : function() {
         // start game, change game state
-        clang.play();  
-        intro_music.destroy();  
+        //intro_music.destroy();  
         game.cache.removeSound('intro');
         this.state.start('Game');
     }

@@ -68,12 +68,10 @@ var GameOver = {
         switch(arrow.y){
             case(305):
                 // load another game, change game state
-                clang.play();  
                 this.state.start('Load');
                 break;
             case(345):
                 // go to main menu, change game state
-                clang.play();  
                 this.state.start('Menu');
                 break;
             default:

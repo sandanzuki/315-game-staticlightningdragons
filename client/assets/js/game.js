@@ -237,7 +237,6 @@ window.choosingMove = function() {
         switch (arrow.y) {
             case(305):
                 output("Resumed");
-                clang.play();
                 pause = false;
                 option.destroy();
                 arrow.destroy();
@@ -252,7 +251,6 @@ window.choosingMove = function() {
             case(422):
                 pause = false;
                 game.win = false;
-                clang.play();
                 battle_music.destroy();
                 game.cache.removeSound('battle');
                 this.state.start('GameOver');
@@ -505,6 +503,7 @@ window.attack = function(oldTile, currTile) {
             targetedUnit.kill();
             enemyUnits.splice(enemyUnits.indexOf(targetedUnit), 1);
 
+            clang.play();
             output("Killed: " + targetedUnit.name)    
 
             oldTile.unit.x = currTile.worldX;
@@ -563,7 +562,6 @@ window.output = function(input) {
 window.pauseGame = function() {
     output("");
     if (!pause) {
-        clang.play();
         option = game.add.sprite(0,0, 'option');
         arrow = game.add.sprite(315,305, 'arrow');
         pause = true;
@@ -627,8 +625,9 @@ var Game = {
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
 
-        battle_music = game.add.audio('battle');
-        battle_music.loopFull();
+        //bg music can go here when ready
+        //battle_music = game.add.audio('battle');
+        //battle_music.loopFull();
 
         loadUnits();
 

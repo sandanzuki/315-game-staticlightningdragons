@@ -53,7 +53,6 @@ var Tutorial = {
 
     startSelect : function() {
         // start unit selection, change game state
-        clang.play();  
         counter = 0;
         this.state.start('Select');
     }

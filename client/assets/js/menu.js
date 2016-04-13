@@ -15,8 +15,9 @@ var Menu = {
         this.add.sprite(0, 0, 'menu'); // add background
 
         clang = game.add.audio('clang');
-        intro_music = game.add.audio('intro');
-        intro_music.loopFull();
+        //bg music when ready
+        // intro_music = game.add.audio('intro');
+        // intro_music.loopFull();
 
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.startLoad, this);
@@ -24,7 +25,6 @@ var Menu = {
 
     startLoad : function() {
         // start loading, change game state
-        clang.play(); // sound effect upon keyboard press
         this.state.start('Load');
     }
 };

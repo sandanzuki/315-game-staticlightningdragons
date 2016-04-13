@@ -18,7 +18,6 @@ var Load = {
 
     startTutorial : function() {
         // go to tutorial, change the game state
-        clang.play();
         this.state.start('Tutorial');
     }
 };
