@@ -1,5 +1,5 @@
 #include "Connection.hpp"
-#include "GameState.hpp"
+#include "Game.hpp"
 #include "GenericResponses.hpp"
 #include "LogWriter.hpp"
 #include "NetworkManager.hpp"
@@ -8,7 +8,7 @@
 #include <map>
 #include <unistd.h>
 
-void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*> &games, int &highest_game_id)
+void handle_assign_game_request(Player *p, EventRequest *r, map<int, Game*> &games, int &highest_game_id)
 {
     // First, let's make sure they aren't already in a game.
     if(p->get_game_id() != 0)
@@ -29,7 +29,7 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
     if(game_id == -2)
     {
         ++highest_game_id;
-        games[highest_game_id] = new GameState(highest_game_id, "test.map");
+        games[highest_game_id] = new Game(highest_game_id, "test.map");
         game_id = highest_game_id;
     }
 
@@ -37,7 +37,7 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
     else if(game_id == -1)
     {
         // Try to put them in an existing game.
-        for(pair<int, GameState*> pi : games)
+        for(pair<int, Game*> pi : games)
         {
             if(pi.second->needs_player())
             {
@@ -50,7 +50,7 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
         if(game_id == -1)
         {
             ++highest_game_id;
-            games[highest_game_id] = new GameState(highest_game_id, "test.map");
+            games[highest_game_id] = new Game(highest_game_id, "test.map");
             game_id = highest_game_id;
         }
     }
@@ -58,7 +58,7 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, GameState*>
     // If all else fails, they wanted a specific game.
     else
     {
-        GameState *g = games[game_id];
+        Game *g = games[game_id];
         game_id = p->get_game_id();
     }
 
@@ -76,7 +76,7 @@ int main(int argc, char **argv)
 
     // important maps
     map<int, Player*> players;
-    map<int, GameState*> games;
+    map<int, Game*> games;
     int highest_game_id = 0;
 
     // main event loop
@@ -110,7 +110,7 @@ int main(int argc, char **argv)
             // PlayerQuitRequest
             else if(type.compare("PlayerQuitRequest") == 0)
             {
-                // First notify the GameState.
+                // First notify the Game.
                 games[p->get_game_id()]->handle_request(p, r);
 
                 // Then disconnect/delete the Player.
@@ -119,7 +119,7 @@ int main(int argc, char **argv)
                 delete p;
             }
 
-            // All other requests just go straight to the GameState.
+            // All other requests just go straight to the Game.
             else
             {
                 games[p->get_game_id()]->handle_request(p, r);
@@ -128,7 +128,7 @@ int main(int argc, char **argv)
             delete r;
         }
 
-        // TODO - tick all GameStates - culling ones that aren't active anymore
+        // TODO - tick all Games - culling ones that aren't active anymore
 
         // Sleep for a bit. Don't want our poor server to die.
         usleep(250);
@@ -142,7 +142,7 @@ int main(int argc, char **argv)
     {
         delete p.second;
     }
-    for(pair<int, GameState*> p : games)
+    for(pair<int, Game*> p : games)
     {
         delete p.second;
     }

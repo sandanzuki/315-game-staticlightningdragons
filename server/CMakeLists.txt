@@ -9,7 +9,7 @@ include_directories(./include)
 set(RQSERVER_SOURCES
     ./src/Connection.cpp
     ./src/Effect.cpp
-    ./src/GameState.cpp
+    ./src/Game.cpp
     ./src/GenericResponses.cpp
     ./src/LogWriter.cpp
     ./src/main.cpp

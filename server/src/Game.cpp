@@ -1,9 +1,9 @@
-#include "GameState.hpp"
+#include "Game.hpp"
 
 #include "GenericResponses.hpp"
 #include "RequestVerification.hpp"
 
-GameState::GameState(int _game_id, string _map_file)
+Game::Game(int _game_id, string _map_file)
 {
     current_gamestate = State::WAITING_FOR_PLAYERS;
     build_map_from_file(_map_file);
@@ -12,7 +12,7 @@ GameState::GameState(int _game_id, string _map_file)
     player_turn = 1;
 }
 
-GameState::~GameState()
+Game::~Game()
 {
     // Delete all Units
     for(Unit *u : units)
@@ -28,7 +28,7 @@ GameState::~GameState()
     delete blocked_tiles;
 }
 
-bool GameState::tick(double time_in_seconds)
+bool Game::tick(double time_in_seconds)
 {
     // If the state is GAME_OVER, just return FALSE.
     if(current_gamestate == State::GAME_OVER)
@@ -49,7 +49,7 @@ bool GameState::tick(double time_in_seconds)
     return true;
 }
 
-void GameState::handle_request(Player *p, EventRequest *r)
+void Game::handle_request(Player *p, EventRequest *r)
 {
     // Depending on the type, we do different things.
     string type = (*r)["type"].asString();
@@ -86,7 +86,7 @@ void GameState::handle_request(Player *p, EventRequest *r)
     delete r;
 }
 
-void GameState::handle_assign_game(Player *p, EventRequest *r)
+void Game::handle_assign_game(Player *p, EventRequest *r)
 {
     // Make sure we have room for the Player.
     if(!needs_player())
@@ -112,7 +112,7 @@ void GameState::handle_assign_game(Player *p, EventRequest *r)
     notify_assign_game(r);
 }
 
-bool GameState::tile_reachable(int distance, int x, int y, int to_x, int to_y)
+bool Game::tile_reachable(int distance, int x, int y, int to_x, int to_y)
 {
     // Verify that the current (x,y) are not outside the map.
     if(x < 0 || y < 0 || x >= map_width || y >= map_height)
@@ -143,7 +143,7 @@ bool GameState::tile_reachable(int distance, int x, int y, int to_x, int to_y)
         || tile_reachable(distance - 1, x, y - 1, to_x, to_y);
 }
 
-void GameState::handle_unit_interact(Player *p, EventRequest *r)
+void Game::handle_unit_interact(Player *p, EventRequest *r)
 {
     // Verify that both units exist and get them.
     if(!verify_unit_interact(r))
@@ -175,7 +175,7 @@ void GameState::handle_unit_interact(Player *p, EventRequest *r)
     notify_unit_interact(r, unit, target);
 }
 
-void GameState::handle_unit_move(Player *p, EventRequest *r)
+void Game::handle_unit_move(Player *p, EventRequest *r)
 {
     // First verify that the event is valid.
     if(!verify_unit_move(r))
@@ -212,7 +212,7 @@ void GameState::handle_unit_move(Player *p, EventRequest *r)
     notify_unit_move(r, unit);
 }
 
-void GameState::handle_unit_selection(Player *p, EventRequest *r)
+void Game::handle_unit_selection(Player *p, EventRequest *r)
 {
     // Veirfy that the request has all necessary fields.
     if(!verify_unit_selection(r))
@@ -249,12 +249,12 @@ void GameState::handle_unit_selection(Player *p, EventRequest *r)
     notify_select_units(r, p);
 }
 
-bool GameState::needs_player()
+bool Game::needs_player()
 {
     return player_one == NULL || player_two == NULL;
 }
 
-void GameState::build_map_from_file(string &map_filename)
+void Game::build_map_from_file(string &map_filename)
 {
     // If we weren't able to load the map, don't start the game.
     current_gamestate = State::GAME_OVER;
@@ -309,7 +309,7 @@ void GameState::build_map_from_file(string &map_filename)
     Json::Value version = map_data["version"];    
 }
 
-void GameState::send_all_players(Event &e)
+void Game::send_all_players(Event &e)
 {
     if(player_one != NULL)
     {
@@ -321,7 +321,7 @@ void GameState::send_all_players(Event &e)
     }
 }
 
-void GameState::notify_assign_game(EventRequest *r)
+void Game::notify_assign_game(EventRequest *r)
 {
     // First get the Player IDs.
     int pid1 = -1;
@@ -346,7 +346,7 @@ void GameState::notify_assign_game(EventRequest *r)
     send_all_players(notify);
 }
 
-void GameState::notify_select_units(EventRequest *r, Player *p)
+void Game::notify_select_units(EventRequest *r, Player *p)
 {
     // Build the event.
     Event notify;
@@ -358,7 +358,7 @@ void GameState::notify_select_units(EventRequest *r, Player *p)
     send_all_players(notify);
 }
 
-void GameState::notify_state_change(EventRequest *r)
+void Game::notify_state_change(EventRequest *r)
 {
     // Determine the state string based on state.
     string state = "";
@@ -388,7 +388,7 @@ void GameState::notify_state_change(EventRequest *r)
     send_all_players(notify);
 }
 
-void GameState::notify_turn_change(EventRequest *r)
+void Game::notify_turn_change(EventRequest *r)
 {
     // Change the player_turn.
     if (player_turn == 1)
@@ -411,7 +411,7 @@ void GameState::notify_turn_change(EventRequest *r)
     send_all_players(notify);
 }
 
-void GameState::notify_unit_interact(EventRequest *r, Unit *first, Unit *second)
+void Game::notify_unit_interact(EventRequest *r, Unit *first, Unit *second)
 {
     // First get the Unit IDs
     int uid1 = -1;
@@ -439,7 +439,7 @@ void GameState::notify_unit_interact(EventRequest *r, Unit *first, Unit *second)
     send_all_players(notify);
 }
 
-void GameState::notify_unit_move(EventRequest *r, Unit *target)
+void Game::notify_unit_move(EventRequest *r, Unit *target)
 {
     // First get the Player IDs
     int uid = -1;

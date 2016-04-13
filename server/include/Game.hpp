@@ -23,12 +23,12 @@ enum State
     GAME_OVER
 };
 
-class GameState
+class Game
 {
     public:
         // Constructor and Destructor
-        GameState(int _game_id, std::string _map_file);
-        ~GameState();
+        Game(int _game_id, std::string _map_file);
+        ~Game();
 
         // Getters
         int get_game_id() { return game_id; }
@@ -37,10 +37,10 @@ class GameState
         vector<Unit*> &get_units() { return units; }
         bool needs_player();
 
-        // Tick the GameState. Return FALSE if game is over, TRUE otherwise.
+        // Tick the Game. Return FALSE if game is over, TRUE otherwise.
         bool tick(double time_in_seconds);
 
-        // Handle an EventRequest bound for this GameState.
+        // Handle an EventRequest bound for this Game.
         void handle_request(Player *p, EventRequest *req);
 
     private:
@@ -73,7 +73,7 @@ class GameState
 
         bool **blocked_tiles;   // an array storing all of the blocked tiles
 
-        State current_gamestate;    // the current state of this GameState
+        State current_gamestate;    // the current state of this Game
 
         vector<Unit*> units;        // all of the units currently in-play
 
