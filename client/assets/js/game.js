@@ -19,7 +19,8 @@ var game = game || {},
     lockCounter = 0,
     friendlyUnits = [],
     enemyUnits = [],
-    pause = false;
+    pause = false,
+    battle_music;
 
 // load units onto tilemap
 window.loadUnits = function() { 
@@ -236,6 +237,7 @@ window.choosingMove = function() {
         switch (arrow.y) {
             case(305):
                 output("Resumed");
+                clang.play();
                 pause = false;
                 option.destroy();
                 arrow.destroy();
@@ -250,6 +252,9 @@ window.choosingMove = function() {
             case(422):
                 pause = false;
                 game.win = false;
+                clang.play();
+                battle_music.destroy();
+                game.cache.removeSound('battle');
                 this.state.start('GameOver');
                 break;
 
@@ -558,6 +563,7 @@ window.output = function(input) {
 window.pauseGame = function() {
     output("");
     if (!pause) {
+        clang.play();
         option = game.add.sprite(0,0, 'option');
         arrow = game.add.sprite(315,305, 'arrow');
         pause = true;
@@ -593,6 +599,8 @@ var Game = {
 
         game.load.image('option', './assets/images/option.png');
         game.load.image('arrow', './assets/images/arrow_white.png');
+
+        game.load.audio('battle', './assets/audio/music/battle.m4a');
     },
 
     create : function() {
@@ -618,6 +626,9 @@ var Game = {
         blocked.fixedToCamera = false;
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
+
+        battle_music = game.add.audio('battle');
+        battle_music.loopFull();
 
         loadUnits();
 
