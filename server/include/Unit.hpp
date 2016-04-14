@@ -35,9 +35,13 @@ class Unit
         int get_max_health() { return max_health; }
         int get_x() { return x; }
         int get_y() { return y; }
+        bool has_interacted() { return interacted; }
+        bool has_moved() { return moved; }
+
 
         // Setters
-        void set_position(int _x, int _y) {x = _x; y = _y; }
+        void new_turn() { interacted = false; moved = false; }
+        void set_position(int _x, int _y) { x = _x; y = _y; moved = true; }
 
         // Hit/Damage/Heal Calculations
         bool interact(Unit *target);    // TRUE if successful, FALSE if illegal
@@ -60,6 +64,8 @@ class Unit
         int max_health;
         int x;
         int y;
+        bool interacted;
+        bool moved;
 };
 
 #endif

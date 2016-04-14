@@ -49,6 +49,12 @@ Unit::Unit(int _unit_id, UnitType _type, int _player_id)
 
 bool Unit::interact(Unit *target)
 {
+    // Verify that the Unit hasn't interacted already.
+    if(interacted)
+    {
+        return false;
+    }
+
     // Verify second is within range of first.
     if(is_within_range(target))
     {
@@ -87,6 +93,10 @@ bool Unit::interact(Unit *target)
     {
         apply_damage(this, true);
     }
+
+    // Note that this Unit can no longer move or interact.
+    interacted = true;
+    moved = true;
 
     // If we've gotten here, everything was successful!
     return true;

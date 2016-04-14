@@ -10,12 +10,15 @@ set(RQSERVER_SOURCES
     ./src/Connection.cpp
     ./src/Effect.cpp
     ./src/Game.cpp
+    ./src/GameState.cpp
     ./src/GenericResponses.cpp
     ./src/LogWriter.cpp
     ./src/main.cpp
+    ./src/MapInfo.cpp
     ./src/NetworkManager.cpp
     ./src/Player.cpp
     ./src/RequestVerification.cpp
+    ./src/SelectionState.cpp
     ./src/Unit.cpp
 
     ./src/jsoncpp.cpp
