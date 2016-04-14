@@ -99,7 +99,7 @@ int main(int argc, char **argv)
         {
             // Get the requesting player.
             // verify that there is a player_id
-            if(!(*r)["player_id"].isMember())
+            if(!r->isMember("player_id"))
             {
                 continue;
             }
