@@ -22,6 +22,7 @@ thread *primary_network_thread = NULL;
 
 int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
+    log->write("CALLBACK_HIT");
     // Useful variables for all cases.
     int *id = (int*) user;
     char output_buffer[1024];
@@ -152,13 +153,13 @@ NetworkManager::NetworkManager()
 NetworkManager::~NetworkManager()
 {
     // Delete any outstanding EventRequests.
-    nm_mutex.lock();
     for(EventRequest *r = pop_incoming_request(); r != NULL; r = pop_incoming_request())
     {
         delete r;
     }
 
     // Delete all Connections.
+    nm_mutex.lock();
     for(pair<int, Connection*> p : connections)
     {
         delete p.second;
