@@ -172,7 +172,7 @@ void NetworkManager::submit_incoming_message(int connection_id, std::string &mes
     {
         // try to create the JSON object and add the playerId
         stringstream(message) >> (*r);
-        (*r)["playerId"] = connection_id;
+        (*r)["player_id"] = connection_id;
 
         // Verify that the request is valid.
         if(!verify_general_request(r))

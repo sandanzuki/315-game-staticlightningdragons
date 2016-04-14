@@ -98,11 +98,6 @@ int main(int argc, char **argv)
         for(EventRequest *r = nm.pop_incoming_request(); r != NULL; r = nm.pop_incoming_request())
         {
             // Get the requesting player.
-            // verify that there is a player_id
-            if(!r->isMember("player_id"))
-            {
-                continue;
-            }
             Player *p = players[(*r)["player_id"].asInt()];
             string type = (*r)["type"].asString();
 
