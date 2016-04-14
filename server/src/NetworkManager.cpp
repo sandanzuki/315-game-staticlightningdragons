@@ -235,12 +235,14 @@ Connection *NetworkManager::get_connection(int id)
 
 void NetworkManager::kill_connection(int id)
 {
-    nm_mutex.lock();
-    if(get_connection(id) != NULL)
+    Connection *c = get_connection(id);
+    if(c != NULL)
     {
+        nm_mutex.lock();
         connections.erase(id);
+        delete c;
+        nm_mutex.unlock();
     }
-    nm_mutex.unlock();
 }
 
 Connection *NetworkManager::pop_new_connection()
