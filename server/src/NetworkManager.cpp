@@ -22,7 +22,6 @@ thread *primary_network_thread = NULL;
 
 int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, void *in, size_t len)
 {
-    log->write("CALLBACK_HIT");
     // Useful variables for all cases.
     int *id = (int*) user;
     char output_buffer[1024];
@@ -77,7 +76,6 @@ int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
                 memset(response, 0, 4096);
                 strcpy((char*) response + LWS_PRE, out->c_str());
 
-                log->write("sending message!");
                 // Try to write the message...
                 if(lws_write(wsi, response + LWS_PRE, out->size(), LWS_WRITE_TEXT) == -1)
                 {
@@ -185,6 +183,11 @@ void NetworkManager::submit_incoming_message(int connection_id, std::string &mes
         }
     }
     catch(Json::RuntimeError exp)
+    {
+        delete r;
+        notify_invalid_request(get_connection(connection_id), NULL);
+    }
+    catch(Json::LogicError exp)
     {
         delete r;
         notify_invalid_request(get_connection(connection_id), NULL);
