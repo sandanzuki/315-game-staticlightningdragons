@@ -101,7 +101,7 @@ int network_thread()
     struct lws_context_creation_info info;
     memset(&info, 0, sizeof info);
     info.port = 13337; // a hard-coded port of magnificent importance
-    struct lws_protocols protocols[] = { {"rqs", callback_rqs, sizeof(int), 0,}, { NULL, NULL, 0, 0} };
+    struct lws_protocols protocols[] = { {"rqs", callback_rqs, sizeof(int), 2048,}, { NULL, NULL, 0, 0} };
     info.protocols = protocols;
 
     // Create the LWS context and verify that there were no errors.
