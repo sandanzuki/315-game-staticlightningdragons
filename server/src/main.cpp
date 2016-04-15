@@ -80,7 +80,7 @@ int main(int argc, char **argv)
     map<int, Game*> games;
     int highest_game_id = 0;
 
-    MapInfo *map = new MapInfo("../client/assets/js/map1.json");
+    MapInfo *map = new MapInfo(&log, "../client/assets/js/map1.json");
 
     // main event loop
     while(true)

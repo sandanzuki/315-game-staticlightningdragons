@@ -1,13 +1,16 @@
 #ifndef MAP_INFO_HPP
 #define MAP_INFO_HPP
 
+#include "LogWriter.hpp"
+
 #include <string>
+
 using namespace std;
 
 class MapInfo
 {
     public:
-        MapInfo(string mapfile);
+        MapInfo(LogWriter *log, string mapfile);
         ~MapInfo();
 
         int get_height() { return height; }

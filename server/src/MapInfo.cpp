@@ -2,11 +2,29 @@
 
 #include "json/json.h"
 
-#include <iostream>
+#include <fstream>
 using namespace std;
 
-MapInfo::MapInfo(string mapfile)
+MapInfo::MapInfo(LogWriter *log, string mapfile)
 {
+    // Load the file.
+    ifstream input(mapfile.c_str());
+    // Parse the JSON.
+    Json::Value map_data;
+    Json::Reader reader;
+    bool parsingSuccessful = reader.parse(input, map_data);
+    if(!parsingSuccessful)
+    {
+        log->write("[MAP] ERROR: Failed to parse configuration. Error below.\n");
+        log->write(reader.getFormattedErrorMessages());
+        log->write("");
+        return;
+    }    
+
+    // Get the height and the width of the map.
+    height = map_data["height"].asInt();
+    width = map_data["width"].asInt();
+
     // Setup the blocked_tiles array.
     blocked_tiles = new bool*[width];
     for(int i = 0; i < width; ++i)
@@ -18,27 +36,20 @@ MapInfo::MapInfo(string mapfile)
         }
     }
 
-    Json::Value map_data;
-    Json::Reader reader;
-    bool parsingSuccessful = reader.parse(mapfile, map_data);
-    if(!parsingSuccessful)
-    {
-        // report failure and their locations in the document to the user
-        cout << "Failed to parse configuration\n" << reader.getFormattedErrorMessages();
-        return;
-    }    
-
-    height = map_data["height"].asInt();
-    width = map_data["width"].asInt();
+    // Locate the layer with the Blocked Data.
     const Json::Value layers = map_data["layers"];
     Json::Value blocked_data;
-    for (int index = 0; index < layers.size(); ++index)
+    for(int index = 0; index < layers.size(); ++index)
+    {
         if(layers[index]["name"].asString().compare("blockedLayer") == 0)
         {
             blocked_data = layers[index]["data"];
             break;
         }
-    for (int index = 0; index < blocked_data.size(); ++index)
+    }
+
+    // Iterate through the Blocked Data and fill in blocked_tiles appropriately.
+    for(int index = 0; index < blocked_data.size(); ++index)
     {
         int tile_data = blocked_data[index].asInt();
         if(tile_data != 0)
@@ -48,13 +59,6 @@ MapInfo::MapInfo(string mapfile)
             blocked_tiles[x][y] = true;
         }
     }
-    Json::Value next_object_id = map_data["nextobjectid"];
-    Json::Value orientation = map_data["orientation"];
-    Json::Value render_order = map_data["renderorder"];
-    Json::Value tile_height = map_data["tileheight"];
-    Json::Value tile_width = map_data["tilewidth"];
-    Json::Value tile_sets = map_data["tilesets"];
-    Json::Value version = map_data["version"];    
 }
 
 MapInfo::~MapInfo()
