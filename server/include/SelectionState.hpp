@@ -14,7 +14,7 @@
 class SelectionState : public GameState
 {
     public:
-        SelectionState(int _game_id, Player *_player_one, Player *_player_two, string mapfile)
+        SelectionState(int _game_id, Player *_player_one, Player *_player_two)
             : GameState(_game_id, _player_one, _player_two) {}
 
         void handle_request(Player *p, EventRequest *r);
@@ -29,10 +29,6 @@ class SelectionState : public GameState
 
         vector<Unit*> units_one;
         vector<Unit*> units_two;
-
-        int tiles_width;
-        int tiles_height;
-        char **blocked_tiles;
 };
 
 #endif

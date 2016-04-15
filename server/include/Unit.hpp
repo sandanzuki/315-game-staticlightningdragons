@@ -38,10 +38,10 @@ class Unit
         bool has_interacted() { return interacted; }
         bool has_moved() { return moved; }
 
-
         // Setters
         void new_turn() { interacted = false; moved = false; }
         void set_position(int _x, int _y) { x = _x; y = _y; moved = true; }
+        void set_interacted() { interacted = true; }
 
         // Hit/Damage/Heal Calculations
         bool interact(Unit *target);    // TRUE if successful, FALSE if illegal

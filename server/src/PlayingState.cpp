@@ -1,15 +1,29 @@
+#include "GenericResponses.hpp"
 #include "PlayingState.hpp"
+#include "RequestVerification.hpp"
 
 PlayingState::PlayingState(int _game_id, Player *_player_one, Player *_player_two,
         vector<Unit*> _units_one, vector<Unit*> _units_two, MapInfo *_map) :
-        GameState(_game_id, _player_one, _player_two)
+    GameState(_game_id, _player_one, _player_two)
 {
     units_one = _units_one;
     units_two = _units_two;
     map = _map;
     state_name = PLAYING;
     player_turn = 1;
-    handle_turn_change(NULL, NULL);
+    handle_turn_change(NULL);
+}
+
+PlayingState::~PlayingState()
+{
+    for(Unit *u : units_one)
+    {
+        delete u;
+    }
+    for(Unit *u : units_two)
+    {
+        delete u;
+    }
 }
 
 void PlayingState::handle_request(Player *p, EventRequest *r)
@@ -33,7 +47,7 @@ void PlayingState::handle_request(Player *p, EventRequest *r)
 bool PlayingState::tick(double time)
 {
     // TODO - maybe include a timer for timed stuff, ya know?
-    
+
     // If the turn is over, change turns.
     bool turn_complete = true;
     if(player_turn == 1)
@@ -58,7 +72,7 @@ bool PlayingState::tick(double time)
     }
     if(turn_complete)
     {
-        handle_turn_change(p, r);
+        handle_turn_change(NULL);
     }
 
     // If one of the Players has no living Units, then we're done!
@@ -87,7 +101,7 @@ bool PlayingState::tick(double time)
     }
 }
 
-void PlayingState::handle_turn_change(Player *p, EventRequest *r)
+void PlayingState::handle_turn_change(EventRequest *r)
 {
     if(player_turn == 1)
     {
@@ -102,22 +116,52 @@ void PlayingState::handle_turn_change(Player *p, EventRequest *r)
 
 void PlayingState::handle_unit_interact(Player *p, EventRequest *r)
 {
-    // TODO allow targetId to be -1 to signify the Unit is doing nothing
-    // Verify that both units exist and get them.
+    // Verify that this request is okay.
     if(!verify_unit_interact(r))
     {
         notify_invalid_request(p->get_connection(), r);
         return;
     }
+
+    // Determine which set of Units we're working with.
+    vector<Unit*> *units = NULL;
+    if(p == player_one)
+    {
+        units = &units_one;
+    }
+    else if(p == player_two)
+    {
+        units = &units_two;
+    }
+
+    // Verify that the attacking Unit exists.
     int unit_id = (*r)["unit_id"].asInt();
-    int target_id = (*r)["target_id"].asInt();
-    if(unit_id >= units.size() || target_id >= units.size())
+    if(unit_id >= units->size())
     {
         notify_illegal_request(p->get_connection(), r);
         return;
     }
-    Unit *unit = units[unit_id];
-    Unit *target = units[target_id];
+    Unit *unit = (*units)[unit_id];
+
+    // If the targetId is empty, don't do anything.
+    int target_id = (*r)["target_id"].asInt();
+    if(target_id == -1)
+    {
+        unit->set_interacted();
+        notify_unit_interact(r, unit, NULL);
+        return;
+    }
+
+    // Otherwise, go ahead and try to do stuff.
+    // Verify that the target Unit exists.
+    if(unit_id >= units->size())
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+
+    // If it exists, get it. Also verify that both Units are alive.
+    Unit *target = (*units)[target_id];
     if(!unit->is_alive() || !target->is_alive())
     {
         notify_illegal_request(p->get_connection(), r);
@@ -130,18 +174,13 @@ void PlayingState::handle_unit_interact(Player *p, EventRequest *r)
         notify_illegal_request(p->get_connection(), r);
         return;
     }
+
+    // Go ahead and notify everyone.
     notify_unit_interact(r, unit, target);
 }
 
 void PlayingState::handle_unit_move(Player *p, EventRequest *r)
 {
-    // Verify that the Unit has not moved yet.
-    if(unit->has_moved())
-    {
-        notify_invalid_request(p->get_connection(), r);
-        return;
-    }
-
     // First verify that the event is valid.
     if(!verify_unit_move(r))
     {
@@ -149,19 +188,37 @@ void PlayingState::handle_unit_move(Player *p, EventRequest *r)
         return;
     }
 
+    // Determine which set of Units we're working with.
+    vector<Unit*> *units = NULL;
+    if(p == player_one)
+    {
+        units = &units_one;
+    }
+    else if(p == player_two)
+    {
+        units = &units_two;
+    }
+
     // Since it's valid, let's grab the Unit and its intended destination.
     int unit_id = (*r)["unit_id"].asInt();
     int x = (*r)["x"].asInt();
     int y = (*r)["y"].asInt();
-    if(unit_id >= units.size())
+    if(unit_id >= units->size())
     {
         notify_illegal_request(p->get_connection(), r);
         return;
     }
-    Unit *unit = units[unit_id];
+    Unit *unit = (*units)[unit_id];
     if(!unit->is_alive())
     {
         notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+
+    // Verify that the Unit has not moved yet.
+    if(unit->has_moved())
+    {
+        notify_invalid_request(p->get_connection(), r);
         return;
     }
 
@@ -224,8 +281,14 @@ void PlayingState::notify_unit_interact(EventRequest *r, Unit *first, Unit *seco
     notify["message_id"] = (*r)["message_id"];
     notify["unit_id"] = uid1;
     notify["target_id"] = uid2;
-    notify["unit_hp"] = first->get_remaining_health();
-    notify["target_hp"] = second->get_remaining_health();
+    if(first != NULL)
+    {
+        notify["unit_hp"] = first->get_remaining_health();
+    }
+    if(second != NULL)
+    {
+        notify["target_hp"] = second->get_remaining_health();
+    }
 
     // Send to all connected players.
     send_all_players(notify);
@@ -256,13 +319,13 @@ void PlayingState::notify_unit_move(EventRequest *r, Unit *target)
 bool PlayingState::tile_reachable(int distance, int x, int y, int to_x, int to_y)
 {
     // Verify that the current (x,y) are not outside the map.
-    if(x < 0 || y < 0 || x >= map_width || y >= map_height)
+    if(x < 0 || y < 0 || x >= map->get_width() || y >= map->get_height())
     {
         return false;
     }
 
     // Verify that this location isn't blocked.
-    if(blocked_tiles[x][y] == true)
+    if(map->is_blocked(x, y) == true)
     {
         return false;
     }

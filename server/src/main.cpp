@@ -8,7 +8,8 @@
 #include <map>
 #include <unistd.h>
 
-void handle_assign_game_request(Player *p, EventRequest *r, map<int, Game*> &games, int &highest_game_id)
+void handle_assign_game_request(Player *p, EventRequest *r,
+        map<int, Game*> &games, int &highest_game_id, MapInfo *map)
 {
     // First, let's make sure they aren't already in a game.
     if(p->get_game_id() != 0)
@@ -29,7 +30,7 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, Game*> &gam
     if(game_id == -2)
     {
         ++highest_game_id;
-        games[highest_game_id] = new Game(highest_game_id, "test.map");
+        games[highest_game_id] = new Game(highest_game_id, map);
         game_id = highest_game_id;
     }
 
@@ -50,7 +51,7 @@ void handle_assign_game_request(Player *p, EventRequest *r, map<int, Game*> &gam
         if(game_id == -1)
         {
             ++highest_game_id;
-            games[highest_game_id] = new Game(highest_game_id, "test.map");
+            games[highest_game_id] = new Game(highest_game_id, map);
             game_id = highest_game_id;
         }
     }
@@ -79,6 +80,8 @@ int main(int argc, char **argv)
     map<int, Game*> games;
     int highest_game_id = 0;
 
+    MapInfo *map = new MapInfo("../client/assets/js/map1.json");
+
     // main event loop
     while(true)
     {
@@ -104,7 +107,7 @@ int main(int argc, char **argv)
             // AssignGameRequest
             if(type.compare("AssignGameRequest") == 0)
             {
-                handle_assign_game_request(p, r, games, highest_game_id);
+                handle_assign_game_request(p, r, games, highest_game_id, map);
             }
 
             // PlayerQuitRequest
@@ -136,6 +139,8 @@ int main(int argc, char **argv)
 
     // make sure to shutdown everything
     shutdown_networking_thread();
+
+    delete map;
 
     // also need to delete used memory
     for(pair<int, Player*> p : players)

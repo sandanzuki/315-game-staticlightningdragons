@@ -5,6 +5,7 @@
 
 enum StateName
 {
+    ASSIGN,
     SELECTION,
     PLAYING,
     NONE
@@ -14,6 +15,11 @@ class GameState
 {
     public:
         GameState(int _game_id, Player *_player_one, Player *_player_two);
+
+        int get_game_id() { return game_id; }
+        StateName get_name() { return state_name; }
+        Player *get_player_one() { return player_one; }
+        Player *get_player_two() { return player_two; }
 
         virtual void handle_request(Player *p, EventRequest *r) = 0;
         virtual bool tick(double time) = 0;
