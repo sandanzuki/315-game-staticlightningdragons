@@ -22,11 +22,11 @@ var Menu = {
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.startLoad, this);
 
-        spaceButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        spaceButton.onDown.add(this.check, this);
+        jButton = game.input.keyboard.addKey(Phaser.Keyboard.J);
+        jButton.onDown.add(this.join, this);
 
-        // refreshBtn = game.input.keyboard.addKey(Phaser.Keyboard.F5);
-        // refreshBtn.onDown.add(this.refresh, this);
+        spaceButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        spaceButton.onDown.add(this.prepClient, this);
     },
 
     refresh : function() {
@@ -43,6 +43,28 @@ var Menu = {
     startLoad : function() {
         // start loading, change game state
         this.state.start('Load');
+    },
+
+    prepClient : function() {
+        connection = new WebSocket("ws://pulse.bitwisehero.com:13337", "rqs");
+        //window.alert(connection.readyState);
+        connection.onopen = function() {
+            window.alert(connection.readyState);
+            var request = '{"game_id":"-2","request_id":"42","type":"AssignGameRequest"}';
+            JSON.stringify(request);
+            //window.alert(request);
+            console.log(request);
+            connection.send(request);
+        };
+    },
+
+    join : function(){
+        connection = new WebSocket("ws://pulse.bitwisehero.com:13337", "rqs");
+
+        connection.onopen = function() {
+            window.alert(connection.readyState);
+            connection.send(" , , AssignGameRequest")
+        }
     }
 };
 

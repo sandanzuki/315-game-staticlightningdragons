@@ -172,7 +172,7 @@ window.cursorUp = function() {
                 arrow.x = 280;
                 break;
 
-            case(389):
+            case(383):
                 arrow.x = 325;
                 break;
 
