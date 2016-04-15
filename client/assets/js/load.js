@@ -5,6 +5,7 @@ var Load = {
         // align canvas
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
+        var connection;
     },
 
     create : function() {
