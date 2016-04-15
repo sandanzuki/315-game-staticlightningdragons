@@ -8,6 +8,7 @@ enum StateName
     ASSIGN,
     SELECTION,
     PLAYING,
+    REMATCH,
     NONE
 };
 

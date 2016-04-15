@@ -3,6 +3,7 @@
 #include "AssignState.hpp"
 #include "GenericResponses.hpp"
 #include "PlayingState.hpp"
+#include "RematchState.hpp"
 #include "RequestVerification.hpp"
 #include "SelectionState.hpp"
 
@@ -45,7 +46,13 @@ bool Game::tick(double time_in_seconds)
             case PLAYING:
                 {
                     delete current_state;
-                    current_state = NULL;
+                    current_state = new RematchState(game_id, player_one, player_two);
+                }
+                break;
+            case REMATCH:
+                {
+                    delete current_state;
+                    current_state = new SelectionState(game_id, player_one, player_two);
                 }
                 break;
         }

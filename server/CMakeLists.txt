@@ -19,6 +19,7 @@ set(RQSERVER_SOURCES
     ./src/NetworkManager.cpp
     ./src/Player.cpp
     ./src/PlayingState.cpp
+    ./src/RematchState.cpp
     ./src/RequestVerification.cpp
     ./src/SelectionState.cpp
     ./src/Unit.cpp
