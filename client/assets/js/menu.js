@@ -21,6 +21,23 @@ var Menu = {
 
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.startLoad, this);
+
+        spaceButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+        spaceButton.onDown.add(this.check, this);
+
+        // refreshBtn = game.input.keyboard.addKey(Phaser.Keyboard.F5);
+        // refreshBtn.onDown.add(this.refresh, this);
+    },
+
+    refresh : function() {
+            connection.onclose = function () {}; // disable onclose handler first
+            connection.close();
+            location.reload();
+    },
+
+    check : function() {
+        window.alert(connection.readyState);
+        //connection.send("Hello");
     },
 
     startLoad : function() {
@@ -28,3 +45,5 @@ var Menu = {
         this.state.start('Load');
     }
 };
+
+
