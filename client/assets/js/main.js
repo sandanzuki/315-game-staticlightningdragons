@@ -1,7 +1,7 @@
 // declare and initialize game
 var game = game || {};
 game.win = true;
-connection = new WebSocket("ws://pulse.bitwisehero.com:13337", "rqs");
+var connection;
 
 game = new Phaser.Game(900, 600, Phaser.AUTO,'');
 

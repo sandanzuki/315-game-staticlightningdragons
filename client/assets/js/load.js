@@ -15,6 +15,7 @@ var Load = {
         this.add.sprite(0, 0, 'load'); // add background
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.startTutorial, this);
+        //connection.onopen = this.startTutorial;
     },
 
     startTutorial : function() {
