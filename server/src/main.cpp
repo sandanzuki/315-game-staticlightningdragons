@@ -131,7 +131,21 @@ int main(int argc, char **argv)
             delete r;
         }
 
-        // TODO - tick all Games - culling ones that aren't active anymore
+        // Tick all of the Games and remove the completed ones.
+        vector<int> remove;
+        for(pair<int, Game*> p : games)
+        {
+            // TODO keep time!
+            if(!p.second->tick(0))
+            {
+                remove.push_back(p.first);
+            }
+        }
+        for(int i : remove)
+        {
+            delete games[i];
+            games.erase(i);
+        }
 
         // Sleep for a bit. Don't want our poor server to die.
         usleep(250);
