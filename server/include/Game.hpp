@@ -27,7 +27,7 @@ class Game : public GameState
 
     private:
         void handle_player_quit(Player *p, EventRequest *r);
-        void notify_state_change(EventRequest *r);
+        void notify_state_change();
 
         Player *player_one;
         Player *player_two;
