@@ -186,11 +186,13 @@ void NetworkManager::submit_incoming_message(int connection_id, std::string &mes
     {
         delete r;
         notify_invalid_request(get_connection(connection_id), NULL);
+        return;
     }
     catch(Json::LogicError exp)
     {
         delete r;
         notify_invalid_request(get_connection(connection_id), NULL);
+        return;
     }
     nm_mutex.lock();
     recv_queue.push(r);
