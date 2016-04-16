@@ -157,7 +157,7 @@ int main(int argc, char **argv)
             else
             {
                 memset(buffer, 0, 2048);
-                sprintf(buffer, "[MAIN] INFO: Passing EventRequest on to the appropriate Game with ID .", game_id);
+                sprintf(buffer, "[MAIN] INFO: Passing EventRequest on to the appropriate Game with ID %d.", game_id);
                 log.write(buffer);
 
                 // Verify that the game exists before trying to do things.
