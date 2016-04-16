@@ -16,7 +16,7 @@ class SelectionState : public GameState
 {
     public:
         SelectionState(LogWriter *log, int _game_id, Player *_player_one, Player *_player_two)
-            : GameState(log, _game_id, _player_one, _player_two) {}
+            : GameState(log, _game_id, _player_one, _player_two) { state_name = SELECTION; }
 
         void handle_request(Player *p, EventRequest *r);
         bool tick(double time);

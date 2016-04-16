@@ -123,23 +123,29 @@ bool Game::needs_player()
 void Game::notify_state_change()
 {
     // Determine the state string based on state.
-    string state = "";
+    string state;
     if(current_state == NULL)
     {
-        state = "GAME_OVER";
+        state = string("GAME_OVER");
     }
     else
     {
         switch(current_state->get_name())
         {
             case ASSIGN:
-                state = "ASSIGN";
+                state = string("ASSIGN");
                 break;
             case SELECTION:
-                state = "SELECTION";
+                state = string("SELECTION");
                 break;
             case PLAYING:
-                state = "PLAYING";
+                state = string("PLAYING");
+                break;
+            case REMATCH:
+                state = string("REMATCH");
+                break;
+            default:
+                state = string("INVALID");
                 break;
         }
     }
@@ -151,5 +157,9 @@ void Game::notify_state_change()
     notify["state"] = state;
 
     // Send to all connected players.
+    char buffer[2048];
+    memset(buffer, 0, 2048);
+    sprintf(buffer, "[GAME] INFO: GameState has switched to %s.", state.c_str());
+    log->write(buffer);
     send_all_players(notify);
 }

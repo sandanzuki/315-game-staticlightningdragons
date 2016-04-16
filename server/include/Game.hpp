@@ -29,9 +29,6 @@ class Game : public GameState
         void handle_player_quit(Player *p, EventRequest *r);
         void notify_state_change();
 
-        Player *player_one;
-        Player *player_two;
-
         int game_id;                // the ID for this game
         GameState *current_state;   // the current callable state
         MapInfo *map;               // the map itself

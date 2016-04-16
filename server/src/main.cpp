@@ -47,7 +47,7 @@ void handle_assign_game_request(Player *p, EventRequest *r,
             if(pi.second->needs_player())
             {
                 log->write("[MAIN] INFO: Found game, assigning Player.");
-                game_id = p->get_game_id();
+                game_id = pi.second->get_game_id();
                 break;
             }
         }
@@ -66,7 +66,6 @@ void handle_assign_game_request(Player *p, EventRequest *r,
     else
     {
         log->write("[MAIN] INFO: Specific Game requested. Attempting to assign Player to game.");
-        Game *g = games[game_id];
         game_id = p->get_game_id();
     }
 
