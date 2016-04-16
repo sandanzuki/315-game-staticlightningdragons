@@ -29,12 +29,6 @@ var Menu = {
         spaceButton.onDown.add(this.prepClient, this);
     },
 
-    refresh : function() {
-            connection.onclose = function () {}; // disable onclose handler first
-            connection.close();
-            location.reload();
-    },
-
     check : function() {
         window.alert(connection.readyState);
         //connection.send("Hello");
@@ -47,23 +41,33 @@ var Menu = {
 
     prepClient : function() {
         connection = new WebSocket("ws://pulse.bitwisehero.com:13337", "rqs");
+        connection.onmessage = function(yas){console.log(yas);}
+
         //window.alert(connection.readyState);
         connection.onopen = function() {
             window.alert(connection.readyState);
-            var request = '{"game_id":"-2","request_id":"42","type":"AssignGameRequest"}';
-            JSON.stringify(request);
-            //window.alert(request);
-            console.log(request);
-            connection.send(request);
+            
+            var request = new Object();
+            request.game_id = -2;
+            request.request_id = 42;
+            request.type = "AssignGameRequest";
+               
+            var strReq = JSON.stringify(request);
+            console.log(strReq);
+            connection.send(strReq);
         };
     },
 
     join : function(){
         connection = new WebSocket("ws://pulse.bitwisehero.com:13337", "rqs");
+        connection.onmessage = function(yas){console.log(yas);}
 
         connection.onopen = function() {
             window.alert(connection.readyState);
-            connection.send(" , , AssignGameRequest")
+            var request = '{"game_ id":"-1","request_id":"43","type":"AssignGameRequest"}';
+            JSON.stringify(request);
+            console.log(request);
+            connection.send(request);
         }
     }
 };
