@@ -2,6 +2,7 @@
 var game = game || {};
 game.win = true;
 var connection;
+var request;
 
 game = new Phaser.Game(900, 600, Phaser.AUTO,'');
 
