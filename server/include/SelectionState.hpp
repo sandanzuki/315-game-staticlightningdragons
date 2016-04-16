@@ -4,6 +4,7 @@
 #include "Event.hpp"
 #include "GameState.hpp"
 #include "GenericResponses.hpp"
+#include "LogWriter.hpp"
 #include "Player.hpp"
 #include "RequestVerification.hpp"
 #include "Unit.hpp"
@@ -14,8 +15,8 @@
 class SelectionState : public GameState
 {
     public:
-        SelectionState(int _game_id, Player *_player_one, Player *_player_two)
-            : GameState(_game_id, _player_one, _player_two) {}
+        SelectionState(LogWriter *log, int _game_id, Player *_player_one, Player *_player_two)
+            : GameState(log, _game_id, _player_one, _player_two) {}
 
         void handle_request(Player *p, EventRequest *r);
         bool tick(double time);

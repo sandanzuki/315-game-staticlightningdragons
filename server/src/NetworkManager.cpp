@@ -167,6 +167,10 @@ NetworkManager::~NetworkManager()
 
 void NetworkManager::submit_incoming_message(int connection_id, std::string &message)
 {
+    log->write("[NET] DEBUG: Received message over network.\n");
+    log->write(message);
+    log->write("");
+
     EventRequest *r = new EventRequest();
     try
     {

@@ -1,8 +1,8 @@
 #include "GenericResponses.hpp"
 #include "RematchState.hpp"
 
-RematchState::RematchState(int game_id, Player *player_one, Player *player_two)
-    : GameState(game_id, player_one, player_two)
+RematchState::RematchState(LogWriter *log, int game_id, Player *player_one, Player *player_two)
+    : GameState(log, game_id, player_one, player_two)
 {
     player_one_accepted = false;
     player_two_accepted = false;
@@ -28,7 +28,7 @@ void RematchState::handle_request(Player *p, EventRequest *r)
         notify["type"] = string("RematchRequest");
         notify["game_id"] = game_id;
         notify["player_id"] = p->get_player_id();
-        notify["message_id"] = (*r)["message_id"];
+        notify["request_id"] = (*r)["request_id"];
         send_all_players(notify);
     }
     else

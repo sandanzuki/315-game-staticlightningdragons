@@ -1,6 +1,7 @@
 #ifndef GAME_STATE_HPP
 #define GAME_STATE_HPP
 
+#include "LogWriter.hpp"
 #include "Player.hpp"
 
 enum StateName
@@ -15,7 +16,7 @@ enum StateName
 class GameState
 {
     public:
-        GameState(int _game_id, Player *_player_one, Player *_player_two);
+        GameState(LogWriter *_log, int _game_id, Player *_player_one, Player *_player_two);
 
         int get_game_id() { return game_id; }
         StateName get_name() { return state_name; }
@@ -27,6 +28,8 @@ class GameState
 
     protected:
         void send_all_players(Event &e);
+
+        LogWriter *log;
 
         int game_id;
         StateName state_name;

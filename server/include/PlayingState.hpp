@@ -3,6 +3,7 @@
 
 #include "Event.hpp"
 #include "GameState.hpp"
+#include "LogWriter.hpp"
 #include "MapInfo.hpp"
 #include "Player.hpp"
 #include "Unit.hpp"
@@ -10,7 +11,7 @@
 class PlayingState : public GameState
 {
     public:
-        PlayingState(int _game_id, Player *_player_one, Player *_player_two,
+        PlayingState(LogWriter *log, int _game_id, Player *_player_one, Player *_player_two,
                 vector<Unit*> _units_one, vector<Unit*> units_two, MapInfo *_map);
         ~PlayingState();
 

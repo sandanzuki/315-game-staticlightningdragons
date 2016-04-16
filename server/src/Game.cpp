@@ -7,10 +7,10 @@
 #include "RequestVerification.hpp"
 #include "SelectionState.hpp"
 
-Game::Game(int _game_id, MapInfo *_map) : GameState(_game_id, NULL, NULL)
+Game::Game(LogWriter *log, int _game_id, MapInfo *_map) : GameState(log, _game_id, NULL, NULL)
 {
     map = _map;
-    current_state = new AssignState(game_id);
+    current_state = new AssignState(log, _game_id);
 }
 
 bool Game::tick(double time_in_seconds)
@@ -31,14 +31,14 @@ bool Game::tick(double time_in_seconds)
                     AssignState *as = (AssignState*) current_state;
                     player_one = as->get_player_one();
                     player_two = as->get_player_two();
-                    current_state = new SelectionState(game_id, player_one, player_two);
+                    current_state = new SelectionState(log, game_id, player_one, player_two);
                     delete as;
                 }
                 break;
             case SELECTION:
                 {
                     SelectionState *ss = (SelectionState*) current_state;
-                    current_state = new PlayingState(game_id, player_one, player_two,
+                    current_state = new PlayingState(log, game_id, player_one, player_two,
                             ss->get_player_one_units(), ss->get_player_two_units(), map);
                     delete ss;
                 }
@@ -46,13 +46,13 @@ bool Game::tick(double time_in_seconds)
             case PLAYING:
                 {
                     delete current_state;
-                    current_state = new RematchState(game_id, player_one, player_two);
+                    current_state = new RematchState(log, game_id, player_one, player_two);
                 }
                 break;
             case REMATCH:
                 {
                     delete current_state;
-                    current_state = new SelectionState(game_id, player_one, player_two);
+                    current_state = new SelectionState(log, game_id, player_one, player_two);
                 }
                 break;
         }
@@ -68,11 +68,13 @@ void Game::handle_request(Player *p, EventRequest *r)
     // Assuming we still have a valid GameState, try this!
     if(current_state != NULL)
     {
+        log->write("[GAME] INFO: Handling EventRequest.");
         string type = (*r)["type"].asString();
 
         // Real talk, if either Player quits, it's time to die.
         if(type.compare("PlayerQuitRequest") == 0)
         {
+            log->write("[GAME] INFO: Handling PlayerQuitRequest.");
             // First remove the requesting player from the Game.
             if(player_one == p)
             {
@@ -104,6 +106,7 @@ void Game::handle_request(Player *p, EventRequest *r)
         }
         else
         {
+            log->write("[GAME] INFO: Forwarding EventRequest to the current GameState.");
             current_state->handle_request(p, r);
         }
     }
@@ -114,7 +117,7 @@ void Game::handle_request(Player *p, EventRequest *r)
 
 bool Game::needs_player()
 {
-    return player_one == NULL || player_two == NULL;
+    return current_state != NULL && current_state->get_name() == ASSIGN;
 }
 
 void Game::notify_state_change()

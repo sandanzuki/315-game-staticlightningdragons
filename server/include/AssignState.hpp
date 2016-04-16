@@ -2,11 +2,12 @@
 #define ASSIGN_STATE_HPP
 
 #include "GameState.hpp"
+#include "LogWriter.hpp"
 
 class AssignState : public GameState
 {
     public:
-        AssignState(int _game_id);
+        AssignState(LogWriter *log, int _game_id);
 
         void handle_request(Player *p, EventRequest *r);
         bool tick(double time);

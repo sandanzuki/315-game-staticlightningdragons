@@ -83,7 +83,7 @@ void SelectionState::notify_select_units(Player *p, EventRequest *r)
     Event notify;
     notify["type"] = string("SelectUnitsEvent");
     notify["game_id"] = game_id;
-    notify["message_id"] = (*r)["message_id"];
+    notify["request_id"] = (*r)["request_id"];
     notify["player_id"] = p->get_player_id();
     send_all_players(notify);
 }

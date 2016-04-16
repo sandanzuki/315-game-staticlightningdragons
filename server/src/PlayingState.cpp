@@ -2,9 +2,9 @@
 #include "PlayingState.hpp"
 #include "RequestVerification.hpp"
 
-PlayingState::PlayingState(int _game_id, Player *_player_one, Player *_player_two,
+PlayingState::PlayingState(LogWriter *log, int _game_id, Player *_player_one, Player *_player_two,
         vector<Unit*> _units_one, vector<Unit*> _units_two, MapInfo *_map) :
-    GameState(_game_id, _player_one, _player_two)
+    GameState(log, _game_id, _player_one, _player_two)
 {
     units_one = _units_one;
     units_two = _units_two;
@@ -252,7 +252,7 @@ void PlayingState::notify_turn_change(EventRequest *r)
     notify["game_id"] = game_id;
     if(r != NULL)
     {
-        notify["message_id"] = (*r)["message_id"];
+        notify["request_id"] = (*r)["request_id"];
     }
     notify["player_turn"] = player_turn;
 
@@ -278,7 +278,7 @@ void PlayingState::notify_unit_interact(EventRequest *r, Unit *first, Unit *seco
     Event notify;
     notify["type"] = string("UnitInteractEvent");
     notify["game_id"] = game_id;
-    notify["message_id"] = (*r)["message_id"];
+    notify["request_id"] = (*r)["request_id"];
     notify["unit_id"] = uid1;
     notify["target_id"] = uid2;
     if(first != NULL)
@@ -307,7 +307,7 @@ void PlayingState::notify_unit_move(EventRequest *r, Unit *target)
     Event notify;
     notify["type"] = string("UnitMoveEvent");
     notify["game_id"] = game_id;
-    notify["message_id"] = (*r)["message_id"];
+    notify["request_id"] = (*r)["request_id"];
     notify["unit_id"] = uid;
     notify["unit_x"] = target->get_x();
     notify["unit_y"] = target->get_y();

@@ -17,7 +17,7 @@ class Game : public GameState
 {
     public:
         // Constructor and Destructor
-        Game(int _game_id, MapInfo *_map);
+        Game(LogWriter *log, int _game_id, MapInfo *_map);
 
         // Getters
         bool needs_player();
