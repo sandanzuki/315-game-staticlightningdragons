@@ -125,11 +125,15 @@ var Menu = {
             switch(response.type){
                 case("AssignGameEvent"):
                     console.log(response);
-                    if(response.player_two_id == -1)
+                    if(response.player_two_id == -1){
                         playerId = 1;
+                        playerServerId = response.player_one_id;
+                    }
                     else{
-                        if(!playerId)
+                        if(!playerId){
                             playerId = 2;
+                            playerServerId = response.player_two_id;
+                        }
                     }
                     gameId = response.game_id;
                     this.state.start('Load');
@@ -142,6 +146,8 @@ var Menu = {
                     break;
                 case("SelectUnitsEvent"):
                     console.log(response);
+                    if(response.player_id == playerServerId)
+                        this.state.start('Load');
                     break;
                 case("AllUnitsSelectedEvent"):
                     console.log(response);
@@ -151,6 +157,7 @@ var Menu = {
                     else if(playerId = 2){
                         otherUnits = response.player_one;
                     }
+                    //this.state.start('Game');
                     break;
                 case("UnitMoveEvent"):
                     console.log(response);

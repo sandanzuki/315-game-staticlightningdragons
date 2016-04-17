@@ -4,6 +4,7 @@ game.win = true;
 var connection,
  	request,
  	playerId,
+ 	playerServerId,
  	gameId,
  	canMove,
  	//units the player chooses in selection phase

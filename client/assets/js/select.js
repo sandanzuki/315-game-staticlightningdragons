@@ -22,6 +22,8 @@ var Select = {
     },
 
     create : function() {
+        window.alert(playerId);
+        window.alert(playerServerId);
         this.add.sprite(0, 0, 'select');
         cursor = game.add.graphics();
         cursor.lineStyle(2, 0x00ff00, 1);
@@ -95,8 +97,6 @@ var Select = {
                     strReq = JSON.stringify(request);
                     console.log(strReq);
                     connection.send(strReq);
-
-                    this.state.start('Game');
                 }
             }
             else{

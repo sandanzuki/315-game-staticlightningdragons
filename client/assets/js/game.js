@@ -77,44 +77,44 @@ window.loadUnits = function() {
     }
 
     // add all red sprites to the map
-    for(var i = 1; i<=5; i++){
-        switch(otherUnits[i].type){
-            case "FIGHTER":
-                rFighter = game.add.sprite(redX, redY, 'r_fighter');
-                enemyUnits.push(rFighter);
-                map.getTileWorldXY(redX, redY).properties.unitType = 1;
-                map.getTileWorldXY(redX, redY).unit = rFighter;
-                rFighter.name = "Enemy Fighter";
-                break;
-            case "ARCHER":
-                rArcher = game.add.sprite(redX, redY, 'r_archer');
-                enemyUnits.push(rArcher);
-                map.getTileWorldXY(redX, redY).properties.unitType = 2
-                map.getTileWorldXY(redX, redY).unit = rArcher;
-                rArcher.name = "Enemy Archer";
-                break;
-            case "MAGE":
-                rMage = game.add.sprite(redX, redY, 'r_mage');
-                enemyUnits.push(rMage);
-                map.getTileWorldXY(redX, redY).properties.unitType = 3;
-                map.getTileWorldXY(redX, redY).unit = rMage;
-                rMage.name = "Enemy Mage";
-                break;
-            case "HEALER":
-                break;
-            default:
-                break;
-        }
-        redY += 60;
-    }
+    // for(var i = 1; i<=5; i++){
+    //     switch(otherUnits[i].type){
+    //         case "FIGHTER":
+    //             rFighter = game.add.sprite(redX, redY, 'r_fighter');
+    //             enemyUnits.push(rFighter);
+    //             map.getTileWorldXY(redX, redY).properties.unitType = 1;
+    //             map.getTileWorldXY(redX, redY).unit = rFighter;
+    //             rFighter.name = "Enemy Fighter";
+    //             break;
+    //         case "ARCHER":
+    //             rArcher = game.add.sprite(redX, redY, 'r_archer');
+    //             enemyUnits.push(rArcher);
+    //             map.getTileWorldXY(redX, redY).properties.unitType = 2
+    //             map.getTileWorldXY(redX, redY).unit = rArcher;
+    //             rArcher.name = "Enemy Archer";
+    //             break;
+    //         case "MAGE":
+    //             rMage = game.add.sprite(redX, redY, 'r_mage');
+    //             enemyUnits.push(rMage);
+    //             map.getTileWorldXY(redX, redY).properties.unitType = 3;
+    //             map.getTileWorldXY(redX, redY).unit = rMage;
+    //             rMage.name = "Enemy Mage";
+    //             break;
+    //         case "HEALER":
+    //             break;
+    //         default:
+    //             break;
+    //     }
+    //     redY += 60;
+    // }
 
     for (var i = 0; i < friendlyUnits.length; i++) {
         friendlyUnits[i].maxHealth = 100;
         friendlyUnits[i].locked = false;
         friendlyUnits[i].friendly = true;
-        enemyUnits[i].maxHealth = 100;
-        enemyUnits[i].locked = false;
-        enemyUnits[i].friendly = false;
+        //enemyUnits[i].maxHealth = 100;
+        //enemyUnits[i].locked = false;
+        //enemyUnits[i].friendly = false;
     }
 }
 
@@ -285,10 +285,9 @@ window.choosingMove = function() {
 
 // show unit movement
 window.moveMenu = function() {
-   coordinates = [];
+    coordinates = [];
     var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
     var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
-
     // save the (x,y) coords in array for convenience
     // because phaser won't set equal someTile = tile
     coordinates[0] = x;
