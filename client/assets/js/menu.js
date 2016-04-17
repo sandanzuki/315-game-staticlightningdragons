@@ -95,7 +95,6 @@ var Menu = {
         };
 
         connection.onmessage = function(yas){
-            console.log(yas); 
             Menu.checkResponse(yas);
         };
 
@@ -115,7 +114,6 @@ var Menu = {
         };
 
         connection.onmessage = function(yas){
-            console.log(yas);
             Menu.checkResponse(yas);
         };
 
@@ -126,22 +124,40 @@ var Menu = {
         if(response){
             switch(response.type){
                 case("AssignGameEvent"):
+                    console.log(response);
                     if(response.player_two_id == -1)
                         playerId = 1;
                     else{
                         if(!playerId)
                             playerId = 2;
                     }
-                    gameId = response.gameId;
+                    gameId = response.game_id;
                     this.state.start('Load');
                     break;
                 case("StateChangeEvent"):
-                    this.state.start('Tutorial');
+                    console.log(response);
+                    if(response.state == "SELECTION"){
+                        this.state.start('Tutorial');
+                    }
+                    break;
+                case("SelectUnitsEvent"):
+                    console.log(response);
+                    break;
+                case("AllUnitsSelectedEvent"):
+                    console.log(response);
+                    if(playerId = 1){
+                        otherUnits = response.player_two;
+                    }
+                    else if(playerId = 2){
+                        otherUnits = response.player_one;
+                    }
                     break;
                 case("UnitMoveEvent"):
                     console.log(response);
                     break;
-
+                default:
+                    console.log(response);
+                    break;
             }
         }
     }
