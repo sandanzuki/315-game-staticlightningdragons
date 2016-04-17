@@ -1,4 +1,5 @@
 var game = game || {},
+    gameId,
     map,
     option,
     arrow,
@@ -23,69 +24,88 @@ var game = game || {},
     battle_music;
 
 // load units onto tilemap
-window.loadUnits = function() { 
+window.loadUnits = function() {
+    console.log(playerId);
+    var blueX, blueY,
+        redX, redY;
+    switch(playerId){
+        case(1):
+            blueX = 0;
+            blueY = 0;
+            redX = map.widthInPixels-60;
+            redY = 180;
+            break;
+        case(2):
+            blueX = map.widthInPixels-60;
+            blueY = 180;
+            redX = 0;
+            redY = 0;
+            break;
+        default:
+            break;
+    }
+
     // add all blue sprites to the map
-    bFighter1 = game.add.sprite(0, 0,'b_fighter');
+    bFighter1 = game.add.sprite(blueX, blueY,'b_fighter');
     friendlyUnits.push(bFighter1); 
-    map.getTileWorldXY(0,0).properties.unitType = 1; 
-    map.getTileWorldXY(0,0).unit = bFighter1; 
+    map.getTileWorldXY(blueX,blueY).properties.unitType = 1; 
+    map.getTileWorldXY(blueX,blueY).unit = bFighter1; 
     bFighter1.maxHealth=100;
     bFighter1.name = "Friendly Fighter";
 
-    bFighter2 = game.add.sprite(0, 240,'b_fighter');
+    bFighter2 = game.add.sprite(blueX, blueY+240,'b_fighter');
     friendlyUnits.push(bFighter2);
-    map.getTileWorldXY(0,240).properties.unitType = 1;
-    map.getTileWorldXY(0,240).unit = bFighter2;
+    map.getTileWorldXY(blueX,blueY+240).properties.unitType = 1;
+    map.getTileWorldXY(blueX,blueY+240).unit = bFighter2;
     bFighter2.name = "Friendly Fighter";
 
-    bArcher1 = game.add.sprite(0, 60,'b_archer');
+    bArcher1 = game.add.sprite(blueX, blueY+60,'b_archer');
     friendlyUnits.push(bArcher1);
-    map.getTileWorldXY(0, 60).properties.unitType = 2;
-    map.getTileWorldXY(0, 60).unit = bArcher1;
+    map.getTileWorldXY(blueX, blueY+60).properties.unitType = 2;
+    map.getTileWorldXY(blueX, blueY+60).unit = bArcher1;
     bArcher1.name = "Friendly Archer";
 
-    bArcher2 = game.add.sprite(0, 180,'b_archer');
+    bArcher2 = game.add.sprite(blueX, blueY+180,'b_archer');
     friendlyUnits.push(bArcher2);
-    map.getTileWorldXY(0, 180).properties.unitType = 2;
-    map.getTileWorldXY(0, 180).unit = bArcher2;
+    map.getTileWorldXY(blueX, blueY+180).properties.unitType = 2;
+    map.getTileWorldXY(blueX, blueY+180).unit = bArcher2;
     bArcher2.name = "Friendly Archer";
 
-    bMage = game.add.sprite(0, 120,'b_mage');
+    bMage = game.add.sprite(blueX, blueY+120,'b_mage');
     friendlyUnits.push(bMage);
-    map.getTileWorldXY(0, 120).properties.unitType = 3;
-    map.getTileWorldXY(0, 120).unit = bMage;
+    map.getTileWorldXY(blueX, blueY+120).properties.unitType = 3;
+    map.getTileWorldXY(blueX, blueY+120).unit = bMage;
     bMage.name = "Friendly Mage";
 
     // add all red sprites to the map
-    var x = map.widthInPixels-60;
-    rFighter1 = game.add.sprite(x, 180, 'r_fighter');
+    rFighter1 = game.add.sprite(redX, redY, 'r_fighter');
     enemyUnits.push(rFighter1);
-    map.getTileWorldXY(x, 180).properties.unitType = 1;
-    map.getTileWorldXY(x, 180).unit = rFighter1;
+    map.getTileWorldXY(redX, redY).properties.unitType = 1;
+    map.getTileWorldXY(redX, redY).unit = rFighter1;
     rFighter1.name = "Enemy Fighter";
 
-    rFighter2 = game.add.sprite(x, 420, 'r_fighter');
+    rFighter2 = game.add.sprite(redX, redY+240, 'r_fighter');
     enemyUnits.push(rFighter2);
-    map.getTileWorldXY(x, 420).properties.unitType = 1;
-    map.getTileWorldXY(x, 420).unit = rFighter2;
+    map.getTileWorldXY(redX, redY+240).properties.unitType = 1;
+    map.getTileWorldXY(redX, redY+240).unit = rFighter2;
     rFighter2.name = "Enemy Fighter";
 
-    rArcher1 = game.add.sprite(x, 240, 'r_archer');
+    rArcher1 = game.add.sprite(redX, redY+60, 'r_archer');
     enemyUnits.push(rArcher1);
-    map.getTileWorldXY(x, 240).properties.unitType = 2
-    map.getTileWorldXY(x, 240).unit = rArcher1;
+    map.getTileWorldXY(redX, redY+60).properties.unitType = 2
+    map.getTileWorldXY(redX, redY+60).unit = rArcher1;
     rArcher1.name = "Enemy Archer";
 
-    rArcher2 = game.add.sprite(x, 360, 'r_archer');
+    rArcher2 = game.add.sprite(redX, redY+180, 'r_archer');
     enemyUnits.push(rArcher2);
-    map.getTileWorldXY(x, 360).properties.unitType = 2;
-    map.getTileWorldXY(x, 360).unit = rArcher2;
+    map.getTileWorldXY(redX, redY+180).properties.unitType = 2;
+    map.getTileWorldXY(redX, redY+180).unit = rArcher2;
     rArcher2.name = "Enemy Archer";
 
-    rMage = game.add.sprite(x, 300, 'r_mage');
+    rMage = game.add.sprite(redX, redY+120, 'r_mage');
     enemyUnits.push(rMage);
-    map.getTileWorldXY(x, 300).properties.unitType = 3;
-    map.getTileWorldXY(x, 300).unit = rMage;
+    map.getTileWorldXY(redX, redY+120).properties.unitType = 3;
+    map.getTileWorldXY(redX, redY+120).unit = rMage;
     rMage.name = "Enemy Mage";
 
     for (var i = 0; i < friendlyUnits.length; i++) {
@@ -278,7 +298,7 @@ window.moveMenu = function() {
 
     if (currTile != null) { // check if current tile is valid (exists on map)
         if (currTile.properties.unitType != 0) { // if the tile actually holds a unit, carry on
-            if (currTile.unit.locked == false) { // if the unit is not locked, figure out what kind it is
+            if ((currTile.unit.locked == false) && (friendlyUnits.indexOf(currTile.unit) != -1)) { // if the unit is not locked, figure out what kind it is
 
                 // draw a spiffy looking gold square to represent a selected unit
                 selected.lineStyle(2, 0xffbf00, 1);
@@ -474,8 +494,18 @@ window.moveComplete = function(coordinates) {
     var currTile = map.getTile(x,y, background);
     var oldTile = map.getTile(coordinates[0], coordinates[1], background);
 
+    var request = new Object();
+    request.game_id = gameId;
+    request.request_id = 44;
+    request.type = "UnitMoveRequest";
+    request.unitId
+
+    var strReq = JSON.stringify(request);
+    connection.send(strReq);
+
     if (possibleTiles.indexOf(currTile) != -1) {
         if (!oldTile.unit.locked) {
+
             // set the unit's location to new tile
             oldTile.unit.x = currTile.worldX;
             oldTile.unit.y = currTile.worldY;
@@ -638,13 +668,20 @@ var Game = {
 
         cursor = game.add.graphics();
         cursor.lineStyle(2, 0xffffff, 1);
-        cursor.drawRect(1, 1, 58, 58);
+        
+        if(playerId == 1)
+            cursor.drawRect(1, 1, 58, 58);
+        else if(playerId == 2){
+            var x = map.widthInPixels-59;
+            var y = map.heightInPixels-179;
+            cursor.drawRect(1, 1, 58, 58);
+            cursor.x = x;
+            cursor.y = y;
+        }
 
         background.resizeWorld();
         game.physics.startSystem(Phaser.Physics.P2JS);
         map.setCollisionBetween(1, 2000, true, 'blockedLayer'); 
-
-        cursors = game.input.keyboard.createCursorKeys();
     },
 
     update : function() {

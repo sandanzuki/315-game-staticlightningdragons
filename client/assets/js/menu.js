@@ -1,5 +1,6 @@
 var clang, intro_music,
-    arrow; 
+    arrow,
+    response = new Object(); 
 
 var Menu = {
     preload : function() {
@@ -82,9 +83,7 @@ var Menu = {
 
     host : function() {
         connection = new WebSocket("ws://pulse.bitwisehero.com:13337", "rqs");
-        connection.onmessage = function(yas){console.log(yas);}
 
-        //window.alert(connection.readyState);
         connection.onopen = function() {            
             request = new Object();
             request.game_id = -2;
@@ -92,15 +91,18 @@ var Menu = {
             request.type = "AssignGameRequest";
                
             var strReq = JSON.stringify(request);
-            console.log(strReq);
             connection.send(strReq);
         };
-        this.state.start('Load');
+
+        connection.onmessage = function(yas){
+            console.log(yas); 
+            Menu.checkResponse(yas);
+        };
+
     },
 
     join : function(){
         connection = new WebSocket("ws://pulse.bitwisehero.com:13337", "rqs");
-        connection.onmessage = function(yas){console.log(yas);}
 
         connection.onopen = function() {
             request = new Object();
@@ -109,11 +111,42 @@ var Menu = {
             request.type = "AssignGameRequest";            
             
             var strReq = JSON.stringify(request);
-            console.log(request);
             connection.send(strReq);
         };
-        this.state.start('Load');
+
+        connection.onmessage = function(yas){
+            console.log(yas);
+            Menu.checkResponse(yas);
+        };
+
+    },
+
+    checkResponse : function(yas){
+        response = eval("("+yas.data+")");
+        if(response){
+            switch(response.type){
+                case("AssignGameEvent"):
+                    if(response.player_two_id == -1)
+                        playerId = 1;
+                    else{
+                        if(!playerId)
+                            playerId = 2;
+                    }
+                    gameId = response.gameId;
+                    this.state.start('Load');
+                    break;
+                case("StateChangeEvent"):
+                    this.state.start('Tutorial');
+                    break;
+                case("UnitMoveEvent"):
+                    console.log(response);
+                    break;
+
+            }
+        }
     }
 };
+
+
 
 

@@ -1,8 +1,10 @@
 // declare and initialize game
 var game = game || {};
 game.win = true;
-var connection;
-var request;
+var connection,
+ 	request,
+ 	playerId,
+ 	canMove;
 
 game = new Phaser.Game(900, 600, Phaser.AUTO,'');
 
