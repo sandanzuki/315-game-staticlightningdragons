@@ -10,12 +10,10 @@ Connection::Connection(int _playerId, lws *_socket_info)
 
 Connection::~Connection()
 {
-    send_mutex.lock();
     for(string *s = pop_outgoing_message(); s != NULL; s = pop_outgoing_message())
     {
         delete s;
     }
-    send_mutex.unlock();
 }
 
 void Connection::submit_outgoing_event(Event &event)

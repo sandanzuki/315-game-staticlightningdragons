@@ -1,5 +1,26 @@
 #include "Unit.hpp"
 
+UnitType string_to_unit_type(string st)
+{
+    if(st.compare("FIGHTER") == 0)
+    {
+        return FIGHTER;
+    }
+    if(st.compare("ARCHER") == 0)
+    {
+        return ARCHER;
+    }
+    if(st.compare("MAGE") == 0)
+    {
+        return MAGE;
+    }
+    if(st.compare("HEALER") == 0)
+    {
+        return HEALER;
+    }
+    return INVALID;
+}
+
 Unit::Unit(int _unit_id, UnitType _type, int _player_id)
 {
     unit_id = _unit_id;
@@ -9,10 +30,31 @@ Unit::Unit(int _unit_id, UnitType _type, int _player_id)
     max_health = 100;
     x = 0;
     y = 0;
+
+    // Set the move_distance based on type.
+    switch(type)
+    {
+        case FIGHTER:
+            move_distance = 4;
+            break;
+        case MAGE:
+            move_distance = 5;
+            break;
+        case ARCHER:
+        case HEALER:
+            move_distance = 6;
+            break;
+    }
 }
 
 bool Unit::interact(Unit *target)
 {
+    // Verify that the Unit hasn't interacted already.
+    if(interacted)
+    {
+        return false;
+    }
+
     // Verify second is within range of first.
     if(is_within_range(target))
     {
@@ -51,6 +93,10 @@ bool Unit::interact(Unit *target)
     {
         apply_damage(this, true);
     }
+
+    // Note that this Unit can no longer move or interact.
+    interacted = true;
+    moved = true;
 
     // If we've gotten here, everything was successful!
     return true;

@@ -76,7 +76,6 @@ int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
                 memset(response, 0, 4096);
                 strcpy((char*) response + LWS_PRE, out->c_str());
 
-                log->write("sending message!");
                 // Try to write the message...
                 if(lws_write(wsi, response + LWS_PRE, out->size(), LWS_WRITE_TEXT) == -1)
                 {
@@ -102,7 +101,7 @@ int network_thread()
     struct lws_context_creation_info info;
     memset(&info, 0, sizeof info);
     info.port = 13337; // a hard-coded port of magnificent importance
-    struct lws_protocols protocols[] = { {"rqs", callback_rqs, sizeof(int), 0,}, { NULL, NULL, 0, 0} };
+    struct lws_protocols protocols[] = { {"rqs", callback_rqs, sizeof(int), 2048,}, { NULL, NULL, 0, 0} };
     info.protocols = protocols;
 
     // Create the LWS context and verify that there were no errors.
@@ -152,13 +151,13 @@ NetworkManager::NetworkManager()
 NetworkManager::~NetworkManager()
 {
     // Delete any outstanding EventRequests.
-    nm_mutex.lock();
     for(EventRequest *r = pop_incoming_request(); r != NULL; r = pop_incoming_request())
     {
         delete r;
     }
 
     // Delete all Connections.
+    nm_mutex.lock();
     for(pair<int, Connection*> p : connections)
     {
         delete p.second;
@@ -168,12 +167,16 @@ NetworkManager::~NetworkManager()
 
 void NetworkManager::submit_incoming_message(int connection_id, std::string &message)
 {
+    log->write("[NET] DEBUG: Received message over network.\n");
+    log->write(message);
+    log->write("");
+
     EventRequest *r = new EventRequest();
     try
     {
         // try to create the JSON object and add the playerId
         stringstream(message) >> (*r);
-        (*r)["playerId"] = connection_id;
+        (*r)["player_id"] = connection_id;
 
         // Verify that the request is valid.
         if(!verify_general_request(r))
@@ -187,6 +190,13 @@ void NetworkManager::submit_incoming_message(int connection_id, std::string &mes
     {
         delete r;
         notify_invalid_request(get_connection(connection_id), NULL);
+        return;
+    }
+    catch(Json::LogicError exp)
+    {
+        delete r;
+        notify_invalid_request(get_connection(connection_id), NULL);
+        return;
     }
     nm_mutex.lock();
     recv_queue.push(r);
@@ -231,12 +241,14 @@ Connection *NetworkManager::get_connection(int id)
 
 void NetworkManager::kill_connection(int id)
 {
-    nm_mutex.lock();
-    if(get_connection(id) != NULL)
+    Connection *c = get_connection(id);
+    if(c != NULL)
     {
+        nm_mutex.lock();
         connections.erase(id);
+        delete c;
+        nm_mutex.unlock();
     }
-    nm_mutex.unlock();
 }
 
 Connection *NetworkManager::pop_new_connection()

@@ -14,8 +14,11 @@ enum UnitType
     FIGHTER,
     ARCHER,
     MAGE,
-    HEALER
+    HEALER,
+    INVALID
 };
+
+UnitType string_to_unit_type(string st);
 
 class Unit
 {
@@ -27,13 +30,18 @@ class Unit
         int get_unit_id() const { return unit_id; }
         UnitType get_type() const { return type; }
         int get_player_id() const { return player_id; }
+        int get_move_distance() const { return move_distance; }
         int get_remaining_health() const { return remaining_health; }
         int get_max_health() { return max_health; }
         int get_x() { return x; }
         int get_y() { return y; }
+        bool has_interacted() { return interacted; }
+        bool has_moved() { return moved; }
 
         // Setters
-        void set_position(int _x, int _y) {x = _x; y = _y; }
+        void new_turn() { interacted = false; moved = false; }
+        void set_position(int _x, int _y) { x = _x; y = _y; moved = true; }
+        void set_interacted() { interacted = true; }
 
         // Hit/Damage/Heal Calculations
         bool interact(Unit *target);    // TRUE if successful, FALSE if illegal
@@ -49,12 +57,15 @@ class Unit
         int unit_id;
         UnitType type;
         int player_id;
+        int move_distance;
 
         // Unit Gameplay Information
         int remaining_health;
         int max_health;
         int x;
         int y;
+        bool interacted;
+        bool moved;
 };
 
 #endif

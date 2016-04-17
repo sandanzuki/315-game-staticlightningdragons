@@ -1,7 +1,9 @@
 var GameOver = {
     preload : function() {
-        game.load.image('gameover', './assets/images/gameover.png');
-        game.load.image('arrow', './assets/images/arrow.png');
+        game.load.image('victory', './assets/images/victory.png');
+        game.load.image('defeat', './assets/images/defeat.png');
+        game.load.image('arrow_black', './assets/images/arrow_black.png');
+        game.load.image('arrow_white', './assets/images/arrow_white.png');
 
         // align canvas
         game.scale.pageAlignHorizontally = true;
@@ -9,9 +11,15 @@ var GameOver = {
     },
 
     create : function() {
-        this.add.sprite(0, 0, 'gameover'); // add background
-        arrow = this.add.sprite(300, 320, 'arrow');
-
+        if(game.win){
+            this.add.sprite(0, 0, 'victory'); // add background
+            arrow = this.add.sprite(280, 305, 'arrow_black');
+        }
+        else{
+            this.add.sprite(0, 0, 'defeat');
+            arrow = this.add.sprite(280, 305, 'arrow_white');
+        }
+        
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.start, this);
 
@@ -23,19 +31,16 @@ var GameOver = {
     },
 
     moveDown : function() {
-        if(arrow.y + 60 > 440)
-            arrow.y = 320;
+        if(arrow.y + 40 > 345)
+            arrow.y = 305;
         else
-            arrow.y += 60;
+            arrow.y += 40;
         switch(arrow.y){
-            case(320):
-                arrow.x = 300;
+            case(305):
+                arrow.x = 280;
                 break;
-            case(380):
-                arrow.x = 295;
-                break;
-            case(440):
-                arrow.x = 365;
+            case(345):
+                arrow.x = 260;
                 break;
             default:
                 break;
@@ -43,19 +48,16 @@ var GameOver = {
     },
 
     moveUp : function() {
-        if(arrow.y - 60<320) 
-            arrow.y = 440;
-        else 
-            arrow.y -= 60;
-        switch(arrow.y) {
-            case(320):
-                arrow.x = 300;
+        if(arrow.y - 40 < 305)
+            arrow.y = 345;
+        else
+            arrow.y -= 40;
+        switch(arrow.y){
+            case(305):
+                arrow.x = 280;
                 break;
-            case(380):
-                arrow.x = 295;
-                break;
-            case(440):
-                arrow.x = 365;
+            case(345):
+                arrow.x = 260;
                 break;
             default:
                 break;
@@ -64,13 +66,11 @@ var GameOver = {
 
     start : function() {
         switch(arrow.y){
-            case(320):
+            case(305):
                 // load another game, change game state
                 this.state.start('Load');
                 break;
-            case(380):
-                break;
-            case(440):
+            case(345):
                 // go to main menu, change game state
                 this.state.start('Menu');
                 break;

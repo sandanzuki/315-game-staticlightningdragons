@@ -40,7 +40,6 @@ var Tutorial = {
         layer3 = this.add.sprite(0, 0, 'layer3');
         layer2 = this.add.sprite(0, 0, 'layer2');
         layer = this.add.sprite(0, 0, 'layer');
-
         // flip between pages of tutorial
         nextButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         prevButton = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -48,12 +47,13 @@ var Tutorial = {
         prevButton.onDown.add(prevLayer, this);
         
         // skip tutorial
-        escapeButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-        escapeButton.onDown.add(this.startSelect, this);
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        enterButton.onDown.add(this.startSelect, this);
     },
 
     startSelect : function() {
         // start unit selection, change game state
-        this.state.start('Select');
+        counter = 0;
+        this.state.start('Username');
     }
 };
