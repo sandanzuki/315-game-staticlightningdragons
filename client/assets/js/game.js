@@ -1,5 +1,4 @@
 var game = game || {},
-    gameId,
     map,
     option,
     arrow,
@@ -25,7 +24,6 @@ var game = game || {},
 
 // load units onto tilemap
 window.loadUnits = function() {
-    console.log(playerId);
     var blueX, blueY,
         redX, redY;
     switch(playerId){
@@ -45,68 +43,70 @@ window.loadUnits = function() {
             break;
     }
 
-    // add all blue sprites to the map
-    bFighter1 = game.add.sprite(blueX, blueY,'b_fighter');
-    friendlyUnits.push(bFighter1); 
-    map.getTileWorldXY(blueX,blueY).properties.unitType = 1; 
-    map.getTileWorldXY(blueX,blueY).unit = bFighter1; 
-    bFighter1.maxHealth=100;
-    bFighter1.name = "Friendly Fighter";
-
-    bFighter2 = game.add.sprite(blueX, blueY+240,'b_fighter');
-    friendlyUnits.push(bFighter2);
-    map.getTileWorldXY(blueX,blueY+240).properties.unitType = 1;
-    map.getTileWorldXY(blueX,blueY+240).unit = bFighter2;
-    bFighter2.name = "Friendly Fighter";
-
-    bArcher1 = game.add.sprite(blueX, blueY+60,'b_archer');
-    friendlyUnits.push(bArcher1);
-    map.getTileWorldXY(blueX, blueY+60).properties.unitType = 2;
-    map.getTileWorldXY(blueX, blueY+60).unit = bArcher1;
-    bArcher1.name = "Friendly Archer";
-
-    bArcher2 = game.add.sprite(blueX, blueY+180,'b_archer');
-    friendlyUnits.push(bArcher2);
-    map.getTileWorldXY(blueX, blueY+180).properties.unitType = 2;
-    map.getTileWorldXY(blueX, blueY+180).unit = bArcher2;
-    bArcher2.name = "Friendly Archer";
-
-    bMage = game.add.sprite(blueX, blueY+120,'b_mage');
-    friendlyUnits.push(bMage);
-    map.getTileWorldXY(blueX, blueY+120).properties.unitType = 3;
-    map.getTileWorldXY(blueX, blueY+120).unit = bMage;
-    bMage.name = "Friendly Mage";
+    //add all blue sprites to the map
+    for(var i = 0; i<=4; i++){
+        switch(units[i]){
+            case "FIGHTER":
+                bFighter = game.add.sprite(blueX, blueY,'b_fighter');
+                map.getTileWorldXY(blueX,blueY).properties.unitType = 1; 
+                map.getTileWorldXY(blueX,blueY).unit = bFighter; 
+                bFighter.maxHealth=100;
+                bFighter.name = "Friendly Fighter";
+                friendlyUnits.push(bFighter); 
+                break;
+            case "ARCHER":
+                bArcher = game.add.sprite(blueX, blueY,'b_archer');
+                map.getTileWorldXY(blueX, blueY).properties.unitType = 2;
+                map.getTileWorldXY(blueX, blueY).unit = bArcher;
+                bArcher.name = "Friendly Archer";
+                friendlyUnits.push(bArcher);
+                break;
+            case "MAGE":
+                bMage = game.add.sprite(blueX, blueY,'b_mage');
+                friendlyUnits.push(bMage);
+                map.getTileWorldXY(blueX, blueY).properties.unitType = 3;
+                map.getTileWorldXY(blueX, blueY).unit = bMage;
+                bMage.name = "Friendly Mage";
+                break;
+            case "HEALER":
+                break;
+            default:
+                break;
+        }
+        blueY += 60;
+    }
 
     // add all red sprites to the map
-    rFighter1 = game.add.sprite(redX, redY, 'r_fighter');
-    enemyUnits.push(rFighter1);
-    map.getTileWorldXY(redX, redY).properties.unitType = 1;
-    map.getTileWorldXY(redX, redY).unit = rFighter1;
-    rFighter1.name = "Enemy Fighter";
-
-    rFighter2 = game.add.sprite(redX, redY+240, 'r_fighter');
-    enemyUnits.push(rFighter2);
-    map.getTileWorldXY(redX, redY+240).properties.unitType = 1;
-    map.getTileWorldXY(redX, redY+240).unit = rFighter2;
-    rFighter2.name = "Enemy Fighter";
-
-    rArcher1 = game.add.sprite(redX, redY+60, 'r_archer');
-    enemyUnits.push(rArcher1);
-    map.getTileWorldXY(redX, redY+60).properties.unitType = 2
-    map.getTileWorldXY(redX, redY+60).unit = rArcher1;
-    rArcher1.name = "Enemy Archer";
-
-    rArcher2 = game.add.sprite(redX, redY+180, 'r_archer');
-    enemyUnits.push(rArcher2);
-    map.getTileWorldXY(redX, redY+180).properties.unitType = 2;
-    map.getTileWorldXY(redX, redY+180).unit = rArcher2;
-    rArcher2.name = "Enemy Archer";
-
-    rMage = game.add.sprite(redX, redY+120, 'r_mage');
-    enemyUnits.push(rMage);
-    map.getTileWorldXY(redX, redY+120).properties.unitType = 3;
-    map.getTileWorldXY(redX, redY+120).unit = rMage;
-    rMage.name = "Enemy Mage";
+    for(var i = 1; i<=5; i++){
+        switch(otherUnits[i].type){
+            case "FIGHTER":
+                rFighter = game.add.sprite(redX, redY, 'r_fighter');
+                enemyUnits.push(rFighter);
+                map.getTileWorldXY(redX, redY).properties.unitType = 1;
+                map.getTileWorldXY(redX, redY).unit = rFighter;
+                rFighter.name = "Enemy Fighter";
+                break;
+            case "ARCHER":
+                rArcher = game.add.sprite(redX, redY, 'r_archer');
+                enemyUnits.push(rArcher);
+                map.getTileWorldXY(redX, redY).properties.unitType = 2
+                map.getTileWorldXY(redX, redY).unit = rArcher;
+                rArcher.name = "Enemy Archer";
+                break;
+            case "MAGE":
+                rMage = game.add.sprite(redX, redY, 'r_mage');
+                enemyUnits.push(rMage);
+                map.getTileWorldXY(redX, redY).properties.unitType = 3;
+                map.getTileWorldXY(redX, redY).unit = rMage;
+                rMage.name = "Enemy Mage";
+                break;
+            case "HEALER":
+                break;
+            default:
+                break;
+        }
+        redY += 60;
+    }
 
     for (var i = 0; i < friendlyUnits.length; i++) {
         friendlyUnits[i].maxHealth = 100;
