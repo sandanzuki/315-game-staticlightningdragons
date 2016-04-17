@@ -151,13 +151,13 @@ var Menu = {
                     break;
                 case("AllUnitsSelectedEvent"):
                     console.log(response);
-                    if(playerId = 1){
+                    if(playerId == 1){
                         otherUnits = response.player_two;
                     }
-                    else if(playerId = 2){
+                    else if(playerId == 2){
                         otherUnits = response.player_one;
                     }
-                    //this.state.start('Game');
+                    this.state.start('Game');
                     break;
                 case("UnitMoveEvent"):
                     console.log(response);
