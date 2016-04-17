@@ -8,7 +8,6 @@ var connection,
 
 game = new Phaser.Game(900, 600, Phaser.AUTO,'');
 
-
 // states of game
 game.state.add('Menu', Menu);
 game.state.add('Load', Load);

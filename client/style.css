@@ -12,6 +12,10 @@
     opacity: 0.75; /* fx, safari, opera */
 }
 
+h1 {
+    font-family: 'Press Start 2P', cursive;
+}
+
 body {
     background-color: #000000
 }
@@ -24,5 +28,6 @@ body {
     /*float: right;*/
     font-family: verdana;
 }
+
 
 * {cursor: none;}

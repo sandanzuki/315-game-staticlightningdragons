@@ -1,11 +1,5 @@
-// var username = []; 
-//var username,
- //   bmd; 
-
-window.print = function() {
-    for(var i = 0; i < 10; i++)
-        window.alert(username[i]); 
-}
+var username,
+    wordcount = 0;
 
 var Username = {
     preload : function() {
@@ -19,15 +13,13 @@ var Username = {
     create : function() {
         this.add.sprite(0, 0, 'select');
 
-       username = game.add.text(game.world.centerX, game.world.centerY, "", {
-            font: "65px Arial",
+        username = game.add.text(game.world.centerX-100, game.world.centerY, "", {
+            font: "Press Start 2P",
             fill: "#ffffff",
             align: "center"
         });
-        //  Capture all key presses
-        // game.input.keyboard.addCallbacks(this, null, null, keyPress);
 
-
+        // active key input
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         deleteButton = game.input.keyboard.addKey(Phaser.Keyboard.BACKSPACE);
 
@@ -68,90 +60,317 @@ var Username = {
         return8 = game.input.keyboard.addKey(Phaser.Keyboard.EIGHT);
         return9 = game.input.keyboard.addKey(Phaser.Keyboard.NINE);
 
+        // map key to function 
         enterButton.onDown.add(this.startGame, this);
-        deleteButton.onDown.add(this.startGame, this);
+        deleteButton.onDown.add(this.deleteChar, this);
 
-        returnA.onDown.add(this.pushA, this); 
-        returnB.onDown.add(this.pushB, this); 
-        returnC.onDown.add(this.pushC, this); 
-        returnD.onDown.add(this.pushD, this); 
-        returnE.onDown.add(this.pushE, this); 
-        returnF.onDown.add(this.pushF, this); 
-        returnG.onDown.add(this.pushG, this); 
-        returnH.onDown.add(this.pushH, this); 
-        returnI.onDown.add(this.pushI, this); 
-        returnJ.onDown.add(this.pushJ, this); 
-        returnK.onDown.add(this.pushK, this); 
-        returnL.onDown.add(this.pushL, this); 
-        returnM.onDown.add(this.pushM, this); 
-        returnN.onDown.add(this.pushN, this); 
-        returnO.onDown.add(this.pushO, this); 
-        returnP.onDown.add(this.pushP, this); 
-        returnQ.onDown.add(this.pushQ, this); 
-        returnR.onDown.add(this.pushR, this); 
-        returnS.onDown.add(this.pushS, this); 
-        returnT.onDown.add(this.pushT, this); 
-        returnU.onDown.add(this.pushU, this); 
-        returnV.onDown.add(this.pushV, this); 
-        returnW.onDown.add(this.pushW, this); 
-        returnX.onDown.add(this.pushX, this); 
-        returnY.onDown.add(this.pushY, this); 
-        returnZ.onDown.add(this.pushZ, this); 
+        returnA.onDown.add(this.push_A, this); 
+        returnB.onDown.add(this.push_B, this); 
+        returnC.onDown.add(this.push_C, this); 
+        returnD.onDown.add(this.push_D, this); 
+        returnE.onDown.add(this.push_E, this); 
+        returnF.onDown.add(this.push_F, this); 
+        returnG.onDown.add(this.push_G, this); 
+        returnH.onDown.add(this.push_H, this); 
+        returnI.onDown.add(this.push_I, this); 
+        returnJ.onDown.add(this.push_J, this); 
+        returnK.onDown.add(this.push_K, this); 
+        returnL.onDown.add(this.push_L, this); 
+        returnM.onDown.add(this.push_M, this); 
+        returnN.onDown.add(this.push_N, this); 
+        returnO.onDown.add(this.push_O, this); 
+        returnP.onDown.add(this.push_P, this); 
+        returnQ.onDown.add(this.push_Q, this); 
+        returnR.onDown.add(this.push_R, this); 
+        returnS.onDown.add(this.push_S, this); 
+        returnT.onDown.add(this.push_T, this); 
+        returnU.onDown.add(this.push_U, this); 
+        returnV.onDown.add(this.push_V, this); 
+        returnW.onDown.add(this.push_W, this); 
+        returnX.onDown.add(this.push_X, this); 
+        returnY.onDown.add(this.push_Y, this); 
+        returnZ.onDown.add(this.push_Z, this); 
 
-        return0.onDown.add(this.push0, this); 
-        return1.onDown.add(this.push1, this); 
-        return2.onDown.add(this.push2, this); 
-        return3.onDown.add(this.push3, this); 
-        return4.onDown.add(this.push4, this); 
-        return5.onDown.add(this.push5, this); 
-        return6.onDown.add(this.push6, this); 
-        return7.onDown.add(this.push7, this); 
-        return8.onDown.add(this.push8, this); 
-        return9.onDown.add(this.push9, this); 
+        return0.onDown.add(this.push_0, this); 
+        return1.onDown.add(this.push_1, this); 
+        return2.onDown.add(this.push_2, this); 
+        return3.onDown.add(this.push_3, this); 
+        return4.onDown.add(this.push_4, this); 
+        return5.onDown.add(this.push_5, this); 
+        return6.onDown.add(this.push_6, this); 
+        return7.onDown.add(this.push_7, this); 
+        return8.onDown.add(this.push_8, this); 
+        return9.onDown.add(this.push_9, this); 
     },
 
-    pushA : function() {username.text = username.text.concat("a")},
-    pushB : function() {username.text = username.text.concat("b")},
-    pushC : function() {username.text = username.text.concat("c")},
-    pushD : function() {username.push("d")},
-    pushE : function() {username.push("e")},
-    pushF : function() {username.push("f")},
-    pushG : function() {username.push("g")},
-    pushH : function() {username.push("h")},
-    pushI : function() {username.push("i")},
-    pushJ : function() {username.push("j")},
-    pushK : function() {username.push("k")},
-    pushL : function() {username.push("l")},
-    pushM : function() {username.push("m")},
-    pushN : function() {username.push("n")},
-    pushO : function() {username.push("o")},
-    pushP : function() {username.push("p")},
-    pushQ : function() {username.push("q")},
-    pushR : function() {username.push("r")},
-    pushS : function() {username.push("s")},
-    pushT : function() {username.push("t")},
-    pushU : function() {username.push("u")},
-    pushV : function() {username.push("v")},
-    pushW : function() {username.push("w")},
-    pushX : function() {username.push("x")},
-    pushY : function() {username.push("y")},
-    pushZ : function() {username.push("z")},
+    // mapped functions
+    push_A : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("a"); 
+            wordcount++;
+        }
+    },
 
-    push0 : function() {username.push("0")},
-    push1 : function() {username.push("1")},
-    push2 : function() {username.push("2")},
-    push3 : function() {username.push("3")},
-    push4 : function() {username.push("4")},
-    push5 : function() {username.push("5")},
-    push6 : function() {username.push("6")},
-    push7 : function() {username.push("7")},
-    push8 : function() {username.push("8")},
-    push9 : function() {username.push("9")},
+    push_B : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("b"); 
+            wordcount++;
+        }
+    },
 
-     
+    push_C : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("c"); 
+            wordcount++;
+        }
+    },
+
+    push_D : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("d"); 
+            wordcount++;
+        }
+    },
+
+    push_E : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("e"); 
+            wordcount++;
+        }
+    },
+
+    push_F : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("f"); 
+            wordcount++;
+        }
+    },
+
+    push_G : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("g"); 
+            wordcount++;
+        }
+    },
+
+    push_H : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("h"); 
+            wordcount++;
+        }
+    },
+
+    push_I : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("i"); 
+            wordcount++;
+        }
+    },
+
+    push_J : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("j"); 
+            wordcount++;
+        }
+    },
+
+    push_K : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("k"); 
+            wordcount++;
+        }
+    },
+
+    push_L : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("l"); 
+            wordcount++;
+        }
+    },
+
+    push_M : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("m"); 
+            wordcount++;
+        }
+    },
+
+    push_N : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("n"); 
+            wordcount++;
+        }
+    },
+
+    push_O : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("o"); 
+            wordcount++;
+        }
+    },
+
+    push_P : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("p"); 
+            wordcount++;
+        }
+    },
+
+    push_Q : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("q"); 
+            wordcount++;
+        }
+    },
+
+    push_R : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("r"); 
+            wordcount++;
+        }
+    },
+
+    push_S : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("s"); 
+            wordcount++;
+        }
+    },
+
+    push_T : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("t"); 
+            wordcount++;
+        }
+    },
+
+    push_U : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("u"); 
+            wordcount++;
+        }
+    },
+
+    push_V : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("v"); 
+            wordcount++;
+        }
+    },
+
+    push_W : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("w"); 
+            wordcount++;
+        }
+    },
+
+    push_X : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("x"); 
+            wordcount++;
+        }
+    },
+
+    push_Y : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("y"); 
+            wordcount++;
+        }
+    },
+
+    push_Z : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("z"); 
+            wordcount++;
+        }
+    },
+
+    push_0 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("0"); 
+            wordcount++;
+        }
+    },
+
+    push_1 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("1"); 
+            wordcount++;
+        }
+    },
+
+    push_2 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("2"); 
+            wordcount++;
+        }
+    },
+
+    push_3 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("3"); 
+            wordcount++;
+        }
+    },
+
+    push_4 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("4"); 
+            wordcount++;
+        }
+    },
+
+    push_5 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("5"); 
+            wordcount++;
+        }
+    },
+
+    push_6 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("6"); 
+            wordcount++;
+        }
+    },
+
+    push_7 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("7"); 
+            wordcount++;
+        }
+    },
+
+    push_8 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("8"); 
+            wordcount++;
+        }
+    },
+
+    push_9 : function() {
+        if(wordcount < 15) {
+            username.text = username.text.concat("9"); 
+            wordcount++;
+        }
+    },
+
+    // clear username 
+    deleteChar: function() {
+        wordcount = 0;
+        username.destroy();
+        username = game.add.text(game.world.centerX-100, game.world.centerY, "", {
+            //font: "65px Helvetica",
+            font: "Press Start 2P",
+            fill: "#ffffff",
+            align: "center"
+        });
+    },
+
+    // to next state
     startGame : function() {
-        // print();
-        // bmd.draw(username, game.world.randomX, game.world.randomY, null, null, 'destination-out');
+        console.log(username);  // for checking if string username stores
         this.state.start('Select');
     }
 };
