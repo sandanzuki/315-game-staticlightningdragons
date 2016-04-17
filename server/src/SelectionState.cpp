@@ -5,7 +5,7 @@ void SelectionState::handle_request(Player *p, EventRequest *r)
 {
     // There's really only one thing we're worried about...
     string type = (*r)["type"].asString();
-    if(type.compare("UnitMoveRequest") == 0)
+    if(type.compare("UnitSelectionRequest") == 0)
     {
         handle_unit_selection(p, r);
     }
