@@ -39,7 +39,6 @@ var Tutorial = {
         layer3 = this.add.sprite(0, 0, 'layer3');
         layer2 = this.add.sprite(0, 0, 'layer2');
         layer = this.add.sprite(0, 0, 'layer');
-
         // flip between pages of tutorial
         nextButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         prevButton = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
