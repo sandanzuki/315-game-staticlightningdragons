@@ -25,7 +25,7 @@ class Unit
 {
     public:
         // Constructor
-        Unit(int _unit_id, UnitType _type, int _player_id);
+        Unit(int _unit_id, UnitType _type, int _player_id, int x, int y);
 
         // Getters
         int get_unit_id() const { return unit_id; }

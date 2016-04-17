@@ -63,16 +63,30 @@ void SelectionState::handle_unit_selection(Player *p, EventRequest *r)
         }
     }
 
+    // Setup the initial positions. TODO - MAKE THIS DYNAMIC LATER
+    // Player 1/2, Unit 1-5, X/Y
+    int pos[2][5][2] = {
+    {{0,0},
+    {0,1},
+    {0,2},
+    {0,3},
+    {0,4}},
+    {{14,3},
+    {14,4},
+    {14,5},
+    {14,6},
+    {14,7}}};
+
     // Go ahead and create the units.
     for(int i = 0; i < 5; ++i)
     {
         if(p == player_one)
         {
-            units_one.push_back(new Unit(units_one.size(), types[i], p->get_player_id()));
+            units_one.push_back(new Unit(units_one.size(), types[i], p->get_player_id(), pos[0][i][0], pos[0][i][1]));
         }
         else
         {
-            units_two.push_back(new Unit(units_two.size(), types[i], p->get_player_id()));
+            units_two.push_back(new Unit(units_two.size(), types[i], p->get_player_id(), pos[0][i][0], pos[0][i][1]));
         }
     }
 
