@@ -14,9 +14,9 @@ var Username = {
         this.add.sprite(0, 0, 'select');
 
         username = game.add.text(game.world.centerX-100, game.world.centerY, "", {
-            font: "Press Start 2P",
-            fill: "#ffffff",
-            align: "center"
+            font: "60px PressStart2P",
+            align: "center",
+            fill: "#ffffff"
         });
 
         // active key input
@@ -361,10 +361,9 @@ var Username = {
         wordcount = 0;
         username.destroy();
         username = game.add.text(game.world.centerX-100, game.world.centerY, "", {
-            //font: "65px Helvetica",
-            font: "Press Start 2P",
-            fill: "#ffffff",
-            align: "center"
+            font: "60px PressStart2P",
+            align: "center",
+            fill: "#ffffff"
         });
     },
 

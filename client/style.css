@@ -12,12 +12,8 @@
     opacity: 0.75; /* fx, safari, opera */
 }
 
-h1 {
-    font-family: 'Press Start 2P', cursive;
-}
-
 body {
-    background-color: #000000
+    background-color: #000000;
 }
 
 #stats {
@@ -28,6 +24,5 @@ body {
     /*float: right;*/
     font-family: verdana;
 }
-
 
 * {cursor: none;}
