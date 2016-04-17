@@ -20,6 +20,8 @@ bool SelectionState::tick(double tick)
     // If both players have selected units, we're done!
     if(!units_one.empty() && !units_two.empty())
     {
+        // Don't forget to tell the Players which units are which.
+        notify_all_units();
         return false;
     }
     
@@ -85,5 +87,44 @@ void SelectionState::notify_select_units(Player *p, EventRequest *r)
     notify["game_id"] = game_id;
     notify["request_id"] = (*r)["request_id"];
     notify["player_id"] = p->get_player_id();
+    send_all_players(notify);
+}
+
+void SelectionState::notify_all_units()
+{
+    // Build the Json::Value with the first player's units.
+    Json::Value player_one;
+    for(int i = 0; i < units_one.size(); ++i)
+    {
+        Json::Value unit;
+        unit["type"] = units_one[i]->get_type_string();
+        unit["hp"] = units_one[i]->get_max_health();
+        unit["x"] = units_one[i]->get_x();
+        unit["y"] = units_one[i]->get_y();
+        unit["id"] = i;
+        unit["speed"] = units_one[i]->get_move_distance();
+        player_one[i + 1] = unit;
+    }
+
+    // Now the second!
+    Json::Value player_two;
+    for(int i = 0; i < units_two.size(); ++i)
+    {
+        Json::Value unit;
+        unit["type"] = units_two[i]->get_type_string();
+        unit["hp"] = units_two[i]->get_max_health();
+        unit["x"] = units_two[i]->get_x();
+        unit["y"] = units_two[i]->get_y();
+        unit["id"] = i;
+        unit["speed"] = units_two[i]->get_move_distance();
+        player_two[i + 1] = unit;
+    }
+
+    // Now create the Event and add this information.
+    Event notify;
+    notify["type"] = string("AllUnitsSelectedEvent");
+    notify["game_id"] = game_id;
+    notify["player_one"] = player_one;
+    notify["player_two"] = player_two;
     send_all_players(notify);
 }

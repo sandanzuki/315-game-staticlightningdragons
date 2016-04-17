@@ -21,6 +21,22 @@ UnitType string_to_unit_type(string st)
     return INVALID;
 }
 
+string unit_type_to_string(UnitType type)
+{
+    switch(type)
+    {
+        case FIGHTER:
+            return "FIGHTER";
+        case ARCHER:
+            return "ARCHER";
+        case MAGE:
+            return "MAGE";
+        case HEALER:
+            return "HEALER";
+    }
+    return "INVALID";
+}
+
 Unit::Unit(int _unit_id, UnitType _type, int _player_id)
 {
     unit_id = _unit_id;
