@@ -14,5 +14,12 @@ var Load = {
         // that is, when another player is connected, it is
         // done "loading" and can go on to the next state
         this.add.sprite(0, 0, 'load'); // add background
+
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        enterButton.onDown.add(this.check, this);
+    },
+
+    check : function() {
+        window.alert(playerId);
     }
 };

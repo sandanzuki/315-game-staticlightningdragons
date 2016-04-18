@@ -112,9 +112,11 @@ window.loadUnits = function() {
         friendlyUnits[i].maxHealth = 100;
         friendlyUnits[i].locked = false;
         friendlyUnits[i].friendly = true;
+        friendlyUnits[i].id = i;
         enemyUnits[i].maxHealth = 100;
         enemyUnits[i].locked = false;
         enemyUnits[i].friendly = false;
+        enemyUnits[i].id = i;
     }
 }
 
@@ -497,9 +499,12 @@ window.moveComplete = function(coordinates) {
     request.game_id = gameId;
     request.request_id = 44;
     request.type = "UnitMoveRequest";
-    request.unitId
+    request.unitId = oldTile.unit.id;
+    request.x = x;
+    request.y = y;
 
     var strReq = JSON.stringify(request);
+    console.log(strReq);
     connection.send(strReq);
 
     if (possibleTiles.indexOf(currTile) != -1) {
@@ -681,7 +686,6 @@ var Game = {
         background.resizeWorld();
         game.physics.startSystem(Phaser.Physics.P2JS);
         map.setCollisionBetween(1, 2000, true, 'blockedLayer'); 
-        window.alert(otherUnits[0].type);
     },
 
     update : function() {
