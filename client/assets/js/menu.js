@@ -95,7 +95,6 @@ var Menu = {
         };
 
         connection.onmessage = function(yas){
-            console.log(yas); 
             Menu.checkResponse(yas);
         };
 
@@ -115,7 +114,6 @@ var Menu = {
         };
 
         connection.onmessage = function(yas){
-            console.log(yas);
             Menu.checkResponse(yas);
         };
 
@@ -126,22 +124,47 @@ var Menu = {
         if(response){
             switch(response.type){
                 case("AssignGameEvent"):
-                    if(response.player_two_id == -1)
+                    console.log(response);
+                    if(response.player_two_id == -1){
                         playerId = 1;
-                    else{
-                        if(!playerId)
-                            playerId = 2;
+                        playerServerId = response.player_one_id;
                     }
-                    gameId = response.gameId;
+                    else{
+                        if(!playerId){
+                            playerId = 2;
+                            playerServerId = response.player_two_id;
+                        }
+                    }
+                    gameId = response.game_id;
                     this.state.start('Load');
                     break;
                 case("StateChangeEvent"):
-                    this.state.start('Tutorial');
+                    console.log(response);
+                    if(response.state == "SELECTION"){
+                        this.state.start('Tutorial');
+                    }
+                    break;
+                case("SelectUnitsEvent"):
+                    console.log(response);
+                    if(response.player_id == playerServerId)
+                        this.state.start('Load');
+                    break;
+                case("AllUnitsSelectedEvent"):
+                    console.log(response);
+                    if(playerId == 1){
+                        otherUnits = response.player_two;
+                    }
+                    else if(playerId == 2){
+                        otherUnits = response.player_one;
+                    }
+                    this.state.start('Game');
                     break;
                 case("UnitMoveEvent"):
                     console.log(response);
                     break;
-
+                default:
+                    console.log(response);
+                    break;
             }
         }
     }

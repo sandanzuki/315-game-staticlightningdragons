@@ -27,6 +27,7 @@ class SelectionState : public GameState
     private:
         void handle_unit_selection(Player *p, EventRequest *r);
         void notify_select_units(Player *p, EventRequest *r);
+        void notify_all_units();
 
         vector<Unit*> units_one;
         vector<Unit*> units_two;

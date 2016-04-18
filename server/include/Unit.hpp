@@ -19,16 +19,18 @@ enum UnitType
 };
 
 UnitType string_to_unit_type(string st);
+string unit_type_to_string(UnitType type);
 
 class Unit
 {
     public:
         // Constructor
-        Unit(int _unit_id, UnitType _type, int _player_id);
+        Unit(int _unit_id, UnitType _type, int _player_id, int x, int y);
 
         // Getters
         int get_unit_id() const { return unit_id; }
         UnitType get_type() const { return type; }
+        string get_type_string() const { return unit_type_to_string(type); }
         int get_player_id() const { return player_id; }
         int get_move_distance() const { return move_distance; }
         int get_remaining_health() const { return remaining_health; }

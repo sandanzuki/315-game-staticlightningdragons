@@ -21,15 +21,31 @@ UnitType string_to_unit_type(string st)
     return INVALID;
 }
 
-Unit::Unit(int _unit_id, UnitType _type, int _player_id)
+string unit_type_to_string(UnitType type)
+{
+    switch(type)
+    {
+        case FIGHTER:
+            return "FIGHTER";
+        case ARCHER:
+            return "ARCHER";
+        case MAGE:
+            return "MAGE";
+        case HEALER:
+            return "HEALER";
+    }
+    return "INVALID";
+}
+
+Unit::Unit(int _unit_id, UnitType _type, int _player_id, int _x, int _y)
 {
     unit_id = _unit_id;
     type = _type;
     player_id = _player_id;
     remaining_health = 100;
     max_health = 100;
-    x = 0;
-    y = 0;
+    x = _x;
+    y = _y;
 
     // Set the move_distance based on type.
     switch(type)
