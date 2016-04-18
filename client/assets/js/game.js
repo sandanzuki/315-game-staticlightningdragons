@@ -611,7 +611,6 @@ window.skip = function() {
 }
 
 var Game = { 
-var Game = { 
     preload : function() {
          // load map
         game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);

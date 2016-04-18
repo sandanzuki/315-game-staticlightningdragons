@@ -13,11 +13,13 @@ var Username = {
     create : function() {
         this.add.sprite(0, 0, 'select');
 
-        username = game.add.text(game.world.centerX-100, game.world.centerY, "", {
-            font: "60px PressStart2P",
-            align: "center",
+        username = game.add.text(game.world.centerX-225, game.world.centerY, "", {
+            font: "75px Playfair Display",
+            boundsAlignH: "center",
+            boundsAlignV: "middle",
             fill: "#ffffff"
         });
+        username.setTextBounds(0, 0, 450, 100);
 
         // active key input
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
@@ -360,11 +362,13 @@ var Username = {
     deleteChar: function() {
         wordcount = 0;
         username.destroy();
-        username = game.add.text(game.world.centerX-100, game.world.centerY, "", {
-            font: "60px PressStart2P",
-            align: "center",
+        username = game.add.text(game.world.centerX-225, game.world.centerY, "", {
+            font: "75px Playfair Display",
+            boundsAlignH: "center",
+            boundsAlignV: "middle",
             fill: "#ffffff"
         });
+        username.setTextBounds(0, 0, 450, 100);
     },
 
     // to next state
