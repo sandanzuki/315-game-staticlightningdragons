@@ -11,7 +11,7 @@ PlayingState::PlayingState(LogWriter *log, int _game_id, Player *_player_one, Pl
     map = _map;
     state_name = PLAYING;
     player_turn = 1;
-    handle_turn_change(NULL);
+    handle_turn_change();
 }
 
 PlayingState::~PlayingState()
@@ -72,7 +72,7 @@ bool PlayingState::tick(double time)
     }
     if(turn_complete)
     {
-        handle_turn_change(NULL);
+        handle_turn_change();
     }
 
     // If one of the Players has no living Units, then we're done!
@@ -101,7 +101,7 @@ bool PlayingState::tick(double time)
     }
 }
 
-void PlayingState::handle_turn_change(EventRequest *r)
+void PlayingState::handle_turn_change()
 {
     if(player_turn == 1)
     {
@@ -111,7 +111,7 @@ void PlayingState::handle_turn_change(EventRequest *r)
     {
         player_turn = 1;
     }
-    notify_turn_change(r);
+    notify_turn_change();
 }
 
 void PlayingState::handle_unit_interact(Player *p, EventRequest *r)
@@ -234,7 +234,7 @@ void PlayingState::handle_unit_move(Player *p, EventRequest *r)
     notify_unit_move(r, unit);
 }
 
-void PlayingState::notify_turn_change(EventRequest *r)
+void PlayingState::notify_turn_change()
 {
     // Change the player_turn.
     if (player_turn == 1)
@@ -250,10 +250,6 @@ void PlayingState::notify_turn_change(EventRequest *r)
     Event notify;
     notify["type"] = string("TurnChangeEvent");
     notify["game_id"] = game_id;
-    if(r != NULL)
-    {
-        notify["request_id"] = (*r)["request_id"];
-    }
     notify["player_turn"] = player_turn;
 
     // Send to all connected players.

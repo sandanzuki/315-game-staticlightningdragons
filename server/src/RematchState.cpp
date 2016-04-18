@@ -6,6 +6,7 @@ RematchState::RematchState(LogWriter *log, int game_id, Player *player_one, Play
 {
     player_one_accepted = false;
     player_two_accepted = false;
+    state_name = REMATCH;
 }
 
 void RematchState::handle_request(Player *p, EventRequest *r)
