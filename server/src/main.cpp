@@ -144,8 +144,6 @@ int main(int argc, char **argv)
                 // First notify the Game.
                 games[p->get_game_id()]->handle_request(p, r);
 
-                // TODO make it so that a disconnection automatically triggers this.
-
                 // Then disconnect/delete the Player.
                 nm.kill_connection(p->get_player_id());
                 players.erase(p->get_player_id());
