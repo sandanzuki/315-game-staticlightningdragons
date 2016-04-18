@@ -24,6 +24,9 @@ var Menu = {
         // intro_music = game.add.audio('intro');
         // intro_music.loopFull();
 
+        toButton = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        toButton.onDown.add(this.startLoad, this);
+
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.select, this);
 
@@ -167,6 +170,11 @@ var Menu = {
                     break;
             }
         }
+    },
+
+    startLoad : function() {
+        // start unit selection, change game state
+        this.state.start('Load');
     }
 };
 

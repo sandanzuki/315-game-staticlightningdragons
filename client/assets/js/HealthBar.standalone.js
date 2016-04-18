@@ -29,6 +29,7 @@ var HealthBar = function(game, providedConfig) {
     this.drawHealthBar();
     this.setFixedToCamera(this.config.isFixedToCamera);
 };
+
 HealthBar.prototype.constructor = HealthBar;
 
 HealthBar.prototype.setupConfiguration = function (providedConfig) {

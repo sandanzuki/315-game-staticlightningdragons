@@ -663,18 +663,26 @@ var Game = {
         blocked.scrollFactorY = 0;
 
         var barConfig = {
-            width: 100,
-            height: 10,
-            x: 0,
-            y: 0,
-            bg: {color: '#ff4d4d'},
-            bar: {color: '#33ff33'},
+            width: 250,
+            height: 40,
+            x: 10,
+            y: 150,
+            bg: {color: '#FF4D4D'},
+            bar: {color: '#33FF33'},
             animationDuration: 2000,
-            flipped: false
+            flipped: false 
         };
 
         this.myHealthBar = new HealthBar(this.game, barConfig);
-        this.myHealthBar.setPercent(50); 
+        //this.myHealthBar = new HealthBar(this.game, {x:200, y:200, width:120});
+        this.myHealthBar2 = new HealthBar(this.game, {x:150, y:150, width:200});
+
+        returnA = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        returnA.onDown.add(this.my_hit, this); 
+
+        returnB = game.input.keyboard.addKey(Phaser.Keyboard.B);
+        returnB.onDown.add(this.my_hit2, this); 
+
         //bg music can go here when ready
         //battle_music = game.add.audio('battle');
         //battle_music.loopFull();
@@ -718,5 +726,8 @@ var Game = {
         enterButton.onDown.add(choosingMove, this);
         pauseButton.onDown.add(pauseGame, this);
         skipButton.onDown.add(skip, this);
-    }
+    },
+
+    my_hit : function() { this.myHealthBar.setPercent(50); },
+    my_hit2 : function() { this.myHealthBar2.setPercent(50); }
 };
