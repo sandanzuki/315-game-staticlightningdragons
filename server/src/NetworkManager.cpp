@@ -37,14 +37,18 @@ int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
             log->write(output_buffer);
             break;
 
-        // connection has been closed
+            // connection has been closed
         case LWS_CALLBACK_CLOSED:
-            nm->kill_connection(*id);
-            sprintf(output_buffer, "[NET] INFO: Player with ID %d has disconnected connected.", *id);
-            log->write(output_buffer);
-            return -1;
+            {
+                // Pass this information back to the NetworkManager and it will take care of this.
+                string quit("{\"type\": \"PlayerQuitRequest\"}");
+                nm->submit_incoming_message(*id, quit);
+                sprintf(output_buffer, "[NET] INFO: Player with ID %d has disconnected.", *id);
+                log->write(output_buffer);
+                return -1;
+            }
 
-        // data has been received over the connection
+            // data has been received over the connection
         case LWS_CALLBACK_RECEIVE:
             {
                 string recvst((const char*) in, len);
@@ -52,7 +56,7 @@ int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
             }
             break;
 
-        // the connection can be written to again
+            // the connection can be written to again
         case LWS_CALLBACK_SERVER_WRITEABLE:
 
             Connection *c = nm->get_connection(*id);
@@ -101,7 +105,7 @@ int network_thread()
     struct lws_context_creation_info info;
     memset(&info, 0, sizeof info);
     info.port = 13337; // a hard-coded port of magnificent importance
-    struct lws_protocols protocols[] = { {"rqs", callback_rqs, sizeof(int), 2048,}, { NULL, NULL, 0, 0} };
+    struct lws_protocols protocols[] = { {"rqs", callback_rqs, sizeof(int), 4096,}, { NULL, NULL, 0, 0} };
     info.protocols = protocols;
 
     // Create the LWS context and verify that there were no errors.
