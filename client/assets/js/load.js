@@ -20,6 +20,6 @@ var Load = {
     },
 
     check : function() {
-        this.state.start('Select');
+        this.state.start('Username');
     }
 };

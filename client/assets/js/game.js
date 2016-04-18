@@ -662,6 +662,19 @@ var Game = {
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
 
+        var barConfig = {
+            width: 100,
+            height: 10,
+            x: 0,
+            y: 0,
+            bg: {color: '#ff4d4d'},
+            bar: {color: '#33ff33'},
+            animationDuration: 2000,
+            flipped: false
+        };
+
+        this.myHealthBar = new HealthBar(this.game, barConfig);
+        this.myHealthBar.setPercent(50); 
         //bg music can go here when ready
         //battle_music = game.add.audio('battle');
         //battle_music.loopFull();
