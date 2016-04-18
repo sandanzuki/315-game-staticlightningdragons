@@ -22,6 +22,7 @@ window.prevLayer = function() {
     }
 }
 
+
 var Tutorial = {
     preload : function() {
         // load images
@@ -53,6 +54,6 @@ var Tutorial = {
     startSelect : function() {
         // start unit selection, change game state
         counter = 0;
-        this.state.start('Select');
+        this.state.start('Username');
     }
 };

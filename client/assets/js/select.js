@@ -7,6 +7,7 @@ var index;
 var symbols=[];
 var request;
 
+
 var Select = {
     preload : function() {
         game.load.image('select', './assets/images/select.png');
@@ -14,7 +15,6 @@ var Select = {
         game.load.image('archer', './assets/images/archer_symbol.png');
         game.load.image('mage', './assets/images/mage_symbol.png');
         game.load.image('healer', './assets/images/healer_symbol.png');
-
         
         // align canvas
         game.scale.pageAlignHorizontally = true;
