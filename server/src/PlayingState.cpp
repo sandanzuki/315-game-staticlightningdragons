@@ -99,6 +99,9 @@ bool PlayingState::tick(double time)
     {
         return false;
     }
+
+    // Otherwise return TRUE.
+    return true;
 }
 
 void PlayingState::handle_turn_change()
