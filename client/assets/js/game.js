@@ -20,7 +20,8 @@ var game = game || {},
     friendlyUnits = [],
     enemyUnits = [],
     pause = false,
-    battle_music;
+    battle_music,
+    request;
 
 // load units onto tilemap
 window.loadUnits = function() {
@@ -495,11 +496,11 @@ window.moveComplete = function(coordinates) {
     var currTile = map.getTile(x,y, background);
     var oldTile = map.getTile(coordinates[0], coordinates[1], background);
 
-    var request = new Object();
+    request = new Object();
     request.game_id = gameId;
-    request.request_id = 44;
+    request.request_id = 49;
     request.type = "UnitMoveRequest";
-    request.unitId = oldTile.unit.id;
+    request.unit_id = oldTile.unit.id;
     request.x = x;
     request.y = y;
 

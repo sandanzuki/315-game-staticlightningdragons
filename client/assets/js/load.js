@@ -20,6 +20,6 @@ var Load = {
     },
 
     check : function() {
-        window.alert(playerId);
+        this.state.start('Select');
     }
 };
