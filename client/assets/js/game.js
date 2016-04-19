@@ -33,9 +33,17 @@ var map,
         animationDuration: 800,
         flipped: false 
     };
+    //time_font = 0,
+    //counter = 0;
 
 window.my_hit2 = function() { this.myHealthBar2.setPercent(0); } // healthbar
 
+/*
+window.updateCounter = function() {
+    counter++;
+    time_font.setText('Counter: ' + counter);
+}
+*/
 
 var Game = { 
     preload : function() {
@@ -84,6 +92,7 @@ var Game = {
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
 
+
         // healthbar 
         // please leave comments alone!
         // --------------------------------------------------------------------------------
@@ -105,6 +114,28 @@ var Game = {
         returnB = game.input.keyboard.addKey(Phaser.Keyboard.B);
         returnB.onDown.add(this.do_hit, this); //  'this' limits function 'my_hit2' in scope of var Game
         // --------------------------------------------------------------------------------
+
+
+        // time 
+        // please leave comments alone!
+        // --------------------------------------------------------------------------------
+        // time_font = game.add.text(game.world.centerX, game.world.centerY, 'Counter: 0', { font: "64px Arial", fill: "#ffffff", align: "center" });
+        /*
+        time_font = game.add.text(game.world.centerX, game.world.centerY, "", {
+            //font: "75px Playfair Display",
+            font: "75px Helvetica",
+            boundsAlignH: "center",
+            boundsAlignV: "middle",
+            fill: "#ffffff"
+        });
+        */
+        // time_font.anchor.setTo(0.5, 0.5);
+        //time_font.setTextBounds(0, 0, 450, 100);
+        // game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);
+
+        game.time.events.add(Phaser.Timer.SECOND * 4, do_hit, this);
+        // --------------------------------------------------------------------------------
+
 
         //bg music can go here when ready
         //battle_music = game.add.audio('battle');
@@ -169,6 +200,8 @@ var Game = {
     // please leave comments alone!
     // --------------------------------------------------------------------------------
     render : function() {
+        //game.debug.text("Time until event: " + game.time.events.duration.toFixed(0), 32, 32);
+        //game.debug.text("Next tick: " + game.time.events.next.toFixed(0), 32, 64);
         game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     },
     // --------------------------------------------------------------------------------

@@ -101,14 +101,14 @@ var Select = {
                     connection.send(strReq);
                 }
             }
-            else{
+            else {
                 this.symbolLocation(cursor.x);
-                if(symbols[index]){
+                if(symbols[index]) {
                     symbols[index].destroy();
                     symbols.splice(index, 1);
                     units.splice(index, 1);
                 }
-                else{
+                else {
                     cursor.clear();
                     position = "down";
                     oldX = cursor.x;
