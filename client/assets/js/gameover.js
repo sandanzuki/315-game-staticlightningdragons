@@ -1,3 +1,4 @@
+var request;
 var GameOver = {
     preload : function() {
         game.load.image('victory', './assets/images/victory.png');
@@ -28,6 +29,7 @@ var GameOver = {
 
         upButton = game.input.keyboard.addKey(Phaser.Keyboard.UP);
         upButton.onDown.add(this.moveUp, this);
+
     },
 
     moveDown : function() {
@@ -71,7 +73,15 @@ var GameOver = {
                 this.state.start('Load');
                 break;
             case(345):
-                // go to main menu, change game state
+                // go to main menu, change game state, player disconnect
+                request.game_id = gameId;
+                request.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                request.type = "PlayerQuitRequest";
+
+                var strReq;
+                strReq = JSON.stringify(request);
+
+                connection.send(strReq);
                 this.state.start('Menu');
                 break;
             default:

@@ -169,7 +169,18 @@ var Menu = {
                     }
                     this.state.start('Game');
                     break;
+                case("TurnChangeEvent"):
+                    console.log(response);
+                    turn = response.player_turn;
+                    break;
                 case("UnitMoveEvent"):
+                    console.log(response);
+                    var opponentId = response.unit_id;
+                    var x = response.unit_x;
+                    var y = response.unit_y;
+                    Game.opponentMove(opponentId, x, y);
+                    break;
+                case("UnitInteractEvent"):
                     console.log(response);
                     break;
                 default:

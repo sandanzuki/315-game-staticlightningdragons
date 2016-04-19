@@ -29,7 +29,7 @@ class PlayingState : public GameState
         
         vector<Unit*> units_one;
         vector<Unit*> units_two;
-        int player_turn;
+        Player *active_player;
         MapInfo *map;
 };
 

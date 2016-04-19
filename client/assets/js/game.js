@@ -1,4 +1,5 @@
 var map,
+    turn,
     option,
     arrow,
     background,
@@ -210,6 +211,8 @@ var Game = {
                     map.getTileWorldXY(blueX,blueY).unit = bFighter; 
                     bFighter.maxHealth=100;
                     bFighter.name = "Friendly Fighter";
+                    bFighter.id = i;
+                    bFighter.owner = playerId;
                     friendlyUnits.push(bFighter); 
                     break;
                 case "ARCHER":
@@ -217,6 +220,8 @@ var Game = {
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 2;
                     map.getTileWorldXY(blueX, blueY).unit = bArcher;
                     bArcher.name = "Friendly Archer";
+                    bArcher.id = i;
+                    bArcher.owner = playerId;
                     friendlyUnits.push(bArcher);
                     break;
                 case "MAGE":
@@ -225,6 +230,8 @@ var Game = {
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 3;
                     map.getTileWorldXY(blueX, blueY).unit = bMage;
                     bMage.name = "Friendly Mage";
+                    bMage.id = i;
+                    bMage.owner = playerId;
                     break;
                 case "HEALER":
                     break;
@@ -234,6 +241,13 @@ var Game = {
             blueY += 60;
         }
 
+        var enemyId;
+        if(playerId == 1){
+            enemyId = 2;
+        }
+        else{
+            enemyId = 1;
+        }
         //add all red sprites to the map
         for(var i = 1; i<=5; i++){
             switch(otherUnits[i].type){
@@ -243,6 +257,8 @@ var Game = {
                     map.getTileWorldXY(redX, redY).properties.unitType = 1;
                     map.getTileWorldXY(redX, redY).unit = rFighter;
                     rFighter.name = "Enemy Fighter";
+                    rFighter.id = i-1;
+                    rFighter.owner = enemyId;
                     break;
                 case "ARCHER":
                     rArcher = game.add.sprite(redX, redY, 'r_archer');
@@ -250,6 +266,8 @@ var Game = {
                     map.getTileWorldXY(redX, redY).properties.unitType = 2
                     map.getTileWorldXY(redX, redY).unit = rArcher;
                     rArcher.name = "Enemy Archer";
+                    rArcher.id = i-1;
+                    rArcher.owner = enemyId;
                     break;
                 case "MAGE":
                     rMage = game.add.sprite(redX, redY, 'r_mage');
@@ -257,6 +275,8 @@ var Game = {
                     map.getTileWorldXY(redX, redY).properties.unitType = 3;
                     map.getTileWorldXY(redX, redY).unit = rMage;
                     rMage.name = "Enemy Mage";
+                    rMage.id = i-1;
+                    rMage.owner = enemyId;
                     break;
                 case "HEALER":
                     break;
@@ -776,5 +796,39 @@ var Game = {
         this.unlockUnits(friendlyUnits);
         this.unlockUnits(enemyUnits);
         lockCounter = 0;
+    },
+
+    //upon receiving an event from the server, the oppenent's unit is moved
+    opponentMove : function(unitId, x, y) {
+        var oldTile;
+        var newTile;
+        var oldX;
+        var oldY;
+        var unit;
+        var newX = x;
+        var newY = y;
+
+        for(var i = 0; i<enemyUnits.length; i++){
+            unit = enemyUnits[i];
+            if((unit.id == unitId) && (unit.owner == turn)){
+                console.log(unit.owner);
+
+                oldX = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                oldY = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                newTile = map.getTile(newX, newY, background);
+                oldTile = map.getTile(oldX, oldY, background);
+
+                oldTile.unit.x = newTile.worldX;
+                oldTile.unit.y = newTile.worldY;
+                newTile.unit = oldTile.unit;
+
+                // give the new tile all of the old tile's properties
+                newTile.properties.unitType = oldTile.properties.unitType;
+                oldTile.properties.unitType = 0;
+                oldTile.unit = null;
+            }
+        } 
+
+        
     }
 };
