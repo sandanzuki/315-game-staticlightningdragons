@@ -34,16 +34,16 @@ var map,
         flipped: false 
     };
     //time_font = 0,
-    //counter = 0;
+    counter = 60;
 
 window.my_hit2 = function() { this.myHealthBar2.setPercent(0); } // healthbar
 
-/*
+
 window.updateCounter = function() {
-    counter++;
-    time_font.setText('Counter: ' + counter);
+    counter--;
+    time_font.setText(counter);
 }
-*/
+
     attackRequest = new Object();
     lockRequest = new Object();
 
@@ -121,7 +121,11 @@ var Game = {
         // time 
         // please leave comments alone!
         // --------------------------------------------------------------------------------
-        // time_font = game.add.text(game.world.centerX, game.world.centerY, 'Counter: 0', { font: "64px Arial", fill: "#ffffff", align: "center" });
+        time_font = game.add.text(game.world.centerX, game.world.centerY, '60', { 
+            font: "64px Arial", 
+            fill: "#ffffff", 
+            align: "center" 
+        });
         /*
         time_font = game.add.text(game.world.centerX, game.world.centerY, "", {
             //font: "75px Playfair Display",
@@ -135,7 +139,8 @@ var Game = {
         //time_font.setTextBounds(0, 0, 450, 100);
         // game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);
 
-        game.time.events.add(Phaser.Timer.SECOND * 4, do_hit, this);
+        //game.time.events.add(Phaser.Timer.SECOND * 4, do_hit, this);
+        game.time.events.loop(Phaser.Timer.SECOND, updateCounter, this);
         // --------------------------------------------------------------------------------
 
 
