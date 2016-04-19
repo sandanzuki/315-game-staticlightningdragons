@@ -1,5 +1,7 @@
+#include "GenericResponses.hpp"
 #include "LogWriter.hpp"
 #include "NetworkManager.hpp"
+#include "RequestVerification.hpp"
 
 #include "json/json.h"
 
@@ -35,14 +37,18 @@ int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
             log->write(output_buffer);
             break;
 
-        // connection has been closed
+            // connection has been closed
         case LWS_CALLBACK_CLOSED:
-            nm->kill_connection(*id);
-            sprintf(output_buffer, "[NET] INFO: Player with ID %d has disconnected connected.", *id);
-            log->write(output_buffer);
-            return -1;
+            {
+                // Pass this information back to the NetworkManager and it will take care of this.
+                string quit("{\"type\": \"PlayerQuitRequest\"}");
+                nm->submit_incoming_message(*id, quit);
+                sprintf(output_buffer, "[NET] INFO: Player with ID %d has disconnected.", *id);
+                log->write(output_buffer);
+                return -1;
+            }
 
-        // data has been received over the connection
+            // data has been received over the connection
         case LWS_CALLBACK_RECEIVE:
             {
                 string recvst((const char*) in, len);
@@ -50,7 +56,7 @@ int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
             }
             break;
 
-        // the connection can be written to again
+            // the connection can be written to again
         case LWS_CALLBACK_SERVER_WRITEABLE:
 
             Connection *c = nm->get_connection(*id);
@@ -74,7 +80,6 @@ int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
                 memset(response, 0, 4096);
                 strcpy((char*) response + LWS_PRE, out->c_str());
 
-                log->write("sending message!");
                 // Try to write the message...
                 if(lws_write(wsi, response + LWS_PRE, out->size(), LWS_WRITE_TEXT) == -1)
                 {
@@ -100,7 +105,7 @@ int network_thread()
     struct lws_context_creation_info info;
     memset(&info, 0, sizeof info);
     info.port = 13337; // a hard-coded port of magnificent importance
-    struct lws_protocols protocols[] = { {"rqs", callback_rqs, sizeof(int), 0,}, { NULL, NULL, 0, 0} };
+    struct lws_protocols protocols[] = { {"rqs", callback_rqs, sizeof(int), 4096,}, { NULL, NULL, 0, 0} };
     info.protocols = protocols;
 
     // Create the LWS context and verify that there were no errors.
@@ -150,13 +155,13 @@ NetworkManager::NetworkManager()
 NetworkManager::~NetworkManager()
 {
     // Delete any outstanding EventRequests.
-    nm_mutex.lock();
     for(EventRequest *r = pop_incoming_request(); r != NULL; r = pop_incoming_request())
     {
         delete r;
     }
 
     // Delete all Connections.
+    nm_mutex.lock();
     for(pair<int, Connection*> p : connections)
     {
         delete p.second;
@@ -166,39 +171,36 @@ NetworkManager::~NetworkManager()
 
 void NetworkManager::submit_incoming_message(int connection_id, std::string &message)
 {
-    // TODO - figure out if this throws exceptions
-    // TURNS OUT IT THROWS AN EXCEPTION
+    log->write("[NET] DEBUG: Received message over network.\n");
+    log->write(message);
+    log->write("");
+
     EventRequest *r = new EventRequest();
     try
     {
+        // try to create the JSON object and add the playerId
         stringstream(message) >> (*r);
-        (*r)["playerId"] = connection_id;
+        (*r)["player_id"] = connection_id;
 
-        // message must include a request_id
-        if(!r->isMember("request_id") || !(*r)["request_id"].isInt() ||
-            !r->isMember("game_id") || !(*r)["game_id"].isInt() ||
-            !r->isMember("type") || !(*r)["type"].isString())
+        // Verify that the request is valid.
+        if(!verify_general_request(r))
         {
+            notify_invalid_request(get_connection(connection_id), r);
             delete r;
-            Event e;
-            e["type"] = string("InvalidEvent");
-            Connection *c = get_connection(connection_id);
-            if(c != NULL)
-            {
-                c->submit_outgoing_event(e);
-            }
+            return;
         }
     }
     catch(Json::RuntimeError exp)
     {
         delete r;
-        Event e;
-        e["type"] = string("InvalidEvent");
-        Connection *c = get_connection(connection_id);
-        if(c != NULL)
-        {
-            c->submit_outgoing_event(e);
-        }
+        notify_invalid_request(get_connection(connection_id), NULL);
+        return;
+    }
+    catch(Json::LogicError exp)
+    {
+        delete r;
+        notify_invalid_request(get_connection(connection_id), NULL);
+        return;
     }
     nm_mutex.lock();
     recv_queue.push(r);
@@ -243,12 +245,14 @@ Connection *NetworkManager::get_connection(int id)
 
 void NetworkManager::kill_connection(int id)
 {
-    nm_mutex.lock();
-    if(get_connection(id) != NULL)
+    Connection *c = get_connection(id);
+    if(c != NULL)
     {
+        nm_mutex.lock();
         connections.erase(id);
+        delete c;
+        nm_mutex.unlock();
     }
-    nm_mutex.unlock();
 }
 
 Connection *NetworkManager::pop_new_connection()
