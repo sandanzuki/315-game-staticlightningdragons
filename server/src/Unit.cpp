@@ -46,8 +46,7 @@ Unit::Unit(int _unit_id, UnitType _type, int _player_id, int _x, int _y)
     max_health = 100;
     x = _x;
     y = _y;
-    moved = false;
-    interacted = false;
+    new_turn();
 
     // Set the move_distance based on type.
     switch(type)

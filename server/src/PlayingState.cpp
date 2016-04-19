@@ -10,16 +10,8 @@ PlayingState::PlayingState(LogWriter *log, int _game_id, Player *_player_one, Pl
     units_two = _units_two;
     map = _map;
     state_name = PLAYING;
-    player_turn = 1;
+    active_player = player_one;
     handle_turn_change();
-    for(Unit *u : units_one)
-    {
-        u->new_turn();
-    }
-    for(Unit *u : units_two)
-    {
-        u->new_turn();
-    }
 }
 
 PlayingState::~PlayingState()
@@ -36,6 +28,13 @@ PlayingState::~PlayingState()
 
 void PlayingState::handle_request(Player *p, EventRequest *r)
 {
+    // Regardless of the type of Request, if it's not the Player's turn, it's illegal.
+    if(p != active_player)
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+
     // Depending on the type, we do different things.
     string type = (*r)["type"].asString();
     if(type.compare("UnitMoveRequest") == 0)
@@ -54,11 +53,9 @@ void PlayingState::handle_request(Player *p, EventRequest *r)
 
 bool PlayingState::tick(double time)
 {
-    // TODO - maybe include a timer for timed stuff, ya know?
-
     // If the turn is over, change turns.
     bool turn_complete = true;
-    if(player_turn == 1)
+    if(active_player == player_one)
     {
         for(Unit *u : units_one)
         {
@@ -114,14 +111,27 @@ bool PlayingState::tick(double time)
 
 void PlayingState::handle_turn_change()
 {
-    if(player_turn == 1)
+    // Set the active Player.
+    if(active_player == player_one)
     {
-        player_turn = 2;
+        active_player = player_two;
     }
     else
     {
-        player_turn = 1;
+        active_player = player_one;
     }
+
+    // Notify all units that they can move and interact again.
+    for(Unit *u : units_one)
+    {
+        u->new_turn();
+    }
+    for(Unit *u : units_two)
+    {
+        u->new_turn();
+    }
+
+    // Notify players of the turn change.
     notify_turn_change();
 }
 
@@ -248,13 +258,10 @@ void PlayingState::handle_unit_move(Player *p, EventRequest *r)
 void PlayingState::notify_turn_change()
 {
     // Change the player_turn.
-    if (player_turn == 1)
+    int player_turn = 1;
+    if(active_player == player_two)
     {
         player_turn = 2;
-    }
-    else
-    {
-        player_turn = 1;
     }
 
     // Build the Event
