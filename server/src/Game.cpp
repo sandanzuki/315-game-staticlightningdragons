@@ -68,7 +68,7 @@ void Game::handle_request(Player *p, EventRequest *r)
     // Assuming we still have a valid GameState, try this!
     if(current_state != NULL)
     {
-        log->write("[GAME] INFO: Handling EventRequest.");
+        // Get the type of EventRequest.
         string type = (*r)["type"].asString();
 
         // Real talk, if either Player quits, it's time to die.
@@ -106,7 +106,6 @@ void Game::handle_request(Player *p, EventRequest *r)
         }
         else
         {
-            log->write("[GAME] INFO: Forwarding EventRequest to the current GameState.");
             current_state->handle_request(p, r);
         }
     }
