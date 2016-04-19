@@ -602,6 +602,7 @@ var Game = {
         var oldTile = map.getTile(coordinates[0], coordinates[1], background);
 
         var strReq;
+        moveRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
         moveRequest.unit_id = oldTile.unit.id;
         moveRequest.x = x;
         moveRequest.y = y;
