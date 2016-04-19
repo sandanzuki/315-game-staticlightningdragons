@@ -23,6 +23,7 @@ var map,
     battle_music,
     moveRequest = new Object(),
     attackRequest = new Object();
+    lockRequest = new Object();
 
 var Game = { 
     preload : function() {
@@ -109,6 +110,12 @@ var Game = {
         attackRequest.type = "UnitInteractRequest";
         attackRequest.unit_id;
         attackRequest.target_id;
+
+        lockRequest.game_id = gameId;
+        lockRequest.request_id = 72;
+        lockRequest.type = "UnitInteractRequest";
+        lockRequest.unit_id;
+        lockRequest.target_id = -1;
     },
 
     update : function() {
@@ -712,6 +719,13 @@ var Game = {
             this.unlockUnits(enemyUnits);
             lockCounter = 0;
         }
+
+        var strReq;
+        lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+        lockRequest.unit_id = unit.id;
+
+        strReq = JSON.stringify(lockRequest);
+        connection.send(strReq);
     },
 
     unlockUnits : function(unitList) {
