@@ -10,7 +10,7 @@ PlayingState::PlayingState(LogWriter *log, int _game_id, Player *_player_one, Pl
     units_two = _units_two;
     map = _map;
     state_name = PLAYING;
-    active_player = player_one;
+    active_player = player_two;
     handle_turn_change();
 }
 
@@ -155,6 +155,8 @@ void PlayingState::handle_unit_interact(Player *p, EventRequest *r)
         units = &units_two;
     }
 
+    // TODO Healer interactions need to be friendly Units.
+
     // Verify that the attacking Unit exists.
     int unit_id = (*r)["unit_id"].asInt();
     if(unit_id >= units->size())
@@ -244,11 +246,12 @@ void PlayingState::handle_unit_move(Player *p, EventRequest *r)
     }
 
     // See if the Unit can move to that tile.
-    if(!tile_reachable(unit->get_move_distance(), unit->get_x(), unit->get_y(), x, y))
-    {
-        notify_illegal_request(p->get_connection(), r);
-        return;
-    }
+    // TODO - THIS ISN'T WORKING - COMMENTED OUT TO NOT BREAK THINGS - FIX THIS
+    //if(!tile_reachable(unit->get_move_distance(), unit->get_x(), unit->get_y(), x, y))
+    //{
+        //notify_illegal_request(p->get_connection(), r);
+        //return;
+    //}
 
     // If we can move, go ahead annd move then!
     unit->set_position(x, y);
