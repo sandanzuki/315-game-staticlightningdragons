@@ -12,6 +12,14 @@ PlayingState::PlayingState(LogWriter *log, int _game_id, Player *_player_one, Pl
     state_name = PLAYING;
     player_turn = 1;
     handle_turn_change();
+    for(Unit *u : units_one)
+    {
+        u->new_turn();
+    }
+    for(Unit *u : units_two)
+    {
+        u->new_turn();
+    }
 }
 
 PlayingState::~PlayingState()

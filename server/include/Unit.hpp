@@ -38,7 +38,7 @@ class Unit
         int get_x() { return x; }
         int get_y() { return y; }
         bool has_interacted() { return interacted; }
-        bool has_moved() { return moved; }
+        bool has_moved() { return moved || interacted; }
 
         // Setters
         void new_turn() { interacted = false; moved = false; }
