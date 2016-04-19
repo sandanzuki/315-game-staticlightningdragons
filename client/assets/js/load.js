@@ -1,4 +1,3 @@
-
 var Load = {
     preload : function() {
         game.load.image('load', './assets/images/load.png');
