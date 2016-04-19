@@ -21,7 +21,28 @@ var game = game || {},
     enemyUnits = [],
     pause = false,
     battle_music,
-    request;
+    request,
+    hb_cnfg = { // HealthBar
+        width: 35,
+        height: 4,
+        x: 100,
+        y: 100,
+        bg: {color: '#FF4D4D'},
+        bar: {color: '#33FF33'},
+        animationDuration: 800,
+        flipped: false 
+    };
+
+// Timer 
+// --------------------------------------------------------------------------------
+// var timer;
+// var total = 0;
+
+
+window.my_hit2 = function() { this.myHealthBar2.setPercent(0); }
+
+
+// --------------------------------------------------------------------------------
 
 // load units onto tilemap
 window.loadUnits = function() {
@@ -615,11 +636,12 @@ window.skip = function() {
     lockCounter = 0;
 }
 
+
 var Game = { 
     preload : function() {
          // load map
         game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);
-        game.load.image('gameTiles', './assets/images/mapTiles.png');
+        my_map = game.load.image('gameTiles', './assets/images/mapTiles.png');
 
         // blue units
         game.load.image('b_archer', './assets/images/b_archer.png');
@@ -662,30 +684,36 @@ var Game = {
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
 
-        var barConfig = {
-            width: 250,
-            height: 40,
-            x: 10,
-            y: 150,
-            bg: {color: '#FF4D4D'},
-            bar: {color: '#33FF33'},
-            animationDuration: 2000,
-            flipped: false 
-        };
 
-        this.myHealthBar = new HealthBar(this.game, barConfig);
-        //this.myHealthBar = new HealthBar(this.game, {x:200, y:200, width:120});
-        this.myHealthBar2 = new HealthBar(this.game, {x:150, y:150, width:200});
+
+        // HealthBar
+        // --------------------------------------------------------------------------------
+        this.myHealthBar = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar2 = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar3 = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar4 = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar5 = new HealthBar(this.game, hb_cnfg);
+
+        this.myHealthBar.setPosition(30, 0); 
+        this.myHealthBar2.setPosition(30, 62); 
+        this.myHealthBar3.setPosition(30, 123); 
+        this.myHealthBar4.setPosition(30, 183); 
+        this.myHealthBar5.setPosition(30, 243); 
+
+        //this.myHealthBar2 = new HealthBar(this.game, { width:200, height:20, x:10, y:150});
 
         returnA = game.input.keyboard.addKey(Phaser.Keyboard.A);
         returnA.onDown.add(this.my_hit, this); 
 
         returnB = game.input.keyboard.addKey(Phaser.Keyboard.B);
-        returnB.onDown.add(this.my_hit2, this); 
+        returnB.onDown.add(this.my_hit2, this); // Please leave comment here! This limits function 'my_hit2' in scope of var Game
 
         //bg music can go here when ready
         //battle_music = game.add.audio('battle');
         //battle_music.loopFull();
+        // --------------------------------------------------------------------------------
+
+
 
         loadUnits();
 
@@ -708,6 +736,20 @@ var Game = {
         background.resizeWorld();
         game.physics.startSystem(Phaser.Physics.P2JS);
         map.setCollisionBetween(1, 2000, true, 'blockedLayer'); 
+
+        // Timer 
+        // --------------------------------------------------------------------------------
+        //  Create our Timer
+        // timer = game.time.create(false);
+
+        //  Set a TimerEvent to occur after 2 seconds
+        // timer.loop(2000, updateCounter, this);
+
+        //  Start the timer running - this is important!
+        //  It won't start automatically, allowing you to hook it to button events and the like.
+        // timer.start();
+
+        // --------------------------------------------------------------------------------
     },
 
     update : function() {
@@ -728,6 +770,27 @@ var Game = {
         skipButton.onDown.add(skip, this);
     },
 
-    my_hit : function() { this.myHealthBar.setPercent(50); },
-    my_hit2 : function() { this.myHealthBar2.setPercent(50); }
+    // Timer 
+    // --------------------------------------------------------------------------------
+    /*
+    updateCounter : function() {
+        total++;
+    },
+    */
+
+    render : function() {
+        //game.debug.text("Time until event: " + game.time.events.duration.toFixed(0), 32, 32);
+        //game.debug.text("Next tick: " + game.time.events.next.toFixed(0), 32, 64);
+        game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+        //game.debug.text('Time until event: ' + timer.events.duration.toFixed(0), 32, 32);
+        //game.debug.text('Loop Count: ' + total, 32, 64);
+    },
+    // --------------------------------------------------------------------------------
+
+    do_hit : function() { game.time.events.add( Phaser.Timer.SECOND * 4, my_hit2, this); },
+
+    // HealthBar
+    // --------------------------------------------------------------------------------
+    my_hit : function() { this.myHealthBar.setPercent(30); },
+    // --------------------------------------------------------------------------------
 };
