@@ -22,7 +22,6 @@ var map,
     pause = false,
     battle_music,
     moveRequest = new Object(),
-<<<<<<< HEAD
     attackRequest = new Object(),
     hb_cnfg = { // healthbar
         width: 35,
@@ -45,10 +44,8 @@ window.updateCounter = function() {
     time_font.setText('Counter: ' + counter);
 }
 */
-=======
     attackRequest = new Object();
     lockRequest = new Object();
->>>>>>> d6c723b6ab2c795cfeeae94040a97a2f5be1f460
 
 var Game = { 
     preload : function() {
