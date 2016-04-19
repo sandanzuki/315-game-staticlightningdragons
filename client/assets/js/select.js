@@ -146,7 +146,10 @@ var Select = {
                     break;
             }
 
-            cursor.x = oldX;
+            if(oldX+168 > 748)
+                cursor.x = oldX;
+            else
+                cursor.x = oldX+=168;
             cursor.y = oldY;
         }
     },
