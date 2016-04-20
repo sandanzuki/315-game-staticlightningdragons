@@ -145,26 +145,27 @@ void PlayingState::handle_unit_interact(Player *p, EventRequest *r)
     }
 
     // Determine which set of Units we're working with.
-    vector<Unit*> *units = NULL;
+    vector<Unit*> *friendly_units = NULL;
+    vector<Unit*> *enemy_units = NULL;
     if(p == player_one)
     {
-        units = &units_one;
+        friendly_units = &units_one;
+        enemy_units = &units_two;
     }
     else if(p == player_two)
     {
-        units = &units_two;
+        friendly_units = &units_two;
+        enemy_units = &units_one;
     }
-
-    // TODO Healer interactions need to be friendly Units.
 
     // Verify that the attacking Unit exists.
     int unit_id = (*r)["unit_id"].asInt();
-    if(unit_id >= units->size())
+    if(unit_id >= friendly_units->size())
     {
         notify_illegal_request(p->get_connection(), r);
         return;
     }
-    Unit *unit = (*units)[unit_id];
+    Unit *unit = (*friendly_units)[unit_id];
 
     // If the targetId is empty, don't do anything.
     int target_id = (*r)["target_id"].asInt();
@@ -177,14 +178,24 @@ void PlayingState::handle_unit_interact(Player *p, EventRequest *r)
 
     // Otherwise, go ahead and try to do stuff.
     // Verify that the target Unit exists.
-    if(unit_id >= units->size())
+    if(unit_id >= friendly_units->size())
     {
         notify_illegal_request(p->get_connection(), r);
         return;
     }
 
+    // If the primary Unit is a healer, then the target Unit is friendly. Otherwise, enemy.
+    Unit *target = NULL;
+    if(unit->get_type() == HEALER)
+    {
+        target = (*friendly_units)[target_id];
+    }
+    else
+    {
+        target = (*enemy_units)[target_id];
+    }
+
     // If it exists, get it. Also verify that both Units are alive.
-    Unit *target = (*units)[target_id];
     if(!unit->is_alive() || !target->is_alive())
     {
         notify_illegal_request(p->get_connection(), r);
