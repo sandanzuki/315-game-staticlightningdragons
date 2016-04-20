@@ -669,7 +669,9 @@ var Game = {
         attackRequest.target_id = targetedUnit.id;
         strReq = JSON.stringify(attackRequest);
         console.log(strReq);
-        //connection.send(strReq);
+        connection.send(strReq);
+
+        //case()
 
 
         if (selectedUnit && targetedUnit) {
