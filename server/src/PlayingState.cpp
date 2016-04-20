@@ -257,11 +257,12 @@ void PlayingState::handle_unit_move(Player *p, EventRequest *r)
     }
 
     // See if the Unit can move to that tile.
-    if(!tile_reachable(unit->get_move_distance(), unit->get_x(), unit->get_y(), x, y))
-    {
-        notify_illegal_request(p->get_connection(), r);
-        return;
-    }
+    // TODO - get this working again
+    //if(!tile_reachable(unit->get_move_distance(), unit->get_x(), unit->get_y(), x, y))
+    //{
+        //notify_illegal_request(p->get_connection(), r);
+        //return;
+    //}
 
     // If we can move, go ahead annd move then!
     unit->set_position(x, y);
