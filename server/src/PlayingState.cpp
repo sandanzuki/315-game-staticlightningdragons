@@ -246,12 +246,11 @@ void PlayingState::handle_unit_move(Player *p, EventRequest *r)
     }
 
     // See if the Unit can move to that tile.
-    // TODO - THIS ISN'T WORKING - COMMENTED OUT TO NOT BREAK THINGS - FIX THIS
-    //if(!tile_reachable(unit->get_move_distance(), unit->get_x(), unit->get_y(), x, y))
-    //{
-        //notify_illegal_request(p->get_connection(), r);
-        //return;
-    //}
+    if(!tile_reachable(unit->get_move_distance(), unit->get_x(), unit->get_y(), x, y))
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
 
     // If we can move, go ahead annd move then!
     unit->set_position(x, y);
@@ -335,6 +334,12 @@ void PlayingState::notify_unit_move(EventRequest *r, Unit *target)
 
 bool PlayingState::tile_reachable(int distance, int x, int y, int to_x, int to_y)
 {
+    // If we can't go any farther, return false.
+    if(distance < 0)
+    {
+        return  false;
+    }
+
     // Verify that the current (x,y) are not outside the map.
     if(x < 0 || y < 0 || x >= map->get_width() || y >= map->get_height())
     {
@@ -347,14 +352,10 @@ bool PlayingState::tile_reachable(int distance, int x, int y, int to_x, int to_y
         return false;
     }
 
-    // If we can't go any farther...
-    if(distance < 1)
+    // If we're there, we're there!
+    if(x == to_x && y == to_y)
     {
-        if(x == to_x && y == to_y)
-        {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     // However, if we can go further, let's try.
