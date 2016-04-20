@@ -57,11 +57,13 @@ var Game = {
         game.load.image('b_archer', './assets/images/b_archer.png');
         game.load.image('b_mage', './assets/images/b_mage.png');
         game.load.image('b_fighter', './assets/images/b_fighter.png');
+        game.load.image('b_healer', './assets/images/b_healer.png');
 
         //red units
         game.load.image('r_archer', './assets/images/r_archer.png');
         game.load.image('r_mage', './assets/images/r_mage.png');
         game.load.image('r_fighter', './assets/images/r_fighter.png');
+        game.load.image('r_healer', './assets/images/r_healer.png');
 
         game.load.image('option', './assets/images/option.png');
         game.load.image('arrow', './assets/images/arrow_white.png');
@@ -280,6 +282,13 @@ var Game = {
                     bMage.owner = playerId;
                     break;
                 case "HEALER":
+                    bHealer = game.add.sprite(blueX, blueY,'b_healer');
+                    friendlyUnits.push(bHealer);
+                    map.getTileWorldXY(blueX, blueY).properties.unitType = 4;
+                    map.getTileWorldXY(blueX, blueY).unit = bHealer;
+                    bHealer.name = "Friendly Healer";
+                    bHealer.id = i;
+                    bHealer.owner = playerId;
                     break;
                 default:
                     break;
@@ -325,6 +334,13 @@ var Game = {
                     rMage.owner = enemyId;
                     break;
                 case "HEALER":
+                    rHealer = game.add.sprite(redX, redY,'r_healer');
+                    enemyUnits.push(rHealer);
+                    map.getTileWorldXY(redX, redY).properties.unitType = 4;
+                    map.getTileWorldXY(redX, redY).unit = rHealer;
+                    rHealer.name = "Enemy Healer";
+                    rHealer.id = i-1;
+                    rHealer.owner = enemyId;
                     break;
                 default:
                     break;
@@ -550,7 +566,11 @@ var Game = {
                             this.getMoveOptions(currTile, 3);
                             return currTile;
                             break;
-                            
+
+                        case 4: // unit is healer
+                            isDown = 1;
+                            this.getMoveOptions(currTile, 4);
+                            return currTile;
                         default:
                             break;
                     }
@@ -587,7 +607,9 @@ var Game = {
                 max = 5;
                 attackRange = 1;
                 break;
-
+            case 4:
+                max = 6;
+                attackRange = 1;
             default:
                 break;
         }
@@ -726,7 +748,6 @@ var Game = {
         moveRequest.y = y;
 
         strReq = JSON.stringify(moveRequest);
-        console.log(strReq);
         connection.send(strReq);
 
         if (possibleTiles.indexOf(currTile) != -1) {
