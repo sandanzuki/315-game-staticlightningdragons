@@ -7,6 +7,7 @@ var connection,
  	playerServerId,
  	gameId,
  	canMove,
+ 	turn,
  	//units the player chooses in selection phase
  	units = [],
  	//units the opposing player chose

@@ -76,10 +76,6 @@ var Select = {
     },
 
     startGame : function() {
-        // start game, change game state
-        //this.state.start('Game');
-        //intro_music.destroy();  
-        //game.cache.removeSound('intro');
         if(position == "up"){
             if(cursor.y == 530){
                 if(symbols.length == 5){

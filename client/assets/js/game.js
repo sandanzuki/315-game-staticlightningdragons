@@ -1,5 +1,5 @@
 var map,
-    turn,
+    timer,
     option,
     arrow,
     background,
@@ -9,6 +9,7 @@ var map,
     cursor,
     bFighter, bArcher, bMage, bHealer,
     hBars = [],
+    enemyHBars = [],
     rFighter, rArcher, rMage, rHealer,
     possibleTiles = [],
     attackTiles = [],
@@ -31,21 +32,13 @@ var map,
         y: 100,
         bg: {color: '#FF4D4D'},
         bar: {color: '#33FF33'},
-        animationDuration: 800,
+        animationDuration: 400,
         flipped: false 
     },
-    counter = 60;
-
-window.my_hit2 = function() { this.myHealthBar2.setPercent(0); } // healthbar
-
-window.updateCounter = function() {
-    if(counter > 0)
-        counter--;
-    time_font.setText(counter);
-}
-
-attackRequest = new Object();
-lockRequest = new Object();
+    counter = 60,
+    tutorialState = true,
+    attackRequest = new Object();
+    lockRequest = new Object();
 
 var Game = { 
     preload : function() {
@@ -96,47 +89,41 @@ var Game = {
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
 
-        // healthbar 
-        // please leave comments alone!
-        // --------------------------------------------------------------------------------
-        myHealthBar = new HealthBar(this.game, hb_cnfg);
-        myHealthBar2 = new HealthBar(this.game, hb_cnfg);
-        myHealthBar3 = new HealthBar(this.game, hb_cnfg);
-        myHealthBar4 = new HealthBar(this.game, hb_cnfg);
-        myHealthBar5 = new HealthBar(this.game, hb_cnfg);
+        game.time.events.loop(Phaser.Timer.SECOND, this.updateCounter, this);
 
-        // myHealthBar.setPosition(30, 0); 
-        // myHealthBar2.setPosition(30, 62); 
-        // myHealthBar3.setPosition(30, 123); 
-        // myHealthBar4.setPosition(30, 183); 
-        // myHealthBar5.setPosition(30, 243); 
-
-        hBars = [myHealthBar, myHealthBar2, myHealthBar3, myHealthBar4, myHealthBar5];
-
-        returnA = game.input.keyboard.addKey(Phaser.Keyboard.A);
-        returnA.onDown.add(this.my_hit, this); 
-
-        returnB = game.input.keyboard.addKey(Phaser.Keyboard.B);
-        returnB.onDown.add(this.do_hit, this); //  'this' limits function 'my_hit2' in scope of var Game
-        // --------------------------------------------------------------------------------
-
-        // time 
-        // please leave comments alone!
-        // --------------------------------------------------------------------------------
         time_font = game.add.text(850, 9, '60', { 
             font: "35px Playfair Display",
             fill: "#ffffff", 
             align: "center" 
         });
 
-        game.time.events.repeat(Phaser.Timer.SECOND * 1, 60, updateCounter, this);
-        // --------------------------------------------------------------------------------
-
         //bg music can go here when ready
         //battle_music = game.add.audio('battle');
         //battle_music.loopFull();
 
+        //create health bars then load the units
+        myHealthBar = new HealthBar(this.game, hb_cnfg);
+        myHealthBar2 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar3 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar4 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar5 = new HealthBar(this.game, hb_cnfg); 
+
+        hBars = [myHealthBar, myHealthBar2, myHealthBar3, myHealthBar4, myHealthBar5];
+
+        myHealthBar6 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar7 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar8 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar9 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar10 = new HealthBar(this.game, hb_cnfg); 
+
+        enemyHBars = [myHealthBar6, myHealthBar7, myHealthBar8, myHealthBar9, myHealthBar10];
+
         this.loadUnits();
+
+        for(var i = 0; i<friendlyUnits.length; i++){
+            hBars[i].setPosition(friendlyUnits[i].x+30, friendlyUnits[i].y);
+            enemyHBars[i].setPosition(enemyUnits[i].x+30, enemyUnits[i].y);
+        }
 
         lockGraphics = game.add.graphics();//identify a locked unit
         selected = game.add.graphics();//identify the user's selected unit
@@ -196,21 +183,32 @@ var Game = {
         skipButton.onDown.add(this.skip, this);
     },
 
-    // time 
-    // please leave comments alone!
-    // --------------------------------------------------------------------------------
-    render : function() {
-        //    game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+    initTimer : function() {
+        counter = 60;
     },
-    // --------------------------------------------------------------------------------
 
-    // healthbar
-    // please leave comments alone!
-    // --------------------------------------------------------------------------------
-    do_hit : function() { game.time.events.add( Phaser.Timer.SECOND * 4, my_hit2, this); },
-    my_hit : function() { this.myHealthBar.setPercent(30); },
-    // --------------------------------------------------------------------------------
+    updateCounter : function() {
+        if(counter >= 0)
+            counter--;
 
+        time_font.setText(counter);
+
+        if(counter == 0){
+            for(var i = 0; i<friendlyUnits.length; i++){
+                if(turn == playerId){
+                    if(!friendlyUnits[i].locked){
+                    lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                    lockRequest.unit_id = friendlyUnits[i].id;
+
+                    strReq = JSON.stringify(lockRequest);
+                    connection.send(strReq);
+                    }
+
+                    this.lockUnit(friendlyUnits[i]);
+                }
+            }
+        }
+    },
     // load units onto tilemap
     loadUnits : function() {
         var blueX, blueY,
@@ -349,6 +347,24 @@ var Game = {
             enemyUnits[i].locked = false;
             enemyUnits[i].friendly = false;
             enemyUnits[i].id = i;
+        }
+    },
+
+    updateBar : function(i, x, y, isEnemy) {
+        if(!isEnemy)
+            hBars[i].setPosition(x+30, y);
+        else
+            enemyHBars[i].setPosition(x+30, y);
+    },
+
+    hpBarsHit : function(targetId, targetHp, unitId, unitHp){
+        if(turn == playerId){
+            hBars[unitId].setPercent(unitHp);
+            enemyHBars[targetId].setPercent(targetHp);
+        }
+        else{
+            hBars[targetId].setPercent(targetHp);
+            enemyHBars[unitId].setPercent(unitHp);
         }
     },
 
@@ -753,6 +769,7 @@ var Game = {
                 oldTile.properties.unitType = 0;
                 oldTile.unit = null;
 
+                this.updateBar(currTile.unit.id, currTile.unit.x, currTile.unit.y, false);
                 // show the user that this unit is now locked, and cannot be moved again
                 this.lockUnit(currTile.unit);
 
@@ -786,16 +803,6 @@ var Game = {
 
                 //clang.play();
                 this.output("Attacked: " + targetedUnit.name)    
-
-                // oldTile.unit.x = currTile.worldX;
-                // oldTile.unit.y = currTile.worldY;
-                // currTile.unit = oldTile.unit;
-
-                // currTile.properties.unitType = oldTile.properties.unitType; // give the new tile all of the old tile's properties
-                // oldTile.properties.unitType = 0;
-                // oldTile.unit = null;
-
-                // unit is now locked and cannot be moved again
                 this.lockUnit(oldTile.unit); 
             }
         } else {
@@ -805,26 +812,29 @@ var Game = {
 
     lockUnit : function(unit) {
         // get the tile the unit is on.
-        var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; 
-        var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
-        var currTile = map.getTile(x, y, background);
 
-        currTile.unit.locked = true;
+            var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; 
+            var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+            var currTile = map.getTile(x, y, background);
 
-        // draw a dark red square over the unit
-        lockGraphics.lineStyle(2, 0x4d4d4d, 1); 
-        lockGraphics.beginFill(0x4d4d4d, .5);
-        lockGraphics.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
+        if(!currTile.unit.locked){
+            currTile.unit.locked = true;
 
-        // increment the number of locked units (in place of turns)
-        lockCounter++; 
+            // draw a dark red square over the unit
+            lockGraphics.lineStyle(2, 0x4d4d4d, 1); 
+            lockGraphics.beginFill(0x4d4d4d, .5);
+            lockGraphics.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
 
-        // if the the lock counter == total number of units, unlock all
-        // TODO replace this with turn mechanism
-        if (lockCounter == friendlyUnits.length + enemyUnits.length) {
-            this.unlockUnits(friendlyUnits);
-            this.unlockUnits(enemyUnits);
-            lockCounter = 0;
+            // increment the number of locked units (in place of turns)
+            lockCounter++; 
+
+            // if the the lock counter == total number of units, unlock all
+            // TODO replace this with turn mechanism
+            if (lockCounter == friendlyUnits.length + enemyUnits.length) {
+                this.unlockUnits(friendlyUnits);
+                this.unlockUnits(enemyUnits);
+                lockCounter = 0;
+            }
         }
     },
 
@@ -841,7 +851,7 @@ var Game = {
     },
 
     pauseGame : function() {
-        output("");
+        this.output("");
         if (!pause) {
             option = game.add.sprite(0,0, 'option');
             arrow = game.add.sprite(315,305, 'arrow');
@@ -888,6 +898,8 @@ var Game = {
                 newTile.properties.unitType = oldTile.properties.unitType;
                 oldTile.properties.unitType = 0;
                 oldTile.unit = null;
+
+                this.updateBar(unitId, newTile.unit.x, newTile.unit.y, true);
             }
         } 
     }
