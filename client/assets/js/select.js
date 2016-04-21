@@ -27,9 +27,6 @@ var Select = {
         cursor.x = 76;
         cursor.y = 196;
 
-        toButton = game.input.keyboard.addKey(Phaser.Keyboard.N);
-        toButton.onDown.add(this.startGame, this);
-
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.startGame, this);
 
@@ -80,7 +77,7 @@ var Select = {
 
     startGame : function() {
         // start game, change game state
-        this.state.start('Game');
+        //this.state.start('Game');
         //intro_music.destroy();  
         //game.cache.removeSound('intro');
         if(position == "up"){
@@ -211,10 +208,5 @@ var Select = {
             cursor.x = 720;
             cursor.y = 530;
         }
-    },
-
-    startGame : function() {
-        // start unit selection, change game state
-        this.state.start('Game');
     }
 };

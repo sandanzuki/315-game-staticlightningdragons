@@ -98,17 +98,7 @@ var Game = {
         // healthbar 
         // please leave comments alone!
         // --------------------------------------------------------------------------------
-        this.myHealthBar = new HealthBar(this.game, hb_cnfg);
-        this.myHealthBar2 = new HealthBar(this.game, hb_cnfg);
-        this.myHealthBar3 = new HealthBar(this.game, hb_cnfg);
-        this.myHealthBar4 = new HealthBar(this.game, hb_cnfg);
-        this.myHealthBar5 = new HealthBar(this.game, hb_cnfg);
-
-        this.myHealthBar.setPosition(30, 0); 
-        this.myHealthBar2.setPosition(30, 62); 
-        this.myHealthBar3.setPosition(30, 123); 
-        this.myHealthBar4.setPosition(30, 183); 
-        this.myHealthBar5.setPosition(30, 243); 
+ 
 
         returnA = game.input.keyboard.addKey(Phaser.Keyboard.A);
         returnA.onDown.add(this.my_hit, this); 
@@ -210,6 +200,19 @@ var Game = {
 
     // load units onto tilemap
     loadUnits : function() {
+        // this.myHealthBar = new HealthBar(this.game, hb_cnfg);
+        // this.myHealthBar2 = new HealthBar(this.game, hb_cnfg);
+        // this.myHealthBar3 = new HealthBar(this.game, hb_cnfg);
+        // this.myHealthBar4 = new HealthBar(this.game, hb_cnfg);
+        // this.myHealthBar5 = new HealthBar(this.game, hb_cnfg);
+
+        // this.myHealthBar.setPosition(30, 0); 
+        // this.myHealthBar2.setPosition(30, 62); 
+        // this.myHealthBar3.setPosition(30, 123); 
+        // this.myHealthBar4.setPosition(30, 183); 
+        // this.myHealthBar5.setPosition(30, 243);
+
+
         var blueX, blueY,
         redX, redY;
         switch(playerId){
@@ -234,12 +237,15 @@ var Game = {
             switch(units[i].type){
                 case "FIGHTER":
                     bFighter = game.add.sprite(blueX, blueY,'b_fighter');
+                    this.hb1 = new HealthBar(this.game, hb_cnfg);
+                    this.hb1.setPosition(blueX/2, blueY+2);
                     map.getTileWorldXY(blueX,blueY).properties.unitType = 1; 
                     map.getTileWorldXY(blueX,blueY).unit = bFighter; 
                     bFighter.health = units[i].hp;
                     bFighter.name = "Friendly Fighter";
                     bFighter.id = i-1;
                     bFighter.owner = playerId;
+                    bFighter.hBar = this.
                     friendlyUnits.push(bFighter); 
                     break;
                 case "ARCHER":
@@ -774,14 +780,12 @@ var Game = {
         console.log(strReq);
         connection.send(strReq);
 
-        //case()
-
         if (selectedUnit && targetedUnit) {
             if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)) {
                 //targetedUnit.kill();
                 //enemyUnits.splice(enemyUnits.indexOf(targetedUnit), 1);
 
-                clang.play();
+                //clang.play();
                 this.output("Attacked: " + targetedUnit.name)    
 
                 // oldTile.unit.x = currTile.worldX;
