@@ -28,7 +28,10 @@ var Select = {
         cursor.drawRect(0, 0, 86, 86);
         cursor.x = 76;
         cursor.y = 196;
-        
+
+        toButton = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        toButton.onDown.add(this.startGame, this);
+
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.startGame, this);
 
@@ -79,6 +82,7 @@ var Select = {
 
     startGame : function() {
         // start game, change game state
+        this.state.start('Game');
         //intro_music.destroy();  
         //game.cache.removeSound('intro');
         if(position == "up"){
@@ -97,14 +101,14 @@ var Select = {
                     connection.send(strReq);
                 }
             }
-            else{
+            else {
                 this.symbolLocation(cursor.x);
-                if(symbols[index]){
+                if(symbols[index]) {
                     symbols[index].destroy();
                     symbols.splice(index, 1);
                     units.splice(index, 1);
                 }
-                else{
+                else {
                     cursor.clear();
                     position = "down";
                     oldX = cursor.x;
@@ -146,7 +150,10 @@ var Select = {
                     break;
             }
 
-            cursor.x = oldX;
+            if(oldX+168 > 748)
+                cursor.x = oldX;
+            else
+                cursor.x = oldX+=168;
             cursor.y = oldY;
         }
     },
@@ -206,5 +213,10 @@ var Select = {
             cursor.x = 720;
             cursor.y = 530;
         }
+    },
+
+    startGame : function() {
+        // start unit selection, change game state
+        this.state.start('Game');
     }
 };

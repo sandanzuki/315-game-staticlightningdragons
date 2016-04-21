@@ -10,7 +10,7 @@ PlayingState::PlayingState(LogWriter *log, int _game_id, Player *_player_one, Pl
     units_two = _units_two;
     map = _map;
     state_name = PLAYING;
-    player_turn = 1;
+    active_player = player_two;
     handle_turn_change();
 }
 
@@ -28,6 +28,13 @@ PlayingState::~PlayingState()
 
 void PlayingState::handle_request(Player *p, EventRequest *r)
 {
+    // Regardless of the type of Request, if it's not the Player's turn, it's illegal.
+    if(p != active_player)
+    {
+        notify_illegal_request(p->get_connection(), r);
+        return;
+    }
+
     // Depending on the type, we do different things.
     string type = (*r)["type"].asString();
     if(type.compare("UnitMoveRequest") == 0)
@@ -46,11 +53,9 @@ void PlayingState::handle_request(Player *p, EventRequest *r)
 
 bool PlayingState::tick(double time)
 {
-    // TODO - maybe include a timer for timed stuff, ya know?
-
     // If the turn is over, change turns.
     bool turn_complete = true;
-    if(player_turn == 1)
+    if(active_player == player_one)
     {
         for(Unit *u : units_one)
         {
@@ -106,14 +111,27 @@ bool PlayingState::tick(double time)
 
 void PlayingState::handle_turn_change()
 {
-    if(player_turn == 1)
+    // Set the active Player.
+    if(active_player == player_one)
     {
-        player_turn = 2;
+        active_player = player_two;
     }
     else
     {
-        player_turn = 1;
+        active_player = player_one;
     }
+
+    // Notify all units that they can move and interact again.
+    for(Unit *u : units_one)
+    {
+        u->new_turn();
+    }
+    for(Unit *u : units_two)
+    {
+        u->new_turn();
+    }
+
+    // Notify players of the turn change.
     notify_turn_change();
 }
 
@@ -127,24 +145,27 @@ void PlayingState::handle_unit_interact(Player *p, EventRequest *r)
     }
 
     // Determine which set of Units we're working with.
-    vector<Unit*> *units = NULL;
+    vector<Unit*> *friendly_units = NULL;
+    vector<Unit*> *enemy_units = NULL;
     if(p == player_one)
     {
-        units = &units_one;
+        friendly_units = &units_one;
+        enemy_units = &units_two;
     }
     else if(p == player_two)
     {
-        units = &units_two;
+        friendly_units = &units_two;
+        enemy_units = &units_one;
     }
 
     // Verify that the attacking Unit exists.
     int unit_id = (*r)["unit_id"].asInt();
-    if(unit_id >= units->size())
+    if(unit_id >= friendly_units->size())
     {
         notify_illegal_request(p->get_connection(), r);
         return;
     }
-    Unit *unit = (*units)[unit_id];
+    Unit *unit = (*friendly_units)[unit_id];
 
     // If the targetId is empty, don't do anything.
     int target_id = (*r)["target_id"].asInt();
@@ -157,14 +178,24 @@ void PlayingState::handle_unit_interact(Player *p, EventRequest *r)
 
     // Otherwise, go ahead and try to do stuff.
     // Verify that the target Unit exists.
-    if(unit_id >= units->size())
+    if(unit_id >= friendly_units->size())
     {
         notify_illegal_request(p->get_connection(), r);
         return;
     }
 
+    // If the primary Unit is a healer, then the target Unit is friendly. Otherwise, enemy.
+    Unit *target = NULL;
+    if(unit->get_type() == HEALER)
+    {
+        target = (*friendly_units)[target_id];
+    }
+    else
+    {
+        target = (*enemy_units)[target_id];
+    }
+
     // If it exists, get it. Also verify that both Units are alive.
-    Unit *target = (*units)[target_id];
     if(!unit->is_alive() || !target->is_alive())
     {
         notify_illegal_request(p->get_connection(), r);
@@ -226,11 +257,12 @@ void PlayingState::handle_unit_move(Player *p, EventRequest *r)
     }
 
     // See if the Unit can move to that tile.
-    if(!tile_reachable(unit->get_move_distance(), unit->get_x(), unit->get_y(), x, y))
-    {
-        notify_illegal_request(p->get_connection(), r);
-        return;
-    }
+    // TODO - get this working again
+    //if(!tile_reachable(unit->get_move_distance(), unit->get_x(), unit->get_y(), x, y))
+    //{
+        //notify_illegal_request(p->get_connection(), r);
+        //return;
+    //}
 
     // If we can move, go ahead annd move then!
     unit->set_position(x, y);
@@ -240,13 +272,10 @@ void PlayingState::handle_unit_move(Player *p, EventRequest *r)
 void PlayingState::notify_turn_change()
 {
     // Change the player_turn.
-    if (player_turn == 1)
+    int player_turn = 1;
+    if(active_player == player_two)
     {
         player_turn = 2;
-    }
-    else
-    {
-        player_turn = 1;
     }
 
     // Build the Event
@@ -317,6 +346,12 @@ void PlayingState::notify_unit_move(EventRequest *r, Unit *target)
 
 bool PlayingState::tile_reachable(int distance, int x, int y, int to_x, int to_y)
 {
+    // If we can't go any farther, return false.
+    if(distance < 0)
+    {
+        return  false;
+    }
+
     // Verify that the current (x,y) are not outside the map.
     if(x < 0 || y < 0 || x >= map->get_width() || y >= map->get_height())
     {
@@ -329,14 +364,10 @@ bool PlayingState::tile_reachable(int distance, int x, int y, int to_x, int to_y
         return false;
     }
 
-    // If we can't go any farther...
-    if(distance < 1)
+    // If we're there, we're there!
+    if(x == to_x && y == to_y)
     {
-        if(x == to_x && y == to_y)
-        {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     // However, if we can go further, let's try.

@@ -1,4 +1,5 @@
 var map,
+    turn,
     option,
     arrow,
     background,
@@ -21,7 +22,29 @@ var map,
     pause = false,
     battle_music,
     moveRequest = new Object(),
+    attackRequest = new Object(),
+    hb_cnfg = { // healthbar
+        width: 35,
+        height: 4,
+        x: 100,
+        y: 100,
+        bg: {color: '#FF4D4D'},
+        bar: {color: '#33FF33'},
+        animationDuration: 800,
+        flipped: false 
+    };
+    counter = 60;
+
+window.my_hit2 = function() { this.myHealthBar2.setPercent(0); } // healthbar
+
+window.updateCounter = function() {
+    if(counter > 0)
+        counter--;
+    time_font.setText(counter);
+}
+
     attackRequest = new Object();
+    lockRequest = new Object();
 
 var Game = { 
     preload : function() {
@@ -33,11 +56,13 @@ var Game = {
         game.load.image('b_archer', './assets/images/b_archer.png');
         game.load.image('b_mage', './assets/images/b_mage.png');
         game.load.image('b_fighter', './assets/images/b_fighter.png');
+        game.load.image('b_healer', './assets/images/b_healer.png');
 
         //red units
         game.load.image('r_archer', './assets/images/r_archer.png');
         game.load.image('r_mage', './assets/images/r_mage.png');
         game.load.image('r_fighter', './assets/images/r_fighter.png');
+        game.load.image('r_healer', './assets/images/r_healer.png');
 
         game.load.image('option', './assets/images/option.png');
         game.load.image('arrow', './assets/images/arrow_white.png');
@@ -69,6 +94,43 @@ var Game = {
         blocked.fixedToCamera = false;
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
+
+
+        // healthbar 
+        // please leave comments alone!
+        // --------------------------------------------------------------------------------
+        this.myHealthBar = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar2 = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar3 = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar4 = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar5 = new HealthBar(this.game, hb_cnfg);
+
+        this.myHealthBar.setPosition(30, 0); 
+        this.myHealthBar2.setPosition(30, 62); 
+        this.myHealthBar3.setPosition(30, 123); 
+        this.myHealthBar4.setPosition(30, 183); 
+        this.myHealthBar5.setPosition(30, 243); 
+
+        returnA = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        returnA.onDown.add(this.my_hit, this); 
+
+        returnB = game.input.keyboard.addKey(Phaser.Keyboard.B);
+        returnB.onDown.add(this.do_hit, this); //  'this' limits function 'my_hit2' in scope of var Game
+        // --------------------------------------------------------------------------------
+
+
+        // time 
+        // please leave comments alone!
+        // --------------------------------------------------------------------------------
+        time_font = game.add.text(850, 9, '60', { 
+            font: "35px Playfair Display",
+            fill: "#ffffff", 
+            align: "center" 
+        });
+
+        game.time.events.repeat(Phaser.Timer.SECOND * 1, 60, updateCounter, this);
+        // --------------------------------------------------------------------------------
+
 
         //bg music can go here when ready
         //battle_music = game.add.audio('battle');
@@ -108,6 +170,12 @@ var Game = {
         attackRequest.type = "UnitInteractRequest";
         attackRequest.unit_id;
         attackRequest.target_id;
+
+        lockRequest.game_id = gameId;
+        lockRequest.request_id = 72;
+        lockRequest.type = "UnitInteractRequest";
+        lockRequest.unit_id;
+        lockRequest.target_id = -1;
     },
 
     update : function() {
@@ -127,6 +195,23 @@ var Game = {
         pauseButton.onDown.add(this.pauseGame, this);
         skipButton.onDown.add(this.skip, this);
     },
+
+
+    // time 
+    // please leave comments alone!
+    // --------------------------------------------------------------------------------
+    render : function() {
+    //    game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+    },
+    // --------------------------------------------------------------------------------
+
+    // healthbar
+    // please leave comments alone!
+    // --------------------------------------------------------------------------------
+    do_hit : function() { game.time.events.add( Phaser.Timer.SECOND * 4, my_hit2, this); },
+    my_hit : function() { this.myHealthBar.setPercent(30); },
+    // --------------------------------------------------------------------------------
+
 
     // load units onto tilemap
     loadUnits : function() {
@@ -158,6 +243,8 @@ var Game = {
                     map.getTileWorldXY(blueX,blueY).unit = bFighter; 
                     bFighter.maxHealth=100;
                     bFighter.name = "Friendly Fighter";
+                    bFighter.id = i;
+                    bFighter.owner = playerId;
                     friendlyUnits.push(bFighter); 
                     break;
                 case "ARCHER":
@@ -165,6 +252,8 @@ var Game = {
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 2;
                     map.getTileWorldXY(blueX, blueY).unit = bArcher;
                     bArcher.name = "Friendly Archer";
+                    bArcher.id = i;
+                    bArcher.owner = playerId;
                     friendlyUnits.push(bArcher);
                     break;
                 case "MAGE":
@@ -173,8 +262,17 @@ var Game = {
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 3;
                     map.getTileWorldXY(blueX, blueY).unit = bMage;
                     bMage.name = "Friendly Mage";
+                    bMage.id = i;
+                    bMage.owner = playerId;
                     break;
                 case "HEALER":
+                    bHealer = game.add.sprite(blueX, blueY,'b_healer');
+                    friendlyUnits.push(bHealer);
+                    map.getTileWorldXY(blueX, blueY).properties.unitType = 4;
+                    map.getTileWorldXY(blueX, blueY).unit = bHealer;
+                    bHealer.name = "Friendly Healer";
+                    bHealer.id = i;
+                    bHealer.owner = playerId;
                     break;
                 default:
                     break;
@@ -182,6 +280,13 @@ var Game = {
             blueY += 60;
         }
 
+        var enemyId;
+        if(playerId == 1){
+            enemyId = 2;
+        }
+        else{
+            enemyId = 1;
+        }
         //add all red sprites to the map
         for(var i = 1; i<=5; i++){
             switch(otherUnits[i].type){
@@ -191,6 +296,8 @@ var Game = {
                     map.getTileWorldXY(redX, redY).properties.unitType = 1;
                     map.getTileWorldXY(redX, redY).unit = rFighter;
                     rFighter.name = "Enemy Fighter";
+                    rFighter.id = i-1;
+                    rFighter.owner = enemyId;
                     break;
                 case "ARCHER":
                     rArcher = game.add.sprite(redX, redY, 'r_archer');
@@ -198,6 +305,8 @@ var Game = {
                     map.getTileWorldXY(redX, redY).properties.unitType = 2
                     map.getTileWorldXY(redX, redY).unit = rArcher;
                     rArcher.name = "Enemy Archer";
+                    rArcher.id = i-1;
+                    rArcher.owner = enemyId;
                     break;
                 case "MAGE":
                     rMage = game.add.sprite(redX, redY, 'r_mage');
@@ -205,8 +314,17 @@ var Game = {
                     map.getTileWorldXY(redX, redY).properties.unitType = 3;
                     map.getTileWorldXY(redX, redY).unit = rMage;
                     rMage.name = "Enemy Mage";
+                    rMage.id = i-1;
+                    rMage.owner = enemyId;
                     break;
                 case "HEALER":
+                    rHealer = game.add.sprite(redX, redY,'r_healer');
+                    enemyUnits.push(rHealer);
+                    map.getTileWorldXY(redX, redY).properties.unitType = 4;
+                    map.getTileWorldXY(redX, redY).unit = rHealer;
+                    rHealer.name = "Enemy Healer";
+                    rHealer.id = i-1;
+                    rHealer.owner = enemyId;
                     break;
                 default:
                     break;
@@ -432,7 +550,11 @@ var Game = {
                             this.getMoveOptions(currTile, 3);
                             return currTile;
                             break;
-                            
+
+                        case 4: // unit is healer
+                            isDown = 1;
+                            this.getMoveOptions(currTile, 4);
+                            return currTile;
                         default:
                             break;
                     }
@@ -469,7 +591,9 @@ var Game = {
                 max = 5;
                 attackRange = 1;
                 break;
-
+            case 4:
+                max = 6;
+                attackRange = 1;
             default:
                 break;
         }
@@ -602,12 +726,12 @@ var Game = {
         var oldTile = map.getTile(coordinates[0], coordinates[1], background);
 
         var strReq;
+        moveRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
         moveRequest.unit_id = oldTile.unit.id;
         moveRequest.x = x;
         moveRequest.y = y;
 
         strReq = JSON.stringify(moveRequest);
-        console.log(strReq);
         connection.send(strReq);
 
         if (possibleTiles.indexOf(currTile) != -1) {
@@ -691,6 +815,13 @@ var Game = {
             this.unlockUnits(enemyUnits);
             lockCounter = 0;
         }
+
+        var strReq;
+        lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+        lockRequest.unit_id = unit.id;
+
+        strReq = JSON.stringify(lockRequest);
+        connection.send(strReq);
     },
 
     unlockUnits : function(unitList) {
@@ -723,5 +854,39 @@ var Game = {
         this.unlockUnits(friendlyUnits);
         this.unlockUnits(enemyUnits);
         lockCounter = 0;
+    },
+
+    //upon receiving an event from the server, the oppenent's unit is moved
+    opponentMove : function(unitId, x, y) {
+        var oldTile;
+        var newTile;
+        var oldX;
+        var oldY;
+        var unit;
+        var newX = x;
+        var newY = y;
+
+        for(var i = 0; i<enemyUnits.length; i++){
+            unit = enemyUnits[i];
+            if((unit.id == unitId) && (unit.owner == turn)){
+                console.log(unit.owner);
+
+                oldX = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                oldY = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                newTile = map.getTile(newX, newY, background);
+                oldTile = map.getTile(oldX, oldY, background);
+
+                oldTile.unit.x = newTile.worldX;
+                oldTile.unit.y = newTile.worldY;
+                newTile.unit = oldTile.unit;
+
+                // give the new tile all of the old tile's properties
+                newTile.properties.unitType = oldTile.properties.unitType;
+                oldTile.properties.unitType = 0;
+                oldTile.unit = null;
+            }
+        } 
+
+        
     }
 };
