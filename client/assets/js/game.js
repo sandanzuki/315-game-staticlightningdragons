@@ -8,6 +8,7 @@ var map,
     GRAVITY = 900,
     cursor,
     bFighter, bArcher, bMage, bHealer,
+    hBars = [],
     rFighter, rArcher, rMage, rHealer,
     possibleTiles = [],
     attackTiles = [],
@@ -98,17 +99,19 @@ var Game = {
         // healthbar 
         // please leave comments alone!
         // --------------------------------------------------------------------------------
-        // myHealthBar = new HealthBar(this.game, hb_cnfg);
-        // myHealthBar2 = new HealthBar(this.game, hb_cnfg);
-        // myHealthBar3 = new HealthBar(this.game, hb_cnfg);
-        // myHealthBar4 = new HealthBar(this.game, hb_cnfg);
-        // myHealthBar5 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar = new HealthBar(this.game, hb_cnfg);
+        myHealthBar2 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar3 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar4 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar5 = new HealthBar(this.game, hb_cnfg);
 
         // myHealthBar.setPosition(30, 0); 
         // myHealthBar2.setPosition(30, 62); 
         // myHealthBar3.setPosition(30, 123); 
         // myHealthBar4.setPosition(30, 183); 
         // myHealthBar5.setPosition(30, 243); 
+
+        hBars = [myHealthBar, myHealthBar2, myHealthBar3, myHealthBar4, myHealthBar5];
 
         returnA = game.input.keyboard.addKey(Phaser.Keyboard.A);
         returnA.onDown.add(this.my_hit, this); 
@@ -234,8 +237,8 @@ var Game = {
             switch(units[i].type){
                 case "FIGHTER":
                     bFighter = game.add.sprite(blueX, blueY,'b_fighter');
-                    bFighter.hBar = new HealthBar(this.game, hb_cnfg);
-                    bFighter.hBar.setPosition(30, 0);
+                    bFighter.hBar = hBars[i-1];
+                    hBars[i-1].setPosition(30, 0);
 
                     map.getTileWorldXY(blueX,blueY).properties.unitType = 1; 
                     map.getTileWorldXY(blueX,blueY).unit = bFighter; 
@@ -793,7 +796,7 @@ var Game = {
                 // oldTile.unit = null;
 
                 // unit is now locked and cannot be moved again
-                this.lockUnit(currTile.unit); 
+                this.lockUnit(oldTile.unit); 
             }
         } else {
             this.output("No unit to attack there");
