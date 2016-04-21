@@ -1,26 +1,5 @@
 var layer, layer2, layer3,// layers of loaded images
-    counter = 0; // counter to cycle thru images
-
-// cycle to next image
-window.nextLayer = function() { 
-    if(counter == 0)
-        layer.visible = !layer.visible;
-    if(counter == 1)
-        layer2.visible = !layer2.visible;
-    counter++;
-}
-
-// cycle to prev image
-window.prevLayer = function() { 
-    if(counter == 1) {
-        layer.visible = !layer.visible;
-        counter = 0;
-    }
-    if(counter >= 1) { 
-        layer2.visible = !layer2.visible;
-        counter = 1;
-    }
-}
+    tutorial_counter = 0; // tutorial_counter to cycle thru images
 
 var Tutorial = {
     preload : function() {
@@ -44,17 +23,38 @@ var Tutorial = {
         nextButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         prevButton = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
 
-        nextButton.onDown.add(nextLayer, this);
-        prevButton.onDown.add(prevLayer, this);
+        nextButton.onDown.add(this.nextLayer, this);
+        prevButton.onDown.add(this.prevLayer, this);
         
         // skip tutorial
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.startSelect, this);
     },
 
+    // cycle to next image
+    nextLayer : function() { 
+        if(tutorial_counter == 0)
+            layer.visible = !layer.visible;
+        if(tutorial_counter == 1)
+            layer2.visible = !layer2.visible;
+        tutorial_counter++;
+    },
+
+    // cycle to prev image
+    prevLayer : function() { 
+        if(tutorial_counter == 1) {
+            layer.visible = !layer.visible;
+            tutorial_counter = 0;
+        }
+        if(tutorial_counter >= 1) { 
+            layer2.visible = !layer2.visible;
+            tutorial_counter = 1;
+        }
+    },
+
     startSelect : function() {
         // start unit selection, change game state
-        counter = 0;
+        tutorial_counter = 0;
         this.state.start('Username');
     }
 };
