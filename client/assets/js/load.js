@@ -8,7 +8,6 @@ var Load = {
         var connection;
     },
 
-
     create : function() {
         // TODO change this to depend on player connecting.
         // that is, when another player is connected, it is

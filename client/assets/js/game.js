@@ -95,7 +95,6 @@ var Game = {
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
 
-
         // healthbar 
         // please leave comments alone!
         // --------------------------------------------------------------------------------
@@ -118,7 +117,6 @@ var Game = {
         returnB.onDown.add(this.do_hit, this); //  'this' limits function 'my_hit2' in scope of var Game
         // --------------------------------------------------------------------------------
 
-
         // time 
         // please leave comments alone!
         // --------------------------------------------------------------------------------
@@ -130,7 +128,6 @@ var Game = {
 
         game.time.events.repeat(Phaser.Timer.SECOND * 1, 60, updateCounter, this);
         // --------------------------------------------------------------------------------
-
 
         //bg music can go here when ready
         //battle_music = game.add.audio('battle');
@@ -196,7 +193,6 @@ var Game = {
         skipButton.onDown.add(this.skip, this);
     },
 
-
     // time 
     // please leave comments alone!
     // --------------------------------------------------------------------------------
@@ -211,7 +207,6 @@ var Game = {
     do_hit : function() { game.time.events.add( Phaser.Timer.SECOND * 4, my_hit2, this); },
     my_hit : function() { this.myHealthBar.setPercent(30); },
     // --------------------------------------------------------------------------------
-
 
     // load units onto tilemap
     loadUnits : function() {
@@ -287,6 +282,7 @@ var Game = {
         else{
             enemyId = 1;
         }
+
         //add all red sprites to the map
         for(var i = 1; i<=5; i++){
             switch(otherUnits[i].type){
@@ -767,7 +763,6 @@ var Game = {
         console.log(strReq);
         //connection.send(strReq);
 
-
         if (selectedUnit && targetedUnit) {
             if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)) {
                 targetedUnit.kill();
@@ -886,7 +881,5 @@ var Game = {
                 oldTile.unit = null;
             }
         } 
-
-        
     }
 };

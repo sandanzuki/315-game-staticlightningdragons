@@ -21,7 +21,7 @@ var Username = {
         });
         username.setTextBounds(0, 0, 450, 100);
 
-        // active key input
+        // keyboard input assignments
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         deleteButton = game.input.keyboard.addKey(Phaser.Keyboard.BACKSPACE);
 
@@ -62,7 +62,7 @@ var Username = {
         return8 = game.input.keyboard.addKey(Phaser.Keyboard.EIGHT);
         return9 = game.input.keyboard.addKey(Phaser.Keyboard.NINE);
 
-        // map key to function 
+        // map keys to function 
         enterButton.onDown.add(this.startGame, this);
         deleteButton.onDown.add(this.deleteChar, this);
 

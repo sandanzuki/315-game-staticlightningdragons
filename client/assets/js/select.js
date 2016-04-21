@@ -2,11 +2,9 @@ var cursor,
     oldX, oldY;
 
 var position = "up";
-
 var index;
 var symbols=[];
 var request;
-
 
 var Select = {
     preload : function() {
