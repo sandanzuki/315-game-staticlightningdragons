@@ -10,7 +10,7 @@ var Menu = {
         game.load.image('arrow_white', './assets/images/arrow_white.png');
 
         game.load.audio('clang', './assets/audio/soundeffects/clang.mp3');
-        game.load.audio('intro', './assets/audio/music/exposition.ogg');
+        game.load.audio('intro', './assets/audio/music/Exposition.ogg');
 
         // align canvas
         game.scale.pageAlignHorizontally = true;
