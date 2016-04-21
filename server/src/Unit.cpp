@@ -95,6 +95,10 @@ bool Unit::interact(Unit *target)
         return false;
     }
 
+    // Note that this Unit can no longer move or interact.
+    interacted = true;
+    moved = true;
+
     // Let's see if it hits. There's a 25% chance of missing.
     if(rand() % 4 == 0)
     {
@@ -110,10 +114,6 @@ bool Unit::interact(Unit *target)
     {
         apply_damage(this, true);
     }
-
-    // Note that this Unit can no longer move or interact.
-    interacted = true;
-    moved = true;
 
     // If we've gotten here, everything was successful!
     return true;
