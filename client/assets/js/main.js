@@ -7,11 +7,11 @@ var connection,
  	playerServerId,
  	gameId,
  	canMove,
+ 	turn,
  	//units the player chooses in selection phase
  	units = [],
  	//units the opposing player chose
- 	otherUnits = [],
- 	newHealth;
+ 	otherUnits = [];
 
 game = new Phaser.Game(900, 600, Phaser.AUTO,'');
 
