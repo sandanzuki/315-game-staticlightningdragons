@@ -32,7 +32,7 @@ var map,
         bar: {color: '#33FF33'},
         animationDuration: 800,
         flipped: false 
-    };
+    },
     counter = 60;
 
 window.my_hit2 = function() { this.myHealthBar2.setPercent(0); } // healthbar
@@ -43,12 +43,12 @@ window.updateCounter = function() {
     time_font.setText(counter);
 }
 
-    attackRequest = new Object();
-    lockRequest = new Object();
+attackRequest = new Object();
+lockRequest = new Object();
 
 var Game = { 
     preload : function() {
-         // load map
+        // load map
         game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);
         game.load.image('gameTiles', './assets/images/mapTiles.png');
 
@@ -140,7 +140,7 @@ var Game = {
 
         cursor = game.add.graphics();
         cursor.lineStyle(2, 0xffffff, 1);
-        
+
         if(playerId == 1)
             cursor.drawRect(1, 1, 58, 58);
         else if(playerId == 2){
@@ -197,7 +197,7 @@ var Game = {
     // please leave comments alone!
     // --------------------------------------------------------------------------------
     render : function() {
-    //    game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+        //    game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     },
     // --------------------------------------------------------------------------------
 
@@ -211,7 +211,7 @@ var Game = {
     // load units onto tilemap
     loadUnits : function() {
         var blueX, blueY,
-            redX, redY;
+        redX, redY;
         switch(playerId){
             case(1):
                 blueX = 0;
@@ -299,7 +299,7 @@ var Game = {
                     rArcher = game.add.sprite(redX, redY, 'r_archer');
                     enemyUnits.push(rArcher);
                     map.getTileWorldXY(redX, redY).properties.unitType = 2
-                    map.getTileWorldXY(redX, redY).unit = rArcher;
+                        map.getTileWorldXY(redX, redY).unit = rArcher;
                     rArcher.name = "Enemy Archer";
                     rArcher.id = i-1;
                     rArcher.owner = enemyId;
@@ -404,7 +404,7 @@ var Game = {
                 arrow.y = 422;
             else
                 arrow.y -= 39;
-            
+
             switch (arrow.y) {
                 case(305):
                     arrow.x = 315;
@@ -468,7 +468,7 @@ var Game = {
             // remove the text below the game screen
             if (document.getElementById("stats").childNodes.length != 0)
                 this.output("");
-            
+
             if (isDown == 0)
                 oldTile = this.moveMenu();
             else {
@@ -534,13 +534,13 @@ var Game = {
                             this.getMoveOptions(currTile, 1);
                             return currTile;
                             break;
-                            
+
                         case 2: // unit is archer
                             isDown = 1;
                             this.getMoveOptions(currTile, 2);
                             return currTile;
                             break;
-                            
+
                         case 3: // unit is mage
                             isDown = 1;
                             this.getMoveOptions(currTile, 3);
@@ -709,7 +709,7 @@ var Game = {
                 j--;
             }
         }
-        
+
         return possibleTiles;
     },
 
@@ -748,7 +748,7 @@ var Game = {
             }
         } else if (attackTiles.indexOf(currTile) != -1)
             this.attack(oldTile, currTile);
-        
+
         graphics.clear();
     },
 
@@ -771,7 +771,7 @@ var Game = {
                 clang.play();
                 this.output("Killed: " + targetedUnit.name)    
 
-                oldTile.unit.x = currTile.worldX;
+                    oldTile.unit.x = currTile.worldX;
                 oldTile.unit.y = currTile.worldY;
                 currTile.unit = oldTile.unit;
 
@@ -799,7 +799,7 @@ var Game = {
         lockGraphics.lineStyle(2, 0x4d4d4d, 1); 
         lockGraphics.beginFill(0x4d4d4d, .5);
         lockGraphics.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
-        
+
         // increment the number of locked units (in place of turns)
         lockCounter++; 
 
