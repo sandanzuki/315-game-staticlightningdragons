@@ -1,4 +1,4 @@
-var layer, layer2, // layers of loaded images
+var layer, layer2, layer3,// layers of loaded images
     counter = 0; // counter to cycle thru images
 
 // cycle to next image
