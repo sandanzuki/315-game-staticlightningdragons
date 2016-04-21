@@ -1,5 +1,7 @@
 var clang, intro_music,
     arrow,
+    x, y,
+    opponentId,
     response = new Object(); 
 
 var Menu = {
@@ -163,9 +165,11 @@ var Menu = {
                     console.log(response);
                     if(playerId == 1){
                         otherUnits = response.player_two;
+                        units = response.player_one;
                     }
                     else if(playerId == 2){
                         otherUnits = response.player_one;
+                        units = response.player_two;
                     }
                     this.state.start('Game');
                     break;
@@ -175,13 +179,15 @@ var Menu = {
                     break;
                 case("UnitMoveEvent"):
                     console.log(response);
-                    var opponentId = response.unit_id;
-                    var x = response.unit_x;
-                    var y = response.unit_y;
-                    Game.opponentMove(opponentId, x, y);
+                    opponentId = response.unit_id;
+                    x = response.unit_x;
+                    y = response.unit_y;
                     break;
                 case("UnitInteractEvent"):
                     console.log(response);
+                    
+                    if(response.target_id == -1)
+                        Game.opponentMove(opponentId, x, y);
                     break;
                 default:
                     console.log(response);
