@@ -303,12 +303,9 @@ var Game = {
                     rArcher = game.add.sprite(redX, redY, 'r_archer');
                     enemyUnits.push(rArcher);
                     map.getTileWorldXY(redX, redY).properties.unitType = 2
-<<<<<<< HEAD
                         map.getTileWorldXY(redX, redY).unit = rArcher;
-=======
                     map.getTileWorldXY(redX, redY).unit = rArcher;
                     rArcher.health = otherUnits[i].hp;
->>>>>>> 105e57da71f4a014be6d32df9999467b9eb50b83
                     rArcher.name = "Enemy Archer";
                     rArcher.id = i-1;
                     rArcher.owner = enemyId;
@@ -787,15 +784,9 @@ var Game = {
                 clang.play();
                 this.output("Attacked: " + targetedUnit.name)    
 
-<<<<<<< HEAD
-                    oldTile.unit.x = currTile.worldX;
-                oldTile.unit.y = currTile.worldY;
-                currTile.unit = oldTile.unit;
-=======
                 // oldTile.unit.x = currTile.worldX;
                 // oldTile.unit.y = currTile.worldY;
                 // currTile.unit = oldTile.unit;
->>>>>>> 105e57da71f4a014be6d32df9999467b9eb50b83
 
                 // currTile.properties.unitType = oldTile.properties.unitType; // give the new tile all of the old tile's properties
                 // oldTile.properties.unitType = 0;
