@@ -201,7 +201,7 @@ var Game = {
     // please leave comments alone!
     // --------------------------------------------------------------------------------
     render : function() {
-        game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+    //    game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
     },
     // --------------------------------------------------------------------------------
 
