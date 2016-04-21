@@ -22,6 +22,27 @@ var map,
     pause = false,
     battle_music,
     moveRequest = new Object(),
+    attackRequest = new Object(),
+    hb_cnfg = { // healthbar
+        width: 35,
+        height: 4,
+        x: 100,
+        y: 100,
+        bg: {color: '#FF4D4D'},
+        bar: {color: '#33FF33'},
+        animationDuration: 800,
+        flipped: false 
+    };
+    counter = 60;
+
+window.my_hit2 = function() { this.myHealthBar2.setPercent(0); } // healthbar
+
+window.updateCounter = function() {
+    if(counter > 0)
+        counter--;
+    time_font.setText(counter);
+}
+
     attackRequest = new Object();
     lockRequest = new Object();
 
@@ -73,6 +94,40 @@ var Game = {
         blocked.fixedToCamera = false;
         blocked.scrollFactorX = 0;
         blocked.scrollFactorY = 0;
+
+        // healthbar 
+        // please leave comments alone!
+        // --------------------------------------------------------------------------------
+        this.myHealthBar = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar2 = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar3 = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar4 = new HealthBar(this.game, hb_cnfg);
+        this.myHealthBar5 = new HealthBar(this.game, hb_cnfg);
+
+        this.myHealthBar.setPosition(30, 0); 
+        this.myHealthBar2.setPosition(30, 62); 
+        this.myHealthBar3.setPosition(30, 123); 
+        this.myHealthBar4.setPosition(30, 183); 
+        this.myHealthBar5.setPosition(30, 243); 
+
+        returnA = game.input.keyboard.addKey(Phaser.Keyboard.A);
+        returnA.onDown.add(this.my_hit, this); 
+
+        returnB = game.input.keyboard.addKey(Phaser.Keyboard.B);
+        returnB.onDown.add(this.do_hit, this); //  'this' limits function 'my_hit2' in scope of var Game
+        // --------------------------------------------------------------------------------
+
+        // time 
+        // please leave comments alone!
+        // --------------------------------------------------------------------------------
+        time_font = game.add.text(850, 9, '60', { 
+            font: "35px Playfair Display",
+            fill: "#ffffff", 
+            align: "center" 
+        });
+
+        game.time.events.repeat(Phaser.Timer.SECOND * 1, 60, updateCounter, this);
+        // --------------------------------------------------------------------------------
 
         //bg music can go here when ready
         //battle_music = game.add.audio('battle');
@@ -137,6 +192,21 @@ var Game = {
         pauseButton.onDown.add(this.pauseGame, this);
         skipButton.onDown.add(this.skip, this);
     },
+
+    // time 
+    // please leave comments alone!
+    // --------------------------------------------------------------------------------
+    render : function() {
+    //    game.debug.text("Time until event: " + game.time.events.duration, 32, 32);
+    },
+    // --------------------------------------------------------------------------------
+
+    // healthbar
+    // please leave comments alone!
+    // --------------------------------------------------------------------------------
+    do_hit : function() { game.time.events.add( Phaser.Timer.SECOND * 4, my_hit2, this); },
+    my_hit : function() { this.myHealthBar.setPercent(30); },
+    // --------------------------------------------------------------------------------
 
     // load units onto tilemap
     loadUnits : function() {
@@ -215,6 +285,7 @@ var Game = {
         else{
             enemyId = 1;
         }
+
         //add all red sprites to the map
         for(var i = 1; i<=5; i++){
             switch(otherUnits[i].type){
@@ -704,7 +775,6 @@ var Game = {
 
         //case()
 
-
         if (selectedUnit && targetedUnit) {
             if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)) {
                 //targetedUnit.kill();
@@ -816,7 +886,5 @@ var Game = {
                 oldTile.unit = null;
             }
         } 
-
-        
     }
 };

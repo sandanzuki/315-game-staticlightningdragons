@@ -21,10 +21,16 @@ var Menu = {
         this.add.sprite(0, 0, 'menu'); // add background
         arrow = this.add.sprite(205, 345, 'arrow_white');
 
-        clang = game.add.audio('clang');
+        // clang = game.add.audio('clang');
         //bg music when ready
         // intro_music = game.add.audio('intro');
         // intro_music.loopFull();
+
+        toButton = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        toButton.onDown.add(this.startGame, this);
+
+        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        enterButton.onDown.add(this.select, this);
 
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.select, this);
@@ -32,8 +38,12 @@ var Menu = {
         downButton = game.input.keyboard.addKey(Phaser.Keyboard.DOWN);
         downButton.onDown.add(this.moveDown, this);
 
-        upButton = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-        upButton.onDown.add(this.moveUp, this);
+        skip_to_game = game.input.keyboard.addKey(Phaser.Keyboard.N);
+        skip_to_game.onDown.add(this.to_game, this);
+    },
+
+    to_game : function() {
+        this.state.start('Game');
     },
 
     moveDown : function() {
@@ -184,6 +194,11 @@ var Menu = {
                     break;
             }
         }
+    },
+
+    startGame: function() {
+        // start unit selection, change game state
+        this.state.start('Game');
     }
 };
 
