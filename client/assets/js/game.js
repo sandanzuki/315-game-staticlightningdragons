@@ -1,5 +1,4 @@
 var map,
-    turn,
     option,
     arrow,
     background,
@@ -32,10 +31,11 @@ var map,
         y: 100,
         bg: {color: '#FF4D4D'},
         bar: {color: '#33FF33'},
-        animationDuration: 800,
+        animationDuration: 400,
         flipped: false 
     },
-    counter = 60;
+    counter = 60,
+    tutorialState = true;
 
 window.my_hit2 = function() { this.myHealthBar2.setPercent(0); } // healthbar
 
@@ -370,7 +370,14 @@ var Game = {
     },
 
     hpBarsHit : function(targetId, targetHp, unitId, unitHp){
-
+        if(turn == playerId){
+            hBars[unitId].setPercent(unitHp);
+            enemyHBars[targetId].setPercent(targetHp);
+        }
+        else{
+            hBars[targetId].setPercent(targetHp);
+            enemyHBars[unitId].setPercent(unitHp);
+        }
     },
 
     // move cursor tile by tile
