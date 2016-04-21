@@ -178,9 +178,20 @@ var Menu = {
                     break;
                 case("UnitInteractEvent"):
                     console.log(response);
-                    
+                    var targetId;
+                    var targetHp;
+                    var unitId;
+                    var unitHp;
+
                     if(response.target_id == -1)
                         Game.opponentMove(opponentId, x, y);
+                    else{
+                        targetId = response.target_id;
+                        targetHp = response.target_hp;
+                        unitId = response.unit_id;
+                        unitHp = response.unit_hp;
+                        Game.hpBarsHit(targetId, targetHp, unitId, unitHp);
+                    }
                     break;
                 default:
                     console.log(response);

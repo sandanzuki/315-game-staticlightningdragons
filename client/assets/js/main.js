@@ -10,7 +10,8 @@ var connection,
  	//units the player chooses in selection phase
  	units = [],
  	//units the opposing player chose
- 	otherUnits = [];
+ 	otherUnits = [],
+ 	newHealth;
 
 game = new Phaser.Game(900, 600, Phaser.AUTO,'');
 

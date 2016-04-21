@@ -362,6 +362,17 @@ var Game = {
         }
     },
 
+    updateBar : function(i, x, y, isEnemy) {
+        if(!isEnemy)
+            hBars[i].setPosition(x+30, y);
+        else
+            enemyHBars[i].setPosition(x+30, y);
+    },
+
+    hpBarsHit : function(targetId, targetHp, unitId, unitHp){
+
+    },
+
     // move cursor tile by tile
     cursorDown : function() { 
         if (!pause) {
@@ -763,6 +774,7 @@ var Game = {
                 oldTile.properties.unitType = 0;
                 oldTile.unit = null;
 
+                this.updateBar(currTile.unit.id, currTile.unit.x, currTile.unit.y, false);
                 // show the user that this unit is now locked, and cannot be moved again
                 this.lockUnit(currTile.unit);
 
@@ -898,6 +910,8 @@ var Game = {
                 newTile.properties.unitType = oldTile.properties.unitType;
                 oldTile.properties.unitType = 0;
                 oldTile.unit = null;
+
+                this.updateBar(unitId, newTile.unit.x, newTile.unit.y, true);
             }
         } 
     }
