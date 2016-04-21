@@ -9,6 +9,7 @@ var map,
     cursor,
     bFighter, bArcher, bMage, bHealer,
     hBars = [],
+    enemyHBars = [],
     rFighter, rArcher, rMage, rHealer,
     possibleTiles = [],
     attackTiles = [],
@@ -99,19 +100,6 @@ var Game = {
         // healthbar 
         // please leave comments alone!
         // --------------------------------------------------------------------------------
-        myHealthBar = new HealthBar(this.game, hb_cnfg);
-        myHealthBar2 = new HealthBar(this.game, hb_cnfg);
-        myHealthBar3 = new HealthBar(this.game, hb_cnfg);
-        myHealthBar4 = new HealthBar(this.game, hb_cnfg);
-        myHealthBar5 = new HealthBar(this.game, hb_cnfg);
-
-        // myHealthBar.setPosition(30, 0); 
-        // myHealthBar2.setPosition(30, 62); 
-        // myHealthBar3.setPosition(30, 123); 
-        // myHealthBar4.setPosition(30, 183); 
-        // myHealthBar5.setPosition(30, 243); 
-
-        hBars = [myHealthBar, myHealthBar2, myHealthBar3, myHealthBar4, myHealthBar5];
 
         returnA = game.input.keyboard.addKey(Phaser.Keyboard.A);
         returnA.onDown.add(this.my_hit, this); 
@@ -136,7 +124,29 @@ var Game = {
         //battle_music = game.add.audio('battle');
         //battle_music.loopFull();
 
+        //create health bars then load the units
+        myHealthBar = new HealthBar(this.game, hb_cnfg);
+        myHealthBar2 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar3 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar4 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar5 = new HealthBar(this.game, hb_cnfg); 
+
+        hBars = [myHealthBar, myHealthBar2, myHealthBar3, myHealthBar4, myHealthBar5];
+
+        myHealthBar6 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar7 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar8 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar9 = new HealthBar(this.game, hb_cnfg);
+        myHealthBar10 = new HealthBar(this.game, hb_cnfg); 
+
+        enemyHBars = [myHealthBar6, myHealthBar7, myHealthBar8, myHealthBar9, myHealthBar10];
+
         this.loadUnits();
+
+        for(var i = 0; i<friendlyUnits.length; i++){
+            hBars[i].setPosition(friendlyUnits[i].x+30, friendlyUnits[i].y);
+            enemyHBars[i].setPosition(enemyUnits[i].x+30, enemyUnits[i].y);
+        }
 
         lockGraphics = game.add.graphics();//identify a locked unit
         selected = game.add.graphics();//identify the user's selected unit
