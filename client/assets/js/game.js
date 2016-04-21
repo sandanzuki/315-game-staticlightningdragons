@@ -98,7 +98,17 @@ var Game = {
         // healthbar 
         // please leave comments alone!
         // --------------------------------------------------------------------------------
- 
+        // myHealthBar = new HealthBar(this.game, hb_cnfg);
+        // myHealthBar2 = new HealthBar(this.game, hb_cnfg);
+        // myHealthBar3 = new HealthBar(this.game, hb_cnfg);
+        // myHealthBar4 = new HealthBar(this.game, hb_cnfg);
+        // myHealthBar5 = new HealthBar(this.game, hb_cnfg);
+
+        // myHealthBar.setPosition(30, 0); 
+        // myHealthBar2.setPosition(30, 62); 
+        // myHealthBar3.setPosition(30, 123); 
+        // myHealthBar4.setPosition(30, 183); 
+        // myHealthBar5.setPosition(30, 243); 
 
         returnA = game.input.keyboard.addKey(Phaser.Keyboard.A);
         returnA.onDown.add(this.my_hit, this); 
@@ -200,19 +210,6 @@ var Game = {
 
     // load units onto tilemap
     loadUnits : function() {
-        // this.myHealthBar = new HealthBar(this.game, hb_cnfg);
-        // this.myHealthBar2 = new HealthBar(this.game, hb_cnfg);
-        // this.myHealthBar3 = new HealthBar(this.game, hb_cnfg);
-        // this.myHealthBar4 = new HealthBar(this.game, hb_cnfg);
-        // this.myHealthBar5 = new HealthBar(this.game, hb_cnfg);
-
-        // this.myHealthBar.setPosition(30, 0); 
-        // this.myHealthBar2.setPosition(30, 62); 
-        // this.myHealthBar3.setPosition(30, 123); 
-        // this.myHealthBar4.setPosition(30, 183); 
-        // this.myHealthBar5.setPosition(30, 243);
-
-
         var blueX, blueY,
         redX, redY;
         switch(playerId){
@@ -237,40 +234,32 @@ var Game = {
             switch(units[i].type){
                 case "FIGHTER":
                     bFighter = game.add.sprite(blueX, blueY,'b_fighter');
-                    hb1 = new HealthBar(this.game, hb_cnfg);
-                    hb1.setPosition(blueX/2, blueY+2);
+                    bFighter.hBar = new HealthBar(this.game, hb_cnfg);
+                    bFighter.hBar.setPosition(30, 0);
 
                     map.getTileWorldXY(blueX,blueY).properties.unitType = 1; 
                     map.getTileWorldXY(blueX,blueY).unit = bFighter; 
-
                     bFighter.health = units[i].hp;
                     bFighter.name = "Friendly Fighter";
                     bFighter.id = i-1;
                     bFighter.owner = playerId;
-                    bFighter.hBar = this.
-
                     friendlyUnits.push(bFighter); 
                     break;
                 case "ARCHER":
                     bArcher = game.add.sprite(blueX, blueY,'b_archer');
-
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 2;
                     map.getTileWorldXY(blueX, blueY).unit = bArcher;
-
                     bArcher.health = units[i].hp;
                     bArcher.name = "Friendly Archer";
                     bArcher.id = i-1;
                     bArcher.owner = playerId;
-
                     friendlyUnits.push(bArcher);
                     break;
                 case "MAGE":
                     bMage = game.add.sprite(blueX, blueY,'b_mage');
-
                     friendlyUnits.push(bMage);
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 3;
                     map.getTileWorldXY(blueX, blueY).unit = bMage;
-
                     bMage.health = units[i].hp;
                     bMage.name = "Friendly Mage";
                     bMage.id = i-1;
@@ -278,11 +267,9 @@ var Game = {
                     break;
                 case "HEALER":
                     bHealer = game.add.sprite(blueX, blueY,'b_healer');
-
                     friendlyUnits.push(bHealer);
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 4;
                     map.getTileWorldXY(blueX, blueY).unit = bHealer;
-
                     bHealer.health = units[i].hp;
                     bHealer.name = "Friendly Healer";
                     bHealer.id = i-1;
@@ -741,17 +728,17 @@ var Game = {
         var currTile = map.getTile(x,y, background);
         var oldTile = map.getTile(coordinates[0], coordinates[1], background);
 
-        var strReq;
-        moveRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
-        moveRequest.unit_id = oldTile.unit.id;
-        moveRequest.x = x;
-        moveRequest.y = y;
-
-        strReq = JSON.stringify(moveRequest);
-        connection.send(strReq);
-
         if (possibleTiles.indexOf(currTile) != -1) {
             if (!oldTile.unit.locked) {
+
+                var strReq;
+                moveRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                moveRequest.unit_id = oldTile.unit.id;
+                moveRequest.x = x;
+                moveRequest.y = y;
+
+                strReq = JSON.stringify(moveRequest);
+                connection.send(strReq);
 
                 // set the unit's location to new tile
                 oldTile.unit.x = currTile.worldX;
@@ -766,7 +753,6 @@ var Game = {
                 // show the user that this unit is now locked, and cannot be moved again
                 this.lockUnit(currTile.unit);
 
-                var strReq;
                 lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
                 lockRequest.unit_id = currTile.unit.id;
 
