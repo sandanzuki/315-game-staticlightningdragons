@@ -179,6 +179,8 @@ var Menu = {
                     opponentId = response.unit_id;
                     x = response.unit_x;
                     y = response.unit_y;
+                    Game.opponentMove(opponentId, x, y);
+
                     break;
                 case("UnitInteractEvent"):
                     console.log(response);
@@ -188,7 +190,6 @@ var Menu = {
                     var unitHp;
 
                     if(response.target_id == -1){}
-                        //Game.opponentMove(opponentId, x, y);
                     else{
                         targetId = response.target_id;
                         targetHp = response.target_hp;
