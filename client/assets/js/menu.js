@@ -173,6 +173,15 @@ var Menu = {
                     console.log(response);
                     turn = response.player_turn;
                     Game.initTimer();
+                    var check = false;
+                    if(turn == playerId){
+                        for(var i = 0; i<friendlyUnits.length; i++){
+                            if(friendlyUnits[i].locked)
+                                check = true
+                        }
+                        if(check)
+                            Game.unlockUnits(friendlyUnits);
+                    }
                     break;
                 case("UnitMoveEvent"):
                     console.log(response);
