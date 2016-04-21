@@ -73,7 +73,7 @@ bool Unit::interact(Unit *target)
     }
 
     // Verify second is within range of first.
-    if(is_within_range(target))
+    if(!is_within_range(target))
     {
         return false;
     }
