@@ -237,32 +237,40 @@ var Game = {
             switch(units[i].type){
                 case "FIGHTER":
                     bFighter = game.add.sprite(blueX, blueY,'b_fighter');
-                    this.hb1 = new HealthBar(this.game, hb_cnfg);
-                    this.hb1.setPosition(blueX/2, blueY+2);
+                    hb1 = new HealthBar(this.game, hb_cnfg);
+                    hb1.setPosition(blueX/2, blueY+2);
+
                     map.getTileWorldXY(blueX,blueY).properties.unitType = 1; 
                     map.getTileWorldXY(blueX,blueY).unit = bFighter; 
+
                     bFighter.health = units[i].hp;
                     bFighter.name = "Friendly Fighter";
                     bFighter.id = i-1;
                     bFighter.owner = playerId;
                     bFighter.hBar = this.
+
                     friendlyUnits.push(bFighter); 
                     break;
                 case "ARCHER":
                     bArcher = game.add.sprite(blueX, blueY,'b_archer');
+
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 2;
                     map.getTileWorldXY(blueX, blueY).unit = bArcher;
+
                     bArcher.health = units[i].hp;
                     bArcher.name = "Friendly Archer";
                     bArcher.id = i-1;
                     bArcher.owner = playerId;
+
                     friendlyUnits.push(bArcher);
                     break;
                 case "MAGE":
                     bMage = game.add.sprite(blueX, blueY,'b_mage');
+
                     friendlyUnits.push(bMage);
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 3;
                     map.getTileWorldXY(blueX, blueY).unit = bMage;
+
                     bMage.health = units[i].hp;
                     bMage.name = "Friendly Mage";
                     bMage.id = i-1;
@@ -270,9 +278,11 @@ var Game = {
                     break;
                 case "HEALER":
                     bHealer = game.add.sprite(blueX, blueY,'b_healer');
+
                     friendlyUnits.push(bHealer);
                     map.getTileWorldXY(blueX, blueY).properties.unitType = 4;
                     map.getTileWorldXY(blueX, blueY).unit = bHealer;
+
                     bHealer.health = units[i].hp;
                     bHealer.name = "Friendly Healer";
                     bHealer.id = i-1;
