@@ -1,4 +1,4 @@
-var layer, layer2, layer3, // layers of loaded images
+var layer, layer2, // layers of loaded images
     counter = 0; // counter to cycle thru images
 
 // cycle to next image
@@ -14,11 +14,11 @@ window.nextLayer = function() {
 window.prevLayer = function() { 
     if(counter == 1) {
         layer.visible = !layer.visible;
-        counter=0;
+        counter = 0;
     }
     if(counter >= 1) { 
         layer2.visible = !layer2.visible;
-        counter=1;
+        counter = 1;
     }
 }
 
@@ -39,9 +39,11 @@ var Tutorial = {
         layer3 = this.add.sprite(0, 0, 'layer3');
         layer2 = this.add.sprite(0, 0, 'layer2');
         layer = this.add.sprite(0, 0, 'layer');
+
         // flip between pages of tutorial
         nextButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         prevButton = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
+
         nextButton.onDown.add(nextLayer, this);
         prevButton.onDown.add(prevLayer, this);
         
