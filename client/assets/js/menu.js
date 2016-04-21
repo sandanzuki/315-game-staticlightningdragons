@@ -172,6 +172,7 @@ var Menu = {
                 case("TurnChangeEvent"):
                     console.log(response);
                     turn = response.player_turn;
+                    Game.initTimer();
                     break;
                 case("UnitMoveEvent"):
                     console.log(response);
@@ -186,8 +187,8 @@ var Menu = {
                     var unitId;
                     var unitHp;
 
-                    if(response.target_id == -1)
-                        Game.opponentMove(opponentId, x, y);
+                    if(response.target_id == -1){}
+                        //Game.opponentMove(opponentId, x, y);
                     else{
                         targetId = response.target_id;
                         targetHp = response.target_hp;
