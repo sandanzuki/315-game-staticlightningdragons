@@ -172,6 +172,7 @@ var Menu = {
                 case("TurnChangeEvent"):
                     console.log(response);
                     turn = response.player_turn;
+                    Game.notifyTurnChange(turn);
                     Game.initTimer();
                     var check = false;
                     if(turn == playerId){

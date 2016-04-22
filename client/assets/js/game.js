@@ -5,7 +5,6 @@ var map,
     background,
     graphics,
     blocked,
-    GRAVITY = 900,
     cursor,
     bFighter, bArcher, bMage, bHealer,
     hBars = [],
@@ -36,6 +35,7 @@ var map,
         flipped: false 
     },
     counter = 60,
+    playerTurn,
     tutorialState = true,
     attackRequest = new Object();
     lockRequest = new Object();
@@ -91,8 +91,28 @@ var Game = {
 
         game.time.events.loop(Phaser.Timer.SECOND, this.updateCounter, this);
 
-        time_font = game.add.text(850, 9, '60', { 
+        time_font = game.add.text(850, game.height -50, '60', { 
             font: "35px Playfair Display",
+            fill: "#ffffff", 
+            align: "center" 
+        });
+
+        game.add.text(0, game.height - 25, 'Player turn: ', {
+            font: "25px Playfair Display",
+            fill: "#ffffff", 
+            align: "center" 
+        });
+
+        var text = game.add.text(0, game.height - 50, '', {
+            font: "25px Playfair Display",
+            fill: "#ffffff", 
+            align: "center" 
+        });
+
+        text.text = "You Are Player " + playerId;
+
+        playerTurn = game.add.text(140, game.height - 25, turn, {
+            font: "25px Playfair Display",
             fill: "#ffffff", 
             align: "center" 
         });
@@ -902,5 +922,14 @@ var Game = {
                 this.updateBar(unitId, newTile.unit.x, newTile.unit.y, true);
             }
         } 
-    }
+    },
+
+    notifyTurnChange : function(turn){
+        if(playerTurn){
+            if(turn == 1)
+                playerTurn.text = "1";
+            else if(turn == 2)
+                playerTurn.text = "2";
+        }  
+    } 
 };

@@ -146,6 +146,9 @@ var Select = {
             else
                 cursor.x = oldX+=168;
             cursor.y = oldY;
+
+            if(symbols.length == 5)
+                this.cursorDown();
         }
     },
 
