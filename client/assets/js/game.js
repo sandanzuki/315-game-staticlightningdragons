@@ -769,7 +769,6 @@ var Game = {
 
         if (possibleTiles.indexOf(currTile) != -1) {
             if (!oldTile.unit.locked) {
-
                 var strReq;
                 moveRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
                 moveRequest.unit_id = oldTile.unit.id;
@@ -818,10 +817,6 @@ var Game = {
 
         if (selectedUnit && targetedUnit) {
             if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)) {
-                //targetedUnit.kill();
-                //enemyUnits.splice(enemyUnits.indexOf(targetedUnit), 1);
-
-                //clang.play();
                 this.output("Attacked: " + targetedUnit.name)    
                 this.lockUnit(oldTile.unit); 
             }
@@ -830,12 +825,38 @@ var Game = {
         }
     },
 
+    killUnit : function(enemyOrFriendly, unitId){
+        if(turn == playerId){
+            if(enemyOrFriendly){
+                var unit = enemyUnits[i];
+                unit.kill();
+                enemyUnits.splice(i,1);
+            }
+            else{
+                var unit = friendlyUnits[i];
+                unit.kill();
+                friendlyUnits.splice(i,1);
+            }
+        }
+        else{
+            if(enemyOrFriendly){
+                var unit = friendlyUnits[i];
+                unit.kill();
+                friendlyUnits.splice(i,1);
+            }
+            else{
+                var unit = enemyUnits[i];
+                unit.kill();
+                enemyUnits.splice(i,1);
+            }
+        }      
+    },
+
     lockUnit : function(unit) {
         // get the tile the unit is on.
-
-            var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; 
-            var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
-            var currTile = map.getTile(x, y, background);
+        var x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60; 
+        var y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+        var currTile = map.getTile(x, y, background);
 
         if(!currTile.unit.locked){
             currTile.unit.locked = true;

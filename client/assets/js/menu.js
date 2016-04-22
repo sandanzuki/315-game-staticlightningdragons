@@ -199,14 +199,17 @@ var Menu = {
                     var unitId;
                     var unitHp;
 
-                    if(response.target_id == -1){}
-                    else{
-                        targetId = response.target_id;
-                        targetHp = response.target_hp;
-                        unitId = response.unit_id;
-                        unitHp = response.unit_hp;
-                        Game.hpBarsHit(targetId, targetHp, unitId, unitHp);
-                    }
+                    targetId = response.target_id;
+                    targetHp = response.target_hp;
+                    unitId = response.unit_id;
+                    unitHp = response.unit_hp;
+                    Game.hpBarsHit(targetId, targetHp, unitId, unitHp);
+                    
+                    if(targetHp == 0)
+                        Game.killUnit(true, targetId);
+                    if(unitHp == 0)
+                        Game.killUnit(false, unitId);
+
                     break;
                 default:
                     console.log(response);
