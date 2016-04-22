@@ -10,6 +10,7 @@ var map,
     hBars = [],
     enemyHBars = [],
     rFighter, rArcher, rMage, rHealer,
+    dummyUnit,
     possibleTiles = [],
     attackTiles = [],
     coordinates = [],
@@ -19,7 +20,9 @@ var map,
     selected,
     lockCounter = 0,
     friendlyUnits = [],
+    friendCount = 5,
     enemyUnits = [],
+    enemyCount = 5,
     pause = false,
     battle_music,
     moveRequest = new Object(),
@@ -37,7 +40,7 @@ var map,
     counter = 60,
     playerTurn,
     tutorialState = true,
-    attackRequest = new Object();
+    attackRequest = new Object(),
     lockRequest = new Object();
 
 var Game = { 
@@ -368,6 +371,12 @@ var Game = {
             enemyUnits[i].friendly = false;
             enemyUnits[i].id = i;
         }
+
+        //dummy unit to be used as placeholder when units are killed
+        dummyUnit = "eric";
+        dummyUnit.locked = false;
+        dummyUnit.friendly = true;
+        dummyUnit.id = 72;
     },
 
     updateBar : function(i, x, y, isEnemy) {
@@ -826,30 +835,72 @@ var Game = {
     },
 
     killUnit : function(enemyOrFriendly, unitId){
+        var x;
+        var y;
+        var unit;
+        var tile;
+
         if(turn == playerId){
             if(enemyOrFriendly){
-                var unit = enemyUnits[i];
+                unit = enemyUnits[unitId];
+                x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                tile = map.getTile(x,y);
+
                 unit.kill();
-                enemyUnits.splice(i,1);
+                tile.unit = null;
+                tile.properties.unitType = 0;
+                enemyUnits[unitId] = dummyUnit;
+                enemyCount--;
             }
             else{
-                var unit = friendlyUnits[i];
+                unit = friendlyUnits[unitId];
+                x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                tile = map.getTile(x,y);
+
                 unit.kill();
-                friendlyUnits.splice(i,1);
+                tile.unit = null;
+                tile.properties.unitType = 0;
+                friendlyUnits[unitId] = dummyUnit;
+                friendlyCount--;
             }
         }
         else{
             if(enemyOrFriendly){
-                var unit = friendlyUnits[i];
+                unit = friendlyUnits[unitId];
+                x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                tile = map.getTile(x,y);
+
                 unit.kill();
-                friendlyUnits.splice(i,1);
+                tile.unit = null;
+                tile.properties.unitType = 0;
+                friendlyUnits[unitId] = dummyUnit;
+                friendlyCount--;
             }
             else{
-                var unit = enemyUnits[i];
+                unit = enemyUnits[unitId];
+                x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                tile = map.getTile(x,y);
+
                 unit.kill();
-                enemyUnits.splice(i,1);
+                tile.unit = null;
+                tile.properties.unitType = 0;
+                enemyUnits[unitId] = dummyUnit;
+                enemyCount--;
             }
-        }      
+        }
+
+        if(enemyCount == 0){
+            game.win = true;
+            this.state.start('GameOver');
+        }
+        if(friendlyCount == 0){
+            game.win = false;
+            this.state.start('GameOver');
+        }
     },
 
     lockUnit : function(unit) {
