@@ -140,7 +140,7 @@ var Menu = {
                             playerServerId = response.player_two_id;
                         }
                     }
-                    gameId = response.game_id;
+                    game_id = response.game_id;
                     this.state.start('Load');
                     break;
                 case("StateChangeEvent"):

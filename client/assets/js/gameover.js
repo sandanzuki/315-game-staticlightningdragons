@@ -14,7 +14,7 @@ var GameOver = {
     create : function() {
         if(game.win){
             this.add.sprite(0, 0, 'victory'); // add background
-            arrow = this.add.sprite(280, 305, 'arrow_black');
+            arrow = this.add.sprite(280, 305, 'arrow_white');
         }
         else{
             this.add.sprite(0, 0, 'defeat');
@@ -70,11 +70,20 @@ var GameOver = {
         switch(arrow.y){
             case(305):
                 // load another game, change game state
+                request = new Object();
+                request.game_id = game_id;
+                request.request_id = 42;
+                request.type = "AssignGameRequest";
+
+                var strReq;
+                strReq = JSON.stringify(request);
+
+                connection.send(strReq);                
                 this.state.start('Load');
                 break;
             case(345):
                 // go to main menu, change game state, player disconnect
-                request.game_id = gameId;
+                request.game_id = game_id;
                 request.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
                 request.type = "PlayerQuitRequest";
 

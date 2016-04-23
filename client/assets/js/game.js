@@ -168,20 +168,20 @@ var Game = {
         game.physics.startSystem(Phaser.Physics.P2JS);
         map.setCollisionBetween(1, 2000, true, 'blockedLayer');
 
-        moveRequest.game_id = gameId;
+        moveRequest.game_id = game_id;
         moveRequest.request_id = 49;
         moveRequest.type = "UnitMoveRequest"; 
         moveRequest.unit_id;
         moveRequest.x;
         moveRequest.y;
 
-        attackRequest.game_id = gameId;
+        attackRequest.game_id = game_id;
         attackRequest.request_id = 50;
         attackRequest.type = "UnitInteractRequest";
         attackRequest.unit_id;
         attackRequest.target_id;
 
-        lockRequest.game_id = gameId;
+        lockRequest.game_id = game_id;
         lockRequest.request_id = 72;
         lockRequest.type = "UnitInteractRequest";
         lockRequest.unit_id;
@@ -386,17 +386,6 @@ var Game = {
             enemyHBars[i].setPosition(x+30, y);
     },
 
-    hpBarsHit : function(targetId, targetHp, unitId, unitHp){
-        if(turn == playerId){
-            hBars[unitId].setPercent(unitHp);
-            enemyHBars[targetId].setPercent(targetHp);
-        }
-        else{
-            hBars[targetId].setPercent(targetHp);
-            enemyHBars[unitId].setPercent(unitHp);
-        }
-    },
-
     // move cursor tile by tile
     cursorDown : function() { 
         if (!pause) {
@@ -550,6 +539,14 @@ var Game = {
                 case(422):
                     pause = false;
                     game.win = false;
+                    request.game_id = game_id;
+                    request.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                    request.type = "PlayerQuitRequest";
+
+                    var strReq;
+                    strReq = JSON.stringify(request);
+
+                    connection.send(strReq);
                     //turn off battle music here
                     //battle_music.destroy();
                     //game.cache.removeSound('battle');
@@ -813,6 +810,21 @@ var Game = {
         graphics.clear();
     },
 
+    hpBarsHit : function(targetId, targetHp, unitId, unitHp){
+        if(turn == playerId){
+            hBars[unitId].setPercent(unitHp);
+            friendlyUnits[unitId].health = unitHp;
+            enemyHBars[targetId].setPercent(targetHp);
+            enemyUnits[targetId].health = targetHp;
+        }
+        else{
+            hBars[targetId].setPercent(targetHp);
+            friendlyUnits[targetId].health = targetHp;
+            enemyHBars[unitId].setPercent(unitHp);
+            enemyUnits[unitId].health = unitHp;
+        }
+    },
+
     attack : function(oldTile, currTile) {
         var selectedUnit = oldTile.unit;
         var targetedUnit = currTile.unit;
@@ -826,6 +838,7 @@ var Game = {
 
         if (selectedUnit && targetedUnit) {
             if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)) {
+                if(targetedUnit.health == 0)
                 this.output("Attacked: " + targetedUnit.name)    
                 this.lockUnit(oldTile.unit); 
             }
@@ -863,7 +876,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 friendlyUnits[unitId] = dummyUnit;
-                friendlyCount--;
+                friendCount--;
             }
         }
         else{
@@ -877,7 +890,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 friendlyUnits[unitId] = dummyUnit;
-                friendlyCount--;
+                friendCount--;
             }
             else{
                 unit = enemyUnits[unitId];
@@ -897,7 +910,7 @@ var Game = {
             game.win = true;
             this.state.start('GameOver');
         }
-        if(friendlyCount == 0){
+        if(friendCount == 0){
             game.win = false;
             this.state.start('GameOver');
         }
