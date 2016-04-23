@@ -27,7 +27,7 @@ bool verify_general_request(EventRequest *r)
 bool verify_rename_request(EventRequest *r)
 {
     // Must have a string name.
-    if(!r->isMember("name") || !(*r)["name"].isString())
+    if(!r->isMember("name"))
     {
         return false;
     }
