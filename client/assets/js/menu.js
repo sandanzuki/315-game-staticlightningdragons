@@ -2,7 +2,8 @@ var clang, music_intro,
     arrow,
     x, y,
     opponentId,
-    response = new Object(); 
+    response = new Object(),
+    bool_host = 0; 
 
 var Menu = {
     preload : function() {
@@ -25,9 +26,6 @@ var Menu = {
         //bg music when ready
         music_intro = game.add.audio('intro');
         music_intro.loopFull();
-
-        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        enterButton.onDown.add(this.select, this);
 
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.select, this);
@@ -103,6 +101,8 @@ var Menu = {
             Menu.checkResponse(yas);
         };
 
+        bool_host = 1;
+        this.state.start('GameID');
     },
 
     join : function(){
@@ -122,6 +122,8 @@ var Menu = {
             Menu.checkResponse(yas);
         };
 
+        bool_host = 0;
+        this.state.start('GameID');
     },
 
     checkResponse : function(yas){
@@ -141,7 +143,7 @@ var Menu = {
                         }
                     }
                     gameId = response.game_id;
-                    this.state.start('Load');
+                    //this.state.start('Load');
                     break;
                 case("StateChangeEvent"):
                     console.log(response);
