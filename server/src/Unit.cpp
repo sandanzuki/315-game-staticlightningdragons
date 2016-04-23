@@ -86,6 +86,8 @@ bool Unit::interact(Unit *target)
             return false;
         }
         target->apply_heal();
+        interacted = true;
+        moved = true;
         return true;
     }
 
