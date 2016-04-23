@@ -10,6 +10,7 @@ var map,
     hBars = [],
     enemyHBars = [],
     rFighter, rArcher, rMage, rHealer,
+    dummyUnit,
     possibleTiles = [],
     attackTiles = [],
     coordinates = [],
@@ -19,7 +20,9 @@ var map,
     selected,
     lockCounter = 0,
     friendlyUnits = [],
+    friendCount = 5,
     enemyUnits = [],
+    enemyCount = 5,
     pause = false,
     battle_music,
     moveRequest = new Object(),
@@ -37,7 +40,7 @@ var map,
     counter = 60,
     playerTurn,
     tutorialState = true,
-    attackRequest = new Object();
+    attackRequest = new Object(),
     lockRequest = new Object();
 
 var Game = { 
@@ -165,20 +168,20 @@ var Game = {
         game.physics.startSystem(Phaser.Physics.P2JS);
         map.setCollisionBetween(1, 2000, true, 'blockedLayer');
 
-        moveRequest.game_id = gameId;
+        moveRequest.game_id = game_id;
         moveRequest.request_id = 49;
         moveRequest.type = "UnitMoveRequest"; 
         moveRequest.unit_id;
         moveRequest.x;
         moveRequest.y;
 
-        attackRequest.game_id = gameId;
+        attackRequest.game_id = game_id;
         attackRequest.request_id = 50;
         attackRequest.type = "UnitInteractRequest";
         attackRequest.unit_id;
         attackRequest.target_id;
 
-        lockRequest.game_id = gameId;
+        lockRequest.game_id = game_id;
         lockRequest.request_id = 72;
         lockRequest.type = "UnitInteractRequest";
         lockRequest.unit_id;
@@ -368,6 +371,12 @@ var Game = {
             enemyUnits[i].friendly = false;
             enemyUnits[i].id = i;
         }
+
+        //dummy unit to be used as placeholder when units are killed
+        dummyUnit = "eric";
+        dummyUnit.locked = false;
+        dummyUnit.friendly = true;
+        dummyUnit.id = 72;
     },
 
     updateBar : function(i, x, y, isEnemy) {
@@ -375,17 +384,6 @@ var Game = {
             hBars[i].setPosition(x+30, y);
         else
             enemyHBars[i].setPosition(x+30, y);
-    },
-
-    hpBarsHit : function(targetId, targetHp, unitId, unitHp){
-        if(turn == playerId){
-            hBars[unitId].setPercent(unitHp);
-            enemyHBars[targetId].setPercent(targetHp);
-        }
-        else{
-            hBars[targetId].setPercent(targetHp);
-            enemyHBars[unitId].setPercent(unitHp);
-        }
     },
 
     // move cursor tile by tile
@@ -541,6 +539,14 @@ var Game = {
                 case(422):
                     pause = false;
                     game.win = false;
+                    request.game_id = game_id;
+                    request.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                    request.type = "PlayerQuitRequest";
+
+                    var strReq;
+                    strReq = JSON.stringify(request);
+
+                    connection.send(strReq);
                     //turn off battle music here
                     //battle_music.destroy();
                     //game.cache.removeSound('battle');
@@ -804,6 +810,21 @@ var Game = {
         graphics.clear();
     },
 
+    hpBarsHit : function(targetId, targetHp, unitId, unitHp){
+        if(turn == playerId){
+            hBars[unitId].setPercent(unitHp);
+            friendlyUnits[unitId].health = unitHp;
+            enemyHBars[targetId].setPercent(targetHp);
+            enemyUnits[targetId].health = targetHp;
+        }
+        else{
+            hBars[targetId].setPercent(targetHp);
+            friendlyUnits[targetId].health = targetHp;
+            enemyHBars[unitId].setPercent(unitHp);
+            enemyUnits[unitId].health = unitHp;
+        }
+    },
+
     attack : function(oldTile, currTile) {
         var selectedUnit = oldTile.unit;
         var targetedUnit = currTile.unit;
@@ -817,6 +838,7 @@ var Game = {
 
         if (selectedUnit && targetedUnit) {
             if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)) {
+                if(targetedUnit.health == 0)
                 this.output("Attacked: " + targetedUnit.name)    
                 this.lockUnit(oldTile.unit); 
             }
@@ -826,30 +848,72 @@ var Game = {
     },
 
     killUnit : function(enemyOrFriendly, unitId){
+        var x;
+        var y;
+        var unit;
+        var tile;
+
         if(turn == playerId){
             if(enemyOrFriendly){
-                var unit = enemyUnits[i];
+                unit = enemyUnits[unitId];
+                x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                tile = map.getTile(x,y);
+
                 unit.kill();
-                enemyUnits.splice(i,1);
+                tile.unit = null;
+                tile.properties.unitType = 0;
+                enemyUnits[unitId] = dummyUnit;
+                enemyCount--;
             }
             else{
-                var unit = friendlyUnits[i];
+                unit = friendlyUnits[unitId];
+                x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                tile = map.getTile(x,y);
+
                 unit.kill();
-                friendlyUnits.splice(i,1);
+                tile.unit = null;
+                tile.properties.unitType = 0;
+                friendlyUnits[unitId] = dummyUnit;
+                friendCount--;
             }
         }
         else{
             if(enemyOrFriendly){
-                var unit = friendlyUnits[i];
+                unit = friendlyUnits[unitId];
+                x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                tile = map.getTile(x,y);
+
                 unit.kill();
-                friendlyUnits.splice(i,1);
+                tile.unit = null;
+                tile.properties.unitType = 0;
+                friendlyUnits[unitId] = dummyUnit;
+                friendCount--;
             }
             else{
-                var unit = enemyUnits[i];
+                unit = enemyUnits[unitId];
+                x = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
+                y = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
+                tile = map.getTile(x,y);
+
                 unit.kill();
-                enemyUnits.splice(i,1);
+                tile.unit = null;
+                tile.properties.unitType = 0;
+                enemyUnits[unitId] = dummyUnit;
+                enemyCount--;
             }
-        }      
+        }
+
+        if(enemyCount == 0){
+            game.win = true;
+            this.state.start('GameOver');
+        }
+        if(friendCount == 0){
+            game.win = false;
+            this.state.start('GameOver');
+        }
     },
 
     lockUnit : function(unit) {

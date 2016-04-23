@@ -5,7 +5,7 @@ var connection,
  	request,
  	playerId,
  	playerServerId,
- 	gameId,
+ 	game_id,
  	canMove,
  	turn,
  	//units the player chooses in selection phase

@@ -142,8 +142,13 @@ var Menu = {
                             playerServerId = response.player_two_id;
                         }
                     }
+<<<<<<< HEAD
                     gameId = response.game_id;
                     //this.state.start('Load');
+=======
+                    game_id = response.game_id;
+                    this.state.start('Load');
+>>>>>>> 3f2a2b7948f6ba6ac05c999c41ad2acf9fbd1a1f
                     break;
                 case("StateChangeEvent"):
                     console.log(response);
@@ -177,6 +182,7 @@ var Menu = {
                     Game.notifyTurnChange(turn);
                     Game.initTimer();
                     var check = false;
+
                     if(turn == playerId){
                         for(var i = 0; i<friendlyUnits.length; i++){
                             if(friendlyUnits[i].locked)
@@ -205,7 +211,9 @@ var Menu = {
                     targetHp = response.target_hp;
                     unitId = response.unit_id;
                     unitHp = response.unit_hp;
-                    Game.hpBarsHit(targetId, targetHp, unitId, unitHp);
+
+                    if(targetId != -1)
+                        Game.hpBarsHit(targetId, targetHp, unitId, unitHp);
                     
                     if(targetHp == 0)
                         Game.killUnit(true, targetId);
