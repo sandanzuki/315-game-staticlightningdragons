@@ -102,20 +102,20 @@ var Menu = {
         };
 
         bool_host = 1;
-        this.state.start('GameID');
+        // this.state.start('GameID');
     },
 
     join : function(){
         connection = new WebSocket("ws://pulse.bitwisehero.com:13337", "rqs");
 
         connection.onopen = function() {
-            request = new Object();
-            request.game_id = -1;
-            request.request_id = 43;
-            request.type = "AssignGameRequest";            
+            //request = new Object();
+            //request.game_id = -1;
+            //request.request_id = 43;
+            //request.type = "AssignGameRequest";            
             
-            var strReq = JSON.stringify(request);
-            connection.send(strReq);
+            //var strReq = JSON.stringify(request);
+            //connection.send(strReq);
         };
 
         connection.onmessage = function(yas){
@@ -142,13 +142,12 @@ var Menu = {
                             playerServerId = response.player_two_id;
                         }
                     }
-<<<<<<< HEAD
-                    gameId = response.game_id;
-                    //this.state.start('Load');
-=======
+
                     game_id = response.game_id;
-                    this.state.start('Load');
->>>>>>> 3f2a2b7948f6ba6ac05c999c41ad2acf9fbd1a1f
+                    if(bool_host == 1)
+                        this.state.start('GameID');
+                    //this.state.start('Load');
+
                     break;
                 case("StateChangeEvent"):
                     console.log(response);

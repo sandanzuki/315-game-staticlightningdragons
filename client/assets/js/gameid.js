@@ -17,7 +17,7 @@ var GameID = {
         this.add.sprite(0, 0, 'join');
 
         if(bool_host == 0) {
-            game_prompt = this.add.sprite(0, 0, 'join');
+            this.add.sprite(0, 0, 'join');
 
             string_gameid = game.add.text(game.world.centerX-225, game.world.centerY, "", {
                 font: "42px Playfair Display",
@@ -43,8 +43,8 @@ var GameID = {
             return8 = game.input.keyboard.addKey(Phaser.Keyboard.EIGHT);
             return9 = game.input.keyboard.addKey(Phaser.Keyboard.NINE);
 
-            enterButton.onDown.add(this.store_game_id, this);
-            deleteButton.onDown.add(this.clear_game_id, this);
+            enterButton.onDown.add(this.store_gameid, this);
+            deleteButton.onDown.add(this.clear_gameid, this);
             return0.onDown.add(this.push_0, this); 
             return1.onDown.add(this.push_1, this); 
             return2.onDown.add(this.push_2, this); 
@@ -58,7 +58,17 @@ var GameID = {
         }
 
         if(bool_host == 1) {
-            game_id = this.add.sprite(0, 0, 'host');
+            this.add.sprite(0, 0, 'host');
+
+            console.log(game_id);
+            
+            string_gameid = game.add.text(game.world.centerX-225, game.world.centerY, game_id.toString(), {
+                font: "42px Playfair Display",
+                boundsAlignH: "center",
+                boundsAlignV: "middle",
+                fill: "#ffffff"
+            });
+
         }
     },
 
@@ -133,7 +143,7 @@ var GameID = {
     },
 
     // clear string_gameid 
-    clear_game_id : function() {
+    clear_gameid : function() {
         gameid_count = 0;
         string_gameid.destroy();
         string_gameid = game.add.text(game.world.centerX-225, game.world.centerY, "", {
@@ -145,10 +155,20 @@ var GameID = {
         string_gameid.setTextBounds(0, 0, 450, 100);
     },
 
-    store_game_id : function() {
+    store_gameid : function() {
       int_gameid = Math.floor(string_gameid.text);
       //console.log(string_gameid);
       console.log(string_gameid.text);
       console.log(int_gameid);
+
+      request = new Object();
+      request.game_id = int_gameid;
+      request.request_id = 42;
+      request.type = "AssignGameRequest";
+
+      var strReq;
+      strReq = JSON.stringify(request);
+
+      connection.send(strReq);                
     }
 };
