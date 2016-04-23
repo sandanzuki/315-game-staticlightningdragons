@@ -66,7 +66,7 @@ void handle_assign_game_request(Player *p, EventRequest *r,
     else
     {
         log->write("[MAIN] INFO: Specific Game requested. Attempting to assign Player to game.");
-        game_id = p->get_game_id();
+        game_id = (*r)["game_id"].asInt();
     }
 
     // One last time, make sure the Game actually needs a Player.

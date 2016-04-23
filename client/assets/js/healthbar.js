@@ -27,7 +27,7 @@ var HealthBar = function(game, providedConfig) {
     this.setPosition(this.config.x, this.config.y);
     this.drawBackground();
     this.drawHealthBar();
-    this.setFixedToCamera(this.config.isFixedToCamera);
+    //this.setFixedToCamera(this.config.isFixedToCamera);
 };
 
 HealthBar.prototype.constructor = HealthBar;
@@ -129,7 +129,12 @@ HealthBar.prototype.setWidth = function(newWidth){
     this.game.add.tween(this.barSprite).to( { width: newWidth }, this.config.animationDuration, Phaser.Easing.Linear.None, true);
 };
 
-HealthBar.prototype.setFixedToCamera = function(fixedToCamera) {
-    this.bgSprite.fixedToCamera = fixedToCamera;
-    this.barSprite.fixedToCamera = fixedToCamera;
-};
+HealthBar.prototype.destroy = function(){
+    this.bgSprite.destroy();
+    this.barSprite.destroy();
+}
+
+// HealthBar.prototype.setFixedToCamera = function(fixedToCamera) {
+//     this.bgSprite.fixedToCamera = fixedToCamera;
+//     this.barSprite.fixedToCamera = fixedToCamera;
+// };

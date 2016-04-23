@@ -17,6 +17,7 @@ game = new Phaser.Game(900, 660, Phaser.AUTO,'');
 
 // states of game
 game.state.add('Menu', Menu);
+game.state.add('GameID', GameID);
 game.state.add('Load', Load);
 game.state.add('Tutorial', Tutorial);
 game.state.add('Username', Username);

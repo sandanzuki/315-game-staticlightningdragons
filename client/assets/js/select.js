@@ -43,7 +43,7 @@ var Select = {
         rightButton.onDown.add(this.cursorRight, this);
 
         request = new Object();
-        request.game_id = gameId;
+        request.game_id = game_id;
         request.request_id = 45;
         request.type = "UnitSelectionRequest";
         request.first;

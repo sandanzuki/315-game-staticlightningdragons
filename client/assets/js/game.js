@@ -10,6 +10,7 @@ var map,
     hBars = [],
     enemyHBars = [],
     rFighter, rArcher, rMage, rHealer,
+    max,
     dummyUnit,
     possibleTiles = [],
     attackTiles = [],
@@ -374,7 +375,7 @@ var Game = {
 
         //dummy unit to be used as placeholder when units are killed
         dummyUnit = "eric";
-        dummyUnit.locked = false;
+        dummyUnit.locked = true;
         dummyUnit.friendly = true;
         dummyUnit.id = 72;
     },
@@ -621,7 +622,6 @@ var Game = {
         var adjacent = [];
         var x = currTile.x;
         var y = currTile.y;
-        var max;
 
         //0 for fighters, 1 for other
         var attackRange; 
@@ -772,6 +772,7 @@ var Game = {
         var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
         var currTile = map.getTile(x,y, background);
         var oldTile = map.getTile(coordinates[0], coordinates[1], background);
+        var distance = Math.abs(oldTile.x-currTile.x) + Math.abs(oldTile.y-currTile.y);
 
         if (possibleTiles.indexOf(currTile) != -1) {
             if (!oldTile.unit.locked) {
@@ -796,13 +797,15 @@ var Game = {
 
                 this.updateBar(currTile.unit.id, currTile.unit.x, currTile.unit.y, false);
                 // show the user that this unit is now locked, and cannot be moved again
-                this.lockUnit(currTile.unit);
+                if(distance>=max){
+                    this.lockUnit(currTile.unit);
 
-                lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
-                lockRequest.unit_id = currTile.unit.id;
+                    lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                    lockRequest.unit_id = currTile.unit.id;
 
-                strReq = JSON.stringify(lockRequest);
-                connection.send(strReq);
+                    strReq = JSON.stringify(lockRequest);
+                    connection.send(strReq);
+                }
             }
         } else if (attackTiles.indexOf(currTile) != -1)
             this.attack(oldTile, currTile);
@@ -838,9 +841,10 @@ var Game = {
 
         if (selectedUnit && targetedUnit) {
             if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)) {
-                if(targetedUnit.health == 0)
-                this.output("Attacked: " + targetedUnit.name)    
-                this.lockUnit(oldTile.unit); 
+                if(targetedUnit.health == 0){
+                    this.output("Attacked: " + targetedUnit.name)    
+                    this.lockUnit(oldTile.unit); 
+                }
             }
         } else {
             this.output("No unit to attack there");
@@ -864,6 +868,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 enemyUnits[unitId] = dummyUnit;
+                enemyHBars[unitId].destroy();
                 enemyCount--;
             }
             else{
@@ -876,6 +881,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 friendlyUnits[unitId] = dummyUnit;
+                hBars[unitId].destroy();
                 friendCount--;
             }
         }
@@ -890,6 +896,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 friendlyUnits[unitId] = dummyUnit;
+                hBars[unitId].destroy();
                 friendCount--;
             }
             else{
@@ -902,6 +909,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 enemyUnits[unitId] = dummyUnit;
+                enemyHBars[unitId].destroy();
                 enemyCount--;
             }
         }

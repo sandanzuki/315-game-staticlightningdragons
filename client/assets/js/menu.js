@@ -2,7 +2,8 @@ var clang, music_intro,
     arrow,
     x, y,
     opponentId,
-    response = new Object(); 
+    response = new Object(),
+    bool_host = 0; 
 
 var Menu = {
     preload : function() {
@@ -25,9 +26,6 @@ var Menu = {
         //bg music when ready
         music_intro = game.add.audio('intro');
         music_intro.loopFull();
-
-        enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        enterButton.onDown.add(this.select, this);
 
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.select, this);
@@ -103,25 +101,29 @@ var Menu = {
             Menu.checkResponse(yas);
         };
 
+        bool_host = 1;
+        // this.state.start('GameID');
     },
 
     join : function(){
         connection = new WebSocket("ws://pulse.bitwisehero.com:13337", "rqs");
 
         connection.onopen = function() {
-            request = new Object();
-            request.game_id = -1;
-            request.request_id = 43;
-            request.type = "AssignGameRequest";            
+            //request = new Object();
+            //request.game_id = -1;
+            //request.request_id = 43;
+            //request.type = "AssignGameRequest";            
             
-            var strReq = JSON.stringify(request);
-            connection.send(strReq);
+            //var strReq = JSON.stringify(request);
+            //connection.send(strReq);
         };
 
         connection.onmessage = function(yas){
             Menu.checkResponse(yas);
         };
 
+        bool_host = 0;
+        this.state.start('GameID');
     },
 
     checkResponse : function(yas){
@@ -140,8 +142,12 @@ var Menu = {
                             playerServerId = response.player_two_id;
                         }
                     }
+
                     game_id = response.game_id;
-                    this.state.start('Load');
+                    if(bool_host == 1)
+                        this.state.start('GameID');
+                    //this.state.start('Load');
+
                     break;
                 case("StateChangeEvent"):
                     console.log(response);
