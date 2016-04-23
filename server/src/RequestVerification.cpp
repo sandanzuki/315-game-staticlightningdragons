@@ -24,6 +24,18 @@ bool verify_general_request(EventRequest *r)
     return true;
 }
 
+bool verify_rename_request(EventRequest *r)
+{
+    // Must have a string name.
+    if(!r->isMember("name") || !(*r)["name"].isString())
+    {
+        return false;
+    }
+
+    // Otherwise, we're good!
+    return true;
+}
+
 bool verify_unit_interact(EventRequest *r)
 {
     // Must have a unitId

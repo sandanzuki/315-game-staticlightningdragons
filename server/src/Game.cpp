@@ -104,6 +104,19 @@ void Game::handle_request(Player *p, EventRequest *r)
             current_state = NULL;
             notify_state_change();
         }
+
+        // If the Player submits a name change request, go ahead and do it.
+        else if(type.compare("PlayerRenameRequest") == 0)
+        {
+            if(!verify_rename_request(r))
+            {
+                notify_invalid_request(p->get_connection(), r);
+                return;
+            }
+            notify_rename(p, r);
+        }
+
+        // Otherwise, pass it off to the state.
         else
         {
             current_state->handle_request(p, r);
@@ -117,6 +130,18 @@ void Game::handle_request(Player *p, EventRequest *r)
 bool Game::needs_player()
 {
     return current_state != NULL && current_state->get_name() == ASSIGN;
+}
+
+void Game::notify_rename(Player *p, EventRequest *r)
+{
+    // Build the Event
+    Event notify;
+    notify["type"] = string("PlayerRenameEvent");
+    notify["game_id"] = game_id;
+    notify["request_id"] = (*r)["request_id"];
+    notify["player_id"] = p->get_player_id();
+    notify["name"] = (*r)["name"];
+    send_all_players(notify);
 }
 
 void Game::notify_state_change()

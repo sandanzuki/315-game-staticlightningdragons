@@ -26,7 +26,8 @@ class Game : public GameState
         void handle_request(Player *p, EventRequest *req);
 
     private:
-        void handle_player_quit(Player *p, EventRequest *r);
+        void handle_player_rename(Player *p, EventRequest *r);
+        void notify_rename(Player *p, EventRequest *r);
         void notify_state_change();
 
         int game_id;                // the ID for this game

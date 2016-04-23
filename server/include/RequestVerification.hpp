@@ -9,6 +9,7 @@
 // field. No gameplay logic is here. See GameState.hpp for that.
 
 bool verify_general_request(EventRequest *r);
+bool verify_rename_request(EventRequest *r);
 bool verify_unit_interact(EventRequest *r);
 bool verify_unit_move(EventRequest *r);
 bool verify_unit_selection(EventRequest *r);
