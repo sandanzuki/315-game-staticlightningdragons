@@ -110,7 +110,7 @@ bool Unit::interact(Unit *target)
     target->apply_damage(this, false);
 
     // There's also a chance that the defender can counterattack.
-    if(target->is_within_range(this))
+    if(target->is_within_range(this) && target->get_type() != HEALER)
     {
         apply_damage(this, true);
     }
