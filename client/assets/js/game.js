@@ -374,7 +374,7 @@ var Game = {
 
         //dummy unit to be used as placeholder when units are killed
         dummyUnit = "eric";
-        dummyUnit.locked = false;
+        dummyUnit.locked = true;
         dummyUnit.friendly = true;
         dummyUnit.id = 72;
     },
@@ -838,9 +838,10 @@ var Game = {
 
         if (selectedUnit && targetedUnit) {
             if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)) {
-                if(targetedUnit.health == 0)
-                this.output("Attacked: " + targetedUnit.name)    
-                this.lockUnit(oldTile.unit); 
+                if(targetedUnit.health == 0){
+                    this.output("Attacked: " + targetedUnit.name)    
+                    this.lockUnit(oldTile.unit); 
+                }
             }
         } else {
             this.output("No unit to attack there");
@@ -864,6 +865,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 enemyUnits[unitId] = dummyUnit;
+                enemyHBars[unitId].destroy();
                 enemyCount--;
             }
             else{
@@ -876,6 +878,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 friendlyUnits[unitId] = dummyUnit;
+                hBars[unitId].destroy();
                 friendCount--;
             }
         }
@@ -890,6 +893,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 friendlyUnits[unitId] = dummyUnit;
+                hBars[unitId].destroy();
                 friendCount--;
             }
             else{
@@ -902,6 +906,7 @@ var Game = {
                 tile.unit = null;
                 tile.properties.unitType = 0;
                 enemyUnits[unitId] = dummyUnit;
+                enemyHBars[unitId].destroy();
                 enemyCount--;
             }
         }
