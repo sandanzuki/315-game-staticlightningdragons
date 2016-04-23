@@ -19,8 +19,8 @@ var GameID = {
         if(bool_host == 0) {
             this.add.sprite(0, 0, 'join');
 
-            string_gameid = game.add.text(game.world.centerX-225, game.world.centerY, "", {
-                font: "42px Playfair Display",
+            string_gameid = game.add.text(game.world.centerX-230, game.world.centerY-60, "", {
+                font: "75px Playfair Display",
                 boundsAlignH: "center",
                 boundsAlignV: "middle",
                 fill: "#ffffff"
@@ -62,13 +62,12 @@ var GameID = {
 
             console.log(game_id);
             
-            string_gameid = game.add.text(game.world.centerX-225, game.world.centerY, game_id.toString(), {
-                font: "42px Playfair Display",
+            string_gameid = game.add.text(game.world.centerX-20, game.world.centerY-60, game_id.toString(), {
+                font: "75px Playfair Display",
                 boundsAlignH: "center",
                 boundsAlignV: "middle",
                 fill: "#ffffff"
             });
-
         }
     },
 
@@ -147,7 +146,7 @@ var GameID = {
         gameid_count = 0;
         string_gameid.destroy();
         string_gameid = game.add.text(game.world.centerX-225, game.world.centerY, "", {
-            font: "42px Playfair Display",
+            font: "75px Playfair Display",
             boundsAlignH: "center",
             boundsAlignV: "middle",
             fill: "#ffffff"
