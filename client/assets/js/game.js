@@ -692,7 +692,7 @@ var Game = {
             }
         }
 
-        possibleTiles = this.drawOptions(set);
+        possibleTiles = this.drawOptions(set, currTile.unit);
     },
 
     getAdjacent : function(currTile) {
@@ -722,16 +722,23 @@ var Game = {
     },
 
     // overlay possible movement for selected unit
-    drawOptions : function(possibleTiles) {
+    drawOptions : function(possibleTiles, unit) {
         graphics = game.add.graphics();
 
         for (var j = 0; j < attackTiles.length; j++) {
-            if (enemyUnits.indexOf(attackTiles[j].unit) != -1) {
-                // enemy unit is in range of attack
-                // TODO implement something to do with that
-                graphics.lineStyle(2, 0xff0000, 1);
-                graphics.beginFill(0xff0000, .5);
-                graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
+            if(unit.name != "Friendly Healer"){
+                if (enemyUnits.indexOf(attackTiles[j].unit) != -1) {
+                    graphics.lineStyle(2, 0xff0000, 1);
+                    graphics.beginFill(0xff0000, .5);
+                    graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
+                }
+            }
+            else{
+                if (friendlyUnits.indexOf(attackTiles[j].unit) != -1 && attackTiles[j].unit != unit) {
+                    graphics.lineStyle(2, 0x33ff33, 1);
+                    graphics.beginFill(0x33ff33, .5);
+                    graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
+                }
             }
         }
 
@@ -742,15 +749,25 @@ var Game = {
                     graphics.lineStyle(2, 0x0066ff, 1); 
                     graphics.beginFill(0x0066ff, .5);
                     graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
-                } else { 
-                    if (enemyUnits.indexOf(possibleTiles[j].unit) != -1) {
-                        // enemy unit is in range of movement
-                        // TODO implement something to do with that
-                        graphics.lineStyle(2, 0xff0000, 1);
-                        graphics.beginFill(0xff0000, .5);
-                        graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
+                } 
+                else { 
+                    if(unit.name != "Friendly Healer"){
+                        if (enemyUnits.indexOf(possibleTiles[j].unit) != -1) {
+                            graphics.lineStyle(2, 0xff0000, 1);
+                            graphics.beginFill(0xff0000, .5);
+                            graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
 
-                        attackTiles.push(possibleTiles[j]);
+                            attackTiles.push(possibleTiles[j]);
+                        }
+                    }
+                    else{
+                        if (friendlyUnits.indexOf(possibleTiles[j].unit) != -1 && possibleTiles[j].unit != unit) {
+                            graphics.lineStyle(2, 0x33ff33, 1);
+                            graphics.beginFill(0x33ff33, .5);
+                            graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
+
+                            attackTiles.push(possibleTiles[j]);
+                        }
                     }
                     //remove impossible locations
                     possibleTiles.splice(j, 1);
@@ -785,26 +802,28 @@ var Game = {
                 strReq = JSON.stringify(moveRequest);
                 connection.send(strReq);
 
-                // set the unit's location to new tile
-                oldTile.unit.x = currTile.worldX;
-                oldTile.unit.y = currTile.worldY;
-                currTile.unit = oldTile.unit;
+                if(valid){
+                    // set the unit's location to new tile
+                    oldTile.unit.x = currTile.worldX;
+                    oldTile.unit.y = currTile.worldY;
+                    currTile.unit = oldTile.unit;
 
-                // give the new tile all of the old tile's properties
-                currTile.properties.unitType = oldTile.properties.unitType;
-                oldTile.properties.unitType = 0;
-                oldTile.unit = null;
+                    // give the new tile all of the old tile's properties
+                    currTile.properties.unitType = oldTile.properties.unitType;
+                    oldTile.properties.unitType = 0;
+                    oldTile.unit = null;
 
-                this.updateBar(currTile.unit.id, currTile.unit.x, currTile.unit.y, false);
-                // show the user that this unit is now locked, and cannot be moved again
-                if(distance>=max){
-                    this.lockUnit(currTile.unit);
+                    this.updateBar(currTile.unit.id, currTile.unit.x, currTile.unit.y, false);
+                    // show the user that this unit is now locked, and cannot be moved again
+                    //if(distance>=max){
+                        this.lockUnit(currTile.unit);
 
-                    lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
-                    lockRequest.unit_id = currTile.unit.id;
+                        lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                        lockRequest.unit_id = currTile.unit.id;
 
-                    strReq = JSON.stringify(lockRequest);
-                    connection.send(strReq);
+                        strReq = JSON.stringify(lockRequest);
+                        connection.send(strReq);
+                    //}
                 }
             }
         } else if (attackTiles.indexOf(currTile) != -1)
@@ -815,16 +834,28 @@ var Game = {
 
     hpBarsHit : function(targetId, targetHp, unitId, unitHp){
         if(turn == playerId){
-            hBars[unitId].setPercent(unitHp);
-            friendlyUnits[unitId].health = unitHp;
-            enemyHBars[targetId].setPercent(targetHp);
-            enemyUnits[targetId].health = targetHp;
+            if(friendlyUnits[unitId].name != "Friendly Healer"){
+                hBars[unitId].setPercent(unitHp);
+                friendlyUnits[unitId].health = unitHp;
+                enemyHBars[targetId].setPercent(targetHp);
+                enemyUnits[targetId].health = targetHp;
+            }
+            else{
+                hBars[targetId].setPercent(targetHp);
+                friendlyUnits[targetId].health = targetHp;
+            }
         }
         else{
-            hBars[targetId].setPercent(targetHp);
-            friendlyUnits[targetId].health = targetHp;
-            enemyHBars[unitId].setPercent(unitHp);
-            enemyUnits[unitId].health = unitHp;
+            if(enemyUnits[unitId].name != "Enemy Healer"){
+                hBars[targetId].setPercent(targetHp);
+                friendlyUnits[targetId].health = targetHp;
+                enemyHBars[unitId].setPercent(unitHp);
+                enemyUnits[unitId].health = unitHp;
+            }
+            else{
+                enemyHBars[targetId].setPercent(targetHp);
+                enemyUnits[targetId].health = targetHp;   
+            }
         }
     },
 
@@ -840,13 +871,14 @@ var Game = {
         connection.send(strReq);
 
         if (selectedUnit && targetedUnit) {
-            if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly)) {
-                if(targetedUnit.health == 0){
-                    this.output("Attacked: " + targetedUnit.name)    
-                    this.lockUnit(oldTile.unit); 
-                }
-            }
-        } else {
+            if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly))
+                this.output("Attacked: " + targetedUnit.name)    
+            else if(selectedUnit.name == "Friendly Healer")
+                this.output("Healed: " + targetedUnit.name) 
+
+            this.lockUnit(oldTile.unit); 
+        } 
+        else {
             this.output("No unit to attack there");
         }
     },

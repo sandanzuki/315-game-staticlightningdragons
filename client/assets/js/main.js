@@ -11,7 +11,9 @@ var connection,
  	//units the player chooses in selection phase
  	units = [],
  	//units the opposing player chose
- 	otherUnits = [];
+ 	otherUnits = [],
+ 	opponentName,
+ 	valid;
 
 game = new Phaser.Game(900, 660, Phaser.AUTO,'');
 

@@ -1,4 +1,5 @@
 var username,
+    nameRequest,
     wordcount = 0;
 
 var Username = {
@@ -12,6 +13,7 @@ var Username = {
 
     create : function() {
         this.add.sprite(0, 0, 'select');
+        nameRequest = new Object();
 
         username = game.add.text(game.world.centerX-225, game.world.centerY, "", {
             font: "75px Playfair Display",
@@ -373,7 +375,16 @@ var Username = {
 
     // to next state
     startGame : function() {
-        console.log(username);  // for checking if string username stores
+        console.log(username._text);  // for checking if string username stores
+        var strReq;
+        nameRequest.game_id = game_id;
+        nameRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+        nameRequest.type = "PlayerRenameRequest";
+        nameRequest.name = username._text;
+
+        strReq = JSON.stringify(nameRequest);
+        console.log(strReq);
+        connection.send(strReq);
         this.state.start('Select');
     }
 };

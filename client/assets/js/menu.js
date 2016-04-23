@@ -94,6 +94,7 @@ var Menu = {
             request.type = "AssignGameRequest";
                
             var strReq = JSON.stringify(request);
+            console.log(strReq);
             connection.send(strReq);
         };
 
@@ -193,6 +194,7 @@ var Menu = {
                     break;
                 case("UnitMoveEvent"):
                     console.log(response);
+                    valid = true;
                     opponentId = response.unit_id;
                     x = response.unit_x;
                     y = response.unit_y;
@@ -219,6 +221,11 @@ var Menu = {
                     if(unitHp == 0)
                         Game.killUnit(false, unitId);
 
+                    break;
+                case("PlayerRenameEvent"):
+                    console.log(response);
+                    if(playerId != response.player_id)
+                        opponentName = response.name;
                     break;
                 default:
                     console.log(response);
