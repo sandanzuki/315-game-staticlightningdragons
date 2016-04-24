@@ -5,6 +5,7 @@ var position = "up";
 var index;
 var symbols=[];
 var request;
+var spritesLayer;
 
 var Select = {
     preload : function() {
@@ -20,9 +21,14 @@ var Select = {
     },
 
     create : function() {
-        this.add.sprite(0, 0, 'select');
+        var bg = this.add.sprite(0, 0, 'select');
+        bg.z = 10;
+
+        spritesLayer = game.add.group();
+        spritesLayer.z = 100;
         cursor = game.add.graphics();
         cursor.lineStyle(2, 0x00ff00, 1);
+        cursor.beginFill(0x00ff00, .5);
         cursor.drawRect(0, 0, 86, 86);
         cursor.x = 76;
         cursor.y = 196;
@@ -106,6 +112,7 @@ var Select = {
                     oldY = cursor.y;
 
                     cursor.lineStyle(2, 0x00ff00, 1);
+                    cursor.beginFill(0x00ff00, .5);
                     cursor.drawRect(0, 0, 70, 70);
 
                     cursor.x = 169;
@@ -114,10 +121,7 @@ var Select = {
             }
         }
         else if (position == "down"){
-            cursor.clear();
             position = "up";
-            cursor.lineStyle(2, 0x00ff00, 1);
-            cursor.drawRect(0, 0, 86, 86);
             this.symbolLocation(oldX);
 
             switch(cursor.x){
@@ -140,6 +144,12 @@ var Select = {
                 default:
                     break;
             }
+
+            spritesLayer.add(symbols[index]);
+            cursor.clear();
+            cursor.lineStyle(2, 0x00ff00, 1);
+            cursor.beginFill(0x00ff00, .5);
+            cursor.drawRect(0, 0, 86, 86);
 
             if(oldX+168 > 748)
                 cursor.x = oldX;
@@ -190,6 +200,7 @@ var Select = {
         if(cursor.y == 530){
             cursor.clear();
             cursor.lineStyle(2, 0x00ff00, 1);
+            cursor.beginFill(0x00ff00, .5);
             cursor.drawRect(0, 0, 86, 86);
             cursor.x = oldX;
             cursor.y = oldY;
@@ -203,6 +214,7 @@ var Select = {
 
             cursor.clear();
             cursor.lineStyle(2, 0x00ff00, 1);
+            cursor.beginFill(0x00ff00, .5);
             cursor.drawRect(0, 0, 140, 37);
             cursor.x = 720;
             cursor.y = 530;

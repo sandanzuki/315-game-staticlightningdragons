@@ -1,4 +1,5 @@
 var username,
+    nameRequest,
     wordcount = 0;
 
 var Username = {
@@ -12,6 +13,7 @@ var Username = {
 
     create : function() {
         this.add.sprite(0, 0, 'select');
+        nameRequest = new Object();
 
         username = game.add.text(game.world.centerX-225, game.world.centerY, "", {
             font: "75px Playfair Display",
@@ -61,6 +63,16 @@ var Username = {
         return7 = game.input.keyboard.addKey(Phaser.Keyboard.SEVEN);
         return8 = game.input.keyboard.addKey(Phaser.Keyboard.EIGHT);
         return9 = game.input.keyboard.addKey(Phaser.Keyboard.NINE);
+        numpad0 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_0);
+        numpad1 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_1);
+        numpad2 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_2);
+        numpad3 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_3);
+        numpad4 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_4);
+        numpad5 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_5);
+        numpad6 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_6);
+        numpad7 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_7);
+        numpad8 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_8);
+        numpad9 = game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_9);
 
         // map keys to function 
         enterButton.onDown.add(this.startGame, this);
@@ -92,7 +104,6 @@ var Username = {
         returnX.onDown.add(this.push_X, this); 
         returnY.onDown.add(this.push_Y, this); 
         returnZ.onDown.add(this.push_Z, this); 
-
         return0.onDown.add(this.push_0, this); 
         return1.onDown.add(this.push_1, this); 
         return2.onDown.add(this.push_2, this); 
@@ -103,6 +114,16 @@ var Username = {
         return7.onDown.add(this.push_7, this); 
         return8.onDown.add(this.push_8, this); 
         return9.onDown.add(this.push_9, this); 
+        numpad0.onDown.add(this.push_0, this); 
+        numpad1.onDown.add(this.push_1, this); 
+        numpad2.onDown.add(this.push_2, this); 
+        numpad3.onDown.add(this.push_3, this); 
+        numpad4.onDown.add(this.push_4, this); 
+        numpad5.onDown.add(this.push_5, this); 
+        numpad6.onDown.add(this.push_6, this); 
+        numpad7.onDown.add(this.push_7, this); 
+        numpad8.onDown.add(this.push_8, this); 
+        numpad9.onDown.add(this.push_9, this); 
     },
 
     // mapped functions
@@ -373,7 +394,16 @@ var Username = {
 
     // to next state
     startGame : function() {
-        console.log(username);  // for checking if string username stores
+        console.log(username._text);  // for checking if string username stores
+        var strReq;
+        nameRequest.game_id = game_id;
+        nameRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+        nameRequest.type = "PlayerRenameRequest";
+        nameRequest.name = username._text;
+
+        strReq = JSON.stringify(nameRequest);
+        console.log(strReq);
+        connection.send(strReq);
         this.state.start('Select');
     }
 };
