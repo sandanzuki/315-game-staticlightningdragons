@@ -4,9 +4,8 @@ var layer, layer2, layer3,// layers of loaded images
 var Tutorial = {
     preload : function() {
         // load images
-        game.load.image('layer', './assets/images/tutorial.png'); 
-        game.load.image('layer2', './assets/images/tutorial_b.png');
-        game.load.image('layer3', './assets/images/tutorial_r.png');
+        game.load.image('layer', './assets/images/tutorial1.png'); 
+        game.load.image('layer2', './assets/images/tutorial2.png');
 
         // align canvas
         game.scale.pageAlignHorizontally = true; 
@@ -15,7 +14,6 @@ var Tutorial = {
 
     create : function() {
         // important! sprites must be declared in this order!
-        layer3 = this.add.sprite(0, 0, 'layer3');
         layer2 = this.add.sprite(0, 0, 'layer2');
         layer = this.add.sprite(0, 0, 'layer');
 
@@ -35,21 +33,14 @@ var Tutorial = {
     nextLayer : function() { 
         if(tutorial_counter == 0)
             layer.visible = !layer.visible;
-        if(tutorial_counter == 1)
-            layer2.visible = !layer2.visible;
-        tutorial_counter++;
+        tutorial_counter = 1;
     },
 
     // cycle to prev image
     prevLayer : function() { 
-        if(tutorial_counter == 1) {
+        if(tutorial_counter == 1)
             layer.visible = !layer.visible;
-            tutorial_counter = 0;
-        }
-        if(tutorial_counter >= 1) { 
-            layer2.visible = !layer2.visible;
-            tutorial_counter = 1;
-        }
+        tutorial_counter = 0;
     },
 
     startSelect : function() {
