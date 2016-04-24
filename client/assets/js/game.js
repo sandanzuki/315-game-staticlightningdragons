@@ -96,29 +96,36 @@ var Game = {
 
         time_font = game.add.text(850, game.height -50, '60', { 
             font: "35px Playfair Display",
-            fill: "#ffffff", 
+            fill: "#000000", 
             align: "center" 
         });
 
-        game.add.text(0, game.height - 25, 'Player turn: ', {
+        time_font.fixedToCamera = true;
+
+        var info = game.add.text(0, game.height - 25, 'Player turn: ', {
             font: "25px Playfair Display",
-            fill: "#ffffff", 
+            fill: "#000000", 
             align: "center" 
         });
+
+        info.fixedToCamera = true;
 
         var text = game.add.text(0, game.height - 50, '', {
             font: "25px Playfair Display",
-            fill: "#ffffff", 
+            fill: "#000000", 
             align: "center" 
         });
 
         text.text = "You Are Player: " + playerId + " - " +username._text;
+        text.fixedToCamera = true;
 
         playerTurn = game.add.text(140, game.height - 25, turn, {
             font: "25px Playfair Display",
-            fill: "#ffffff", 
+            fill: "#000000", 
             align: "center" 
         });
+
+        playerTurn.fixedToCamera = true;
 
         if(turn == playerId)
             playerTurn.text = turn + " - " + username._text;
