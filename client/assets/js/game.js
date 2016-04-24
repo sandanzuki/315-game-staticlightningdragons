@@ -47,8 +47,8 @@ var map,
 var Game = { 
     preload : function() {
         // load map
-        game.load.tilemap('Map', './assets/js/map1.json', null, Phaser.Tilemap.TILED_JSON);
-        game.load.image('gameTiles', './assets/images/mapTiles.png');
+        game.load.tilemap('Map', './assets/js/map2.json', null, Phaser.Tilemap.TILED_JSON);
+        game.load.image('gameTiles', './assets/images/map2.png');
 
         // blue units
         game.load.image('b_archer', './assets/images/b_archer.png');
@@ -64,6 +64,7 @@ var Game = {
 
         game.load.image('option', './assets/images/option.png');
         game.load.image('arrow', './assets/images/arrow_white.png');
+        game.load.image('cursor', './assets/images/cursor.png');
 
         //load bg music here.. must load in this game state!
         game.load.audio('battle', './assets/audio/music/battle.m4a');
@@ -71,27 +72,25 @@ var Game = {
 
     create : function() {
         // show map
+        game.physics.startSystem(Phaser.Physics.ARCADE);
         isDown = 0;
-        game.scale.pageAlignHorizontally = true; // aligns canvas
-        game.scale.pageAlignVertically = true; // aligns canvas
-        game.scale.refresh();
         map = game.add.tilemap('Map');
 
         // building the map as intended in Tiled
-        map.addTilesetImage('mapTiles', 'gameTiles');
+        map.addTilesetImage('tileset2', 'gameTiles');
 
         // create layers
         background = map.createLayer('backgroundLayer');
         blocked = map.createLayer('blockedLayer');
 
         // position layers
-        background.fixedToCamera = false;
-        background.scrollFactorX = 0;
-        background.scrollFactorY = 0;
+        // background.fixedToCamera = false;
+        // background.scrollFactorX = 0;
+        // background.scrollFactorY = 0;
 
-        blocked.fixedToCamera = false;
-        blocked.scrollFactorX = 0;
-        blocked.scrollFactorY = 0;
+        // blocked.fixedToCamera = false;
+        // blocked.scrollFactorX = 0;
+        // blocked.scrollFactorY = 0;
 
         game.time.events.loop(Phaser.Timer.SECOND, this.updateCounter, this);
 
@@ -113,7 +112,7 @@ var Game = {
             align: "center" 
         });
 
-        text.text = "You Are Player " + playerId;
+        text.text = "You Are Player: " + playerId + " - " +username._text;
 
         playerTurn = game.add.text(140, game.height - 25, turn, {
             font: "25px Playfair Display",
@@ -121,9 +120,14 @@ var Game = {
             align: "center" 
         });
 
-        //bg music can go here when ready
-        //battle_music = game.add.audio('battle');
-        //battle_music.loopFull();
+        if(turn == playerId)
+            playerTurn.text = turn + " - " + username._text;
+        else
+            playerTurn.text = turn + " - " + opponentName;
+
+        // bg music can go here when ready
+        // battle_music = game.add.audio('battle');
+        // battle_music.loopFull();
 
         //create health bars then load the units
         myHealthBar = new HealthBar(this.game, hb_cnfg);
@@ -142,6 +146,16 @@ var Game = {
 
         enemyHBars = [myHealthBar6, myHealthBar7, myHealthBar8, myHealthBar9, myHealthBar10];
 
+        if(playerId == 1)
+            cursor = game.add.sprite(1, 661, 'cursor');
+        else if(playerId == 2){
+            var x = map.widthInPixels-59;
+            var y = 61;
+            cursor = game.add.sprite(x, y, 'cursor');
+        }
+
+        game.physics.enable(cursor);
+
         this.loadUnits();
 
         for(var i = 0; i<friendlyUnits.length; i++){
@@ -152,22 +166,9 @@ var Game = {
         lockGraphics = game.add.graphics();//identify a locked unit
         selected = game.add.graphics();//identify the user's selected unit
 
-        cursor = game.add.graphics();
-        cursor.lineStyle(2, 0xffffff, 1);
-
-        if(playerId == 1)
-            cursor.drawRect(1, 1, 58, 58);
-        else if(playerId == 2){
-            var x = map.widthInPixels-59;
-            var y = map.heightInPixels-179;
-            cursor.drawRect(1, 1, 58, 58);
-            cursor.x = x;
-            cursor.y = y;
-        }
-
         background.resizeWorld();
-        game.physics.startSystem(Phaser.Physics.P2JS);
-        map.setCollisionBetween(1, 2000, true, 'blockedLayer');
+        blocked.resizeWorld();
+        game.camera.follow(cursor);
 
         moveRequest.game_id = game_id;
         moveRequest.request_id = 49;
@@ -196,7 +197,6 @@ var Game = {
         rightButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
-        skipButton = game.input.keyboard.addKey(Phaser.Keyboard.S);
 
         downButton.onDown.add(this.cursorDown, this);
         upButton.onDown.add(this.cursorUp, this);
@@ -204,7 +204,6 @@ var Game = {
         rightButton.onDown.add(this.cursorRight, this);
         enterButton.onDown.add(this.choosingMove, this);
         pauseButton.onDown.add(this.pauseGame, this);
-        skipButton.onDown.add(this.skip, this);
     },
 
     initTimer : function() {
@@ -240,15 +239,15 @@ var Game = {
         switch(playerId){
             case(1):
                 blueX = 0;
-                blueY = 0;
+                blueY = 660;
                 redX = map.widthInPixels-60;
-                redY = 180;
+                redY = 60;
                 break;
             case(2):
                 blueX = map.widthInPixels-60;
-                blueY = 180;
+                blueY = 60;
                 redX = 0;
-                redY = 0;
+                redY = 660;
                 break;
             default:
                 break;
@@ -331,7 +330,7 @@ var Game = {
                     rArcher = game.add.sprite(redX, redY, 'r_archer');
                     enemyUnits.push(rArcher);
                     map.getTileWorldXY(redX, redY).properties.unitType = 2
-                        map.getTileWorldXY(redX, redY).unit = rArcher;
+                    map.getTileWorldXY(redX, redY).unit = rArcher;
                     map.getTileWorldXY(redX, redY).unit = rArcher;
                     rArcher.health = otherUnits[i].hp;
                     rArcher.name = "Enemy Archer";
@@ -440,7 +439,7 @@ var Game = {
             var nextTile;
 
             if (y == 0)
-                nextTile = map.getTileBelow(i, x, 8);
+                nextTile = map.getTileBelow(i, x, 18);
             else
                 nextTile = map.getTileAbove(i, x, y);
 
@@ -483,7 +482,7 @@ var Game = {
             var nextTile;
 
             if (x == 0)
-                nextTile = map.getTileRight(i, 13, y);
+                nextTile = map.getTileRight(i, 23, y);
             else
                 nextTile = map.getTileLeft(i, x, y);
 
@@ -789,9 +788,9 @@ var Game = {
         var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
         var currTile = map.getTile(x,y, background);
         var oldTile = map.getTile(coordinates[0], coordinates[1], background);
-        var distance = Math.abs(oldTile.x-currTile.x) + Math.abs(oldTile.y-currTile.y);
 
         if (possibleTiles.indexOf(currTile) != -1) {
+            var distance = Math.abs(oldTile.x-currTile.x) + Math.abs(oldTile.y-currTile.y);
             if (!oldTile.unit.locked) {
                 var strReq;
                 moveRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
@@ -802,7 +801,6 @@ var Game = {
                 strReq = JSON.stringify(moveRequest);
                 connection.send(strReq);
 
-                if(valid){
                     // set the unit's location to new tile
                     oldTile.unit.x = currTile.worldX;
                     oldTile.unit.y = currTile.worldY;
@@ -824,7 +822,6 @@ var Game = {
                         strReq = JSON.stringify(lockRequest);
                         connection.send(strReq);
                     //}
-                }
             }
         } else if (attackTiles.indexOf(currTile) != -1)
             this.attack(oldTile, currTile);
@@ -1008,13 +1005,6 @@ var Game = {
         }
     },
 
-    // makes Alex's life easier 
-    skip : function() {
-        this.unlockUnits(friendlyUnits);
-        this.unlockUnits(enemyUnits);
-        lockCounter = 0;
-    },
-
     //upon receiving an event from the server, the oppenent's unit is moved
     opponentMove : function(unitId, x, y) {
         var oldTile;
@@ -1051,10 +1041,10 @@ var Game = {
 
     notifyTurnChange : function(turn){
         if(playerTurn){
-            if(turn == 1)
-                playerTurn.text = "1";
-            else if(turn == 2)
-                playerTurn.text = "2";
+            if(turn == playerId)
+                playerTurn.text = "1 - " +username;
+            else
+                playerTurn.text = "2 - " +opponentName;
         }  
     } 
 };
