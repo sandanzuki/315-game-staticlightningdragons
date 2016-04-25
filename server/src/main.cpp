@@ -144,8 +144,12 @@ int main(int argc, char **argv)
                 if(p != NULL)
                 {
                     log.write("[MAIN] INFO: Processing PlayerQuitRequest.");
-                    // First notify the Game.
-                    games[p->get_game_id()]->handle_request(p, r);
+                    // First notify the Game (if they're still in one)...
+                    Game *g = games[p->get_game_id()];
+                    if(g != NULL)
+                    {
+                        g->handle_request(p, r);
+                    }
 
                     // Then disconnect/delete the Player.
                     nm.kill_connection(p->get_player_id());
@@ -185,7 +189,7 @@ int main(int argc, char **argv)
         for(pair<int, Game*> p : games)
         {
             // TODO keep time!
-            if(!p.second->tick(0))
+            if(p.second != NULL && !p.second->tick(0))
             {
                 remove.push_back(p.first);
             }
