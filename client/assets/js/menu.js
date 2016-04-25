@@ -141,6 +141,9 @@ var Menu = {
                     if(response.state == "SELECTION"){
                         this.state.start('Tutorial');
                     }
+                    // else if(){
+                        
+                    // }
                     break;
                 case("SelectUnitsEvent"):
                     console.log(response);

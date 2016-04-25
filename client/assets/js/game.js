@@ -144,6 +144,40 @@ var Game = {
 
         enemyHBars = [myHealthBar6, myHealthBar7, myHealthBar8, myHealthBar9, myHealthBar10];
 
+        this.loadUnits();
+
+        for(var i = 0; i<friendlyUnits.length; i++){
+            hBars[i].setPosition(friendlyUnits[i].x+30, friendlyUnits[i].y);
+            enemyHBars[i].setPosition(enemyUnits[i].x+30, enemyUnits[i].y);
+        }
+
+        graphics = game.add.graphics();
+        lockGraphics = game.add.graphics();//identify a locked unit
+        selected = game.add.graphics();//identify the user's selected unit
+     
+
+        background.resizeWorld();
+        blocked.resizeWorld();
+
+        moveRequest.game_id = game_id;
+        moveRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+        moveRequest.type = "UnitMoveRequest"; 
+        moveRequest.unit_id;
+        moveRequest.x;
+        moveRequest.y;
+
+        attackRequest.game_id = game_id;
+        attackRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+        attackRequest.type = "UnitInteractRequest";
+        attackRequest.unit_id;
+        attackRequest.target_id;
+
+        lockRequest.game_id = game_id;
+        lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+        lockRequest.type = "UnitInteractRequest";
+        lockRequest.unit_id;
+        lockRequest.target_id = -1;
+
         if(playerId == 1)
             cursor = game.add.sprite(1, 781, 'cursor');
         else if(playerId == 2){
@@ -153,39 +187,7 @@ var Game = {
         }
 
         game.physics.enable(cursor);
-
-        this.loadUnits();
-
-        for(var i = 0; i<friendlyUnits.length; i++){
-            hBars[i].setPosition(friendlyUnits[i].x+30, friendlyUnits[i].y);
-            enemyHBars[i].setPosition(enemyUnits[i].x+30, enemyUnits[i].y);
-        }
-
-        lockGraphics = game.add.graphics();//identify a locked unit
-        selected = game.add.graphics();//identify the user's selected unit
-
-        background.resizeWorld();
-        blocked.resizeWorld();
         game.camera.follow(cursor);
-
-        moveRequest.game_id = game_id;
-        moveRequest.request_id = 49;
-        moveRequest.type = "UnitMoveRequest"; 
-        moveRequest.unit_id;
-        moveRequest.x;
-        moveRequest.y;
-
-        attackRequest.game_id = game_id;
-        attackRequest.request_id = 50;
-        attackRequest.type = "UnitInteractRequest";
-        attackRequest.unit_id;
-        attackRequest.target_id;
-
-        lockRequest.game_id = game_id;
-        lockRequest.request_id = 72;
-        lockRequest.type = "UnitInteractRequest";
-        lockRequest.unit_id;
-        lockRequest.target_id = -1;
     },
 
     update : function() {
@@ -324,6 +326,7 @@ var Game = {
                     rFighter.id = i-1;
                     rFighter.owner = enemyId;
                     break;
+
                 case "ARCHER":
                     rArcher = game.add.sprite(redX, redY, 'r_archer');
                     enemyUnits.push(rArcher);
@@ -335,6 +338,7 @@ var Game = {
                     rArcher.id = i-1;
                     rArcher.owner = enemyId;
                     break;
+
                 case "MAGE":
                     rMage = game.add.sprite(redX, redY, 'r_mage');
                     enemyUnits.push(rMage);
@@ -345,6 +349,7 @@ var Game = {
                     rMage.id = i-1;
                     rMage.owner = enemyId;
                     break;
+
                 case "HEALER":
                     rHealer = game.add.sprite(redX, redY,'r_healer');
                     enemyUnits.push(rHealer);
@@ -355,6 +360,7 @@ var Game = {
                     rHealer.id = i-1;
                     rHealer.owner = enemyId;
                     break;
+
                 default:
                     break;
             }
@@ -721,18 +727,17 @@ var Game = {
     // overlay possible movement for selected unit
     drawOptions : function(possibleTiles, unit) {
         graphics = game.add.graphics();
-
         for (var j = 0; j < attackTiles.length; j++) {
             if(unit.name != "Friendly Healer"){
                 if (enemyUnits.indexOf(attackTiles[j].unit) != -1) {
-                    graphics.lineStyle(2, 0xff0000, 1);
+                    graphics.lineStyle(2, 0xff0000, .5);
                     graphics.beginFill(0xff0000, .5);
                     graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
                 }
             }
             else{
                 if (friendlyUnits.indexOf(attackTiles[j].unit) != -1 && attackTiles[j].unit != unit) {
-                    graphics.lineStyle(2, 0x33ff33, 1);
+                    graphics.lineStyle(2, 0x33ff33, .5);
                     graphics.beginFill(0x33ff33, .5);
                     graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
                 }
@@ -743,14 +748,14 @@ var Game = {
             if (possibleTiles[j] != null) {
                 if (possibleTiles[j].unit == null) {
                     // draw some spiffy looking blue squares for possible movement
-                    graphics.lineStyle(2, 0x0066ff, 1); 
+                    graphics.lineStyle(2, 0x0066ff, .5); 
                     graphics.beginFill(0x0066ff, .5);
                     graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
                 } 
                 else { 
                     if(unit.name != "Friendly Healer"){
                         if (enemyUnits.indexOf(possibleTiles[j].unit) != -1) {
-                            graphics.lineStyle(2, 0xff0000, 1);
+                            graphics.lineStyle(2, 0xff0000, .5);
                             graphics.beginFill(0xff0000, .5);
                             graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
 
@@ -759,7 +764,7 @@ var Game = {
                     }
                     else{
                         if (friendlyUnits.indexOf(possibleTiles[j].unit) != -1 && possibleTiles[j].unit != unit) {
-                            graphics.lineStyle(2, 0x33ff33, 1);
+                            graphics.lineStyle(2, 0x33ff33, .5);
                             graphics.beginFill(0x33ff33, .5);
                             graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
 
@@ -775,6 +780,7 @@ var Game = {
                 j--;
             }
         }
+        cursor.bringToTop();
 
         return possibleTiles;
     },
@@ -1029,7 +1035,6 @@ var Game = {
 
     notifyTurnChange : function(turn){
         if(playerTurn){
-            console.log("hello");
             if(turn == playerId)
                 playerTurn.text = playerId + " - " + username._text;
             else
