@@ -15,7 +15,7 @@ var connection,
  	opponentName,
  	valid;
 
-game = new Phaser.Game(900, 660, Phaser.AUTO,'');
+game = new Phaser.Game(900, 600, Phaser.AUTO,'');
 
 // states of game
 game.state.add('Menu', Menu);
