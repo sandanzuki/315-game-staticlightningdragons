@@ -210,7 +210,7 @@ var Menu = {
                     break;
                 case("PlayerRenameEvent"):
                     console.log(response);
-                    if(playerId != response.player_id)
+                    if(playerServerId != response.player_id)
                         opponentName = response.name;
                     break;
                 default:

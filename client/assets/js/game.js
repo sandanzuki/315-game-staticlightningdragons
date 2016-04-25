@@ -83,15 +83,6 @@ var Game = {
         background = map.createLayer('backgroundLayer');
         blocked = map.createLayer('blockedLayer');
 
-        // position layers
-        // background.fixedToCamera = false;
-        // background.scrollFactorX = 0;
-        // background.scrollFactorY = 0;
-
-        // blocked.fixedToCamera = false;
-        // blocked.scrollFactorX = 0;
-        // blocked.scrollFactorY = 0;
-
         game.time.events.loop(Phaser.Timer.SECOND, this.updateCounter, this);
 
         time_font = game.add.text(850, game.height -50, '60', { 
@@ -154,10 +145,10 @@ var Game = {
         enemyHBars = [myHealthBar6, myHealthBar7, myHealthBar8, myHealthBar9, myHealthBar10];
 
         if(playerId == 1)
-            cursor = game.add.sprite(1, 661, 'cursor');
+            cursor = game.add.sprite(1, 781, 'cursor');
         else if(playerId == 2){
             var x = map.widthInPixels-59;
-            var y = 61;
+            var y = 181;
             cursor = game.add.sprite(x, y, 'cursor');
         }
 
@@ -407,29 +398,31 @@ var Game = {
             else
                 nextTile = map.getTileBelow(i, x, y);
 
-            cursor.x = nextTile.worldX;
-            cursor.y = nextTile.worldY;
+            cursor.x = nextTile.worldX+1;
+            cursor.y = nextTile.worldY+1;
         } else {
-            if (arrow.y+39 > 422)
-                arrow.y = 305;
+            var x = game.camera.x;
+            var y = game.camera.y;
+            if (arrow.y+39 > y+422)
+                arrow.y = y+305;
             else
                 arrow.y += 39;
 
             switch (arrow.y) {
-                case(305):
-                    arrow.x = 315;
+                case(y+305):
+                    arrow.x = x+315;
                     break;
 
-                case(344):
-                    arrow.x = 280;
+                case(y+344):
+                    arrow.x = x+280;
                     break;
 
-                case(383):
-                    arrow.x = 325;
+                case(y+383):
+                    arrow.x = x+325;
                     break;
 
-                case(422):
-                    arrow.x = 300;
+                case(y+422):
+                    arrow.x = x+300;
                     break;
 
                 default:
@@ -450,29 +443,31 @@ var Game = {
             else
                 nextTile = map.getTileAbove(i, x, y);
 
-            cursor.x = nextTile.worldX;
-            cursor.y = nextTile.worldY;
+            cursor.x = nextTile.worldX+1;
+            cursor.y = nextTile.worldY+1;
         } else {
-            if (arrow.y-39 < 305)
-                arrow.y = 422;
+            var x = game.camera.x;
+            var y = game.camera.y;
+            if (arrow.y-39 < y+305)
+                arrow.y = y+422;
             else
                 arrow.y -= 39;
 
             switch (arrow.y) {
-                case(305):
-                    arrow.x = 315;
+                case(y+305):
+                    arrow.x = x+315;
                     break;
 
-                case(344):
-                    arrow.x = 280;
+                case(y+344):
+                    arrow.x = x+280;
                     break;
 
-                case(383):
-                    arrow.x = 325;
+                case(y+383):
+                    arrow.x = x+325;
                     break;
 
-                case(422):
-                    arrow.x = 300;
+                case(y+422):
+                    arrow.x = x+300;
                     break;
 
                 default:
@@ -493,8 +488,8 @@ var Game = {
             else
                 nextTile = map.getTileLeft(i, x, y);
 
-            cursor.x = nextTile.worldX;
-            cursor.y = nextTile.worldY;
+            cursor.x = nextTile.worldX+1;
+            cursor.y = nextTile.worldY+1;
         }
     },
 
@@ -510,40 +505,39 @@ var Game = {
             else
                 nextTile = map.getTileRight(i, x, y);
 
-            cursor.x = nextTile.worldX;
-            cursor.y = nextTile.worldY;
+            cursor.x = nextTile.worldX+1;
+            cursor.y = nextTile.worldY+1;
         }
     },
 
     // functionality of 'enter'
     choosingMove : function() {
-        if (!pause) {
-            // remove the text below the game screen
-            if (document.getElementById("stats").childNodes.length != 0)
-                this.output("");
-
-            if (isDown == 0)
-                oldTile = this.moveMenu();
-            else {
-                selected.clear();
-                this.moveComplete(coordinates);
-            }
+        if (!pause){
+            if(turn == playerId){
+                if (isDown == 0)
+                    oldTile = this.moveMenu();
+                else {
+                    selected.clear();
+                    this.moveComplete(coordinates);
+                }
+            }      
         } else {
+            var x = game.camera.x;
+            var y = game.camera.y;
             switch (arrow.y) {
-                case(305):
-                    this.output("Resumed");
+                case(y+305):
                     pause = false;
                     option.destroy();
                     arrow.destroy();
                     break;
 
-                case(344):
+                case(y+344):
                     break;
 
-                case(389):
+                case(y+389):
                     break;
 
-                case(422):
+                case(y+422):
                     pause = false;
                     game.win = false;
                     request.game_id = game_id;
@@ -588,7 +582,6 @@ var Game = {
                     selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
                     possibleTiles = [];
 
-                    this.output(currTile.unit.name);
                     switch (currTile.properties.unitType) {
                         case 1: // unit is fighter
                             isDown = 1;
@@ -616,10 +609,8 @@ var Game = {
                             break;
                     }
                 }
-            } else
-                this.output("No Unit Here");
-        } else
-            this.output("Invalid Tile Selection");
+            } 
+        } 
     },
 
     // calculates possible movement
@@ -874,17 +865,8 @@ var Game = {
         console.log(strReq);
         connection.send(strReq);
 
-        if (selectedUnit && targetedUnit) {
-            if ((!targetedUnit.friendly && selectedUnit.friendly) || (targetedUnit.friendly && !selectedUnit.friendly))
-                this.output("Attacked: " + targetedUnit.name)    
-            else if(selectedUnit.name == "Friendly Healer")
-                this.output("Healed: " + targetedUnit.name) 
-
+        if (selectedUnit && targetedUnit) 
             this.lockUnit(oldTile.unit); 
-        } 
-        else {
-            this.output("No unit to attack there");
-        }
     },
 
     killUnit : function(enemyOrFriendly, unitId){
@@ -994,16 +976,15 @@ var Game = {
         lockGraphics.clear();
     },
 
-    // output helpful info to screen
-    output : function(input) { 
-        document.getElementById("stats").innerHTML = input;
-    },
 
     pauseGame : function() {
-        this.output("");
         if (!pause) {
+            var x = game.camera.x;
+            var y = game.camera.y;
+
             option = game.add.sprite(0,0, 'option');
-            arrow = game.add.sprite(315,305, 'arrow');
+            option.fixedToCamera=true;
+            arrow = game.add.sprite(x+315, y+305, 'arrow');
             pause = true;
         } else {
             option.destroy();
@@ -1048,10 +1029,11 @@ var Game = {
 
     notifyTurnChange : function(turn){
         if(playerTurn){
+            console.log("hello");
             if(turn == playerId)
-                playerTurn.text = "1 - " +username;
+                playerTurn.text = playerId + " - " + username._text;
             else
-                playerTurn.text = "2 - " +opponentName;
+                playerTurn.text = turn + " - " + opponentName;
         }  
     } 
 };
