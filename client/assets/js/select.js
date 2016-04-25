@@ -3,12 +3,15 @@ var cursor,
 
 var position = "up";
 var index;
-var symbols=[];
+var symbols;
 var request;
 var spritesLayer;
 
 var Select = {
     preload : function() {
+        symbols = [];
+        units = [];
+        otherUnits = [];
         game.load.image('select', './assets/images/select.png');
         game.load.image('fighter', './assets/images/fighter_symbol.png');
         game.load.image('archer', './assets/images/archer_symbol.png');

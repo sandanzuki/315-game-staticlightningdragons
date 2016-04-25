@@ -141,9 +141,13 @@ var Menu = {
                     if(response.state == "SELECTION"){
                         this.state.start('Tutorial');
                     }
-                    // else if(){
-                        
-                    // }
+                    else if(response.state == "GAME_OVER"){
+                        if(friendCount > 0){
+                            console.log("hello");
+                            game.win = true;
+                            this.state.start('GameOver');
+                        }
+                    }
                     break;
                 case("SelectUnitsEvent"):
                     console.log(response);
