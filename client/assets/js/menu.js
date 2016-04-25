@@ -11,7 +11,7 @@ var Menu = {
         game.load.image('arrow_white', './assets/images/arrow_white.png');
 
         game.load.audio('clang', './assets/audio/soundeffects/clang.mp3');
-        game.load.audio('intro', './assets/audio/music/Exposition.ogg');
+        //game.load.audio('intro', './assets/audio/music/Exposition.ogg');
 
         // align canvas
         game.scale.pageAlignHorizontally = true;
@@ -24,8 +24,8 @@ var Menu = {
 
         // clang = game.add.audio('clang');
         //bg music when ready
-        music_intro = game.add.audio('intro');
-        music_intro.loopFull();
+        //music_intro = game.add.audio('intro');
+        //music_intro.loopFull();
 
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.select, this);
@@ -161,8 +161,8 @@ var Menu = {
                         units = response.player_two;
                     }
                     // turn off intro music 
-                    music_intro.destroy();  
-                    game.cache.removeSound('intro');
+                    //music_intro.destroy();  
+                    //game.cache.removeSound('intro');
                     this.state.start('Game');
                     break;
                 case("TurnChangeEvent"):
