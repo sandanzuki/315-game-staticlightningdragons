@@ -140,14 +140,18 @@ int main(int argc, char **argv)
             // PlayerQuitRequest
             else if(type.compare("PlayerQuitRequest") == 0)
             {
-                log.write("[MAIN] INFO: Processing PlayerQuitRequest.");
-                // First notify the Game.
-                games[p->get_game_id()]->handle_request(p, r);
+                // Only handle this request if we haven't received one already.
+                if(p != NULL)
+                {
+                    log.write("[MAIN] INFO: Processing PlayerQuitRequest.");
+                    // First notify the Game.
+                    games[p->get_game_id()]->handle_request(p, r);
 
-                // Then disconnect/delete the Player.
-                nm.kill_connection(p->get_player_id());
-                players.erase(p->get_player_id());
-                delete p;
+                    // Then disconnect/delete the Player.
+                    nm.kill_connection(p->get_player_id());
+                    players.erase(p->get_player_id());
+                    delete p;
+                }
             }
 
             // All other requests just go straight to the Game.
