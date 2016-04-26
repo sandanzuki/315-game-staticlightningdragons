@@ -871,8 +871,8 @@ var Game = {
         console.log(strReq);
         connection.send(strReq);
 
-        if (selectedUnit && targetedUnit) 
-            this.lockUnit(oldTile.unit); 
+        // if (selectedUnit && targetedUnit) 
+        //     this.lockUnit(oldTile.unit); 
     },
 
     killUnit : function(enemyOrFriendly, unitId){
