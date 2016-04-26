@@ -79,10 +79,12 @@ void Game::handle_request(Player *p, EventRequest *r)
             if(player_one == p)
             {
                 player_one = NULL;
+                player_two->set_game_id(-1);
             }
             else if(player_two == p)
             {
                 player_two == NULL;
+                player_one->set_game_id(-1);
             }
 
             // If we're in SELECTION state, we have to delete the Units first.

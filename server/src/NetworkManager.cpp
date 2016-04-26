@@ -41,7 +41,7 @@ int callback_rqs(struct lws *wsi, enum lws_callback_reasons reason, void *user, 
         case LWS_CALLBACK_CLOSED:
             {
                 // Pass this information back to the NetworkManager and it will take care of this.
-                string quit("{\"type\": \"PlayerQuitRequest\"}");
+                string quit("{\"type\": \"PlayerQuitRequest\", \"game_id\": -1, \"request_id\": 9001}");
                 nm->submit_incoming_message(*id, quit);
                 sprintf(output_buffer, "[NET] INFO: Player with ID %d has disconnected.", *id);
                 log->write(output_buffer);
