@@ -1,4 +1,4 @@
-var clang, music_intro,
+var music_intro,
     arrow,
     x, y,
     opponentId,
@@ -10,7 +10,6 @@ var Menu = {
         game.load.image('menu', './assets/images/menu.png');
         game.load.image('arrow_white', './assets/images/arrow_white.png');
 
-        game.load.audio('clang', './assets/audio/soundeffects/clang.mp3');
         //game.load.audio('intro', './assets/audio/music/Exposition.ogg');
 
         // align canvas
@@ -22,7 +21,6 @@ var Menu = {
         this.add.sprite(0, 0, 'menu'); // add background
         arrow = this.add.sprite(205, 345, 'arrow_white');
 
-        // clang = game.add.audio('clang');
         //bg music when ready
         //music_intro = game.add.audio('intro');
         //music_intro.loopFull();
