@@ -4,8 +4,9 @@ var cursor,
 var position = "up";
 var index;
 var symbols;
-var request;
-var spritesLayer;
+var request,
+    spritesLayer,
+    arrow;
 
 var Select = {
     preload : function() {
@@ -17,6 +18,7 @@ var Select = {
         game.load.image('archer', './assets/images/archer_symbol.png');
         game.load.image('mage', './assets/images/mage_symbol.png');
         game.load.image('healer', './assets/images/healer_symbol.png');
+        game.load.image('arrow', './assets/images/arrow_white.png')
         
         // align canvas
         game.scale.pageAlignHorizontally = true;
@@ -86,7 +88,7 @@ var Select = {
 
     startGame : function() {
         if(position == "up"){
-            if(cursor.y == 530){
+            if(arrow.y == 520){
                 if(symbols.length == 5){
                     var strReq;
 
@@ -200,11 +202,13 @@ var Select = {
     },
 
     cursorUp : function() {
-        if(cursor.y == 530){
-            cursor.clear();
+        if(arrow.y == 520){
+            arrow.destroy();
+
             cursor.lineStyle(2, 0x00ff00, 1);
             cursor.beginFill(0x00ff00, .5);
             cursor.drawRect(0, 0, 86, 86);
+
             cursor.x = oldX;
             cursor.y = oldY;
         }
@@ -212,15 +216,13 @@ var Select = {
 
     cursorDown : function() {
         if(cursor.y == 196){
+            arrow = this.add.sprite(0, 0, 'arrow');
             oldX = cursor.x;
             oldY = cursor.y;
 
             cursor.clear();
-            cursor.lineStyle(2, 0x00ff00, 1);
-            cursor.beginFill(0x00ff00, .5);
-            cursor.drawRect(0, 0, 140, 37);
-            cursor.x = 720;
-            cursor.y = 530;
+            arrow.x = 685;
+            arrow.y = 520;
         }
     }
 };
