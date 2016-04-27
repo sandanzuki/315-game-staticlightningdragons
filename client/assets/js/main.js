@@ -27,4 +27,3 @@ game.state.add('Select', Select);
 game.state.add('Game', Game);
 game.state.add('GameOver', GameOver);
 game.state.start('Menu'); // start on 'Menu' state
-

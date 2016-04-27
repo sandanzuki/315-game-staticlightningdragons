@@ -211,6 +211,8 @@ var Menu = {
                         Game.killUnit(true, targetId);
                     if(unitHp == 0)
                         Game.killUnit(false, unitId);
+                    else
+                        Game.lockUnit(friendlyUnits[unitId]);
 
                     break;
                 case("PlayerRenameEvent"):
@@ -225,7 +227,3 @@ var Menu = {
         }
     }
 };
-
-
-
-
