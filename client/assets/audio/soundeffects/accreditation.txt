@@ -1,0 +1,13 @@
+Accreditation for in-game sound effects.
+All files were taken from soundbible.com.
+
+Original download filename                                  Modified filename               License
+---------------------------------------------------------------------------------------------------------------
+Bottle Rocket-SoundBible.com-332895117.mp3                  bottle_rocket.mp3               Attribution 3.0
+Bow_Fire_Arrow-Stephan_Schutze-2133929391.mp3               bow.mp3                         Noncommerical 3.0
+Metal Clang-SoundBible.com-19572601.mp3                     clang.mp3                       Attribution 3.0
+Mystic_Chanting_1-Marianne_Gagnon-116365125.mp3             chant.mp3                       Attribution 3.0
+Sword Swing-SoundBible.com-639083727.wav                    sword.wav                       Attribution 3.0
+Tick-DeepFrozenApps-397275646.mp3                           tick.mp3                        Attribution 3.0
+Ting-Popup_Pixels-349896185.mp3                             ting.mp3                        Attribution 3.0
+dun_dun_dun-Delsym-719755295.mp3                            defeat.mp3                      Attribution 3.0
