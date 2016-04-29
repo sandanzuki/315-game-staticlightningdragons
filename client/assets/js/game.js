@@ -752,25 +752,37 @@ var Game = {
                     graphics.beginFill(0x0066ff, .5);
                     graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
                 } 
-                else { 
-                    if(unit.name != "Friendly Healer"){
-                        if (enemyUnits.indexOf(possibleTiles[j].unit) != -1) {
-                            graphics.lineStyle(2, 0xff0000, .5);
-                            graphics.beginFill(0xff0000, .5);
-                            graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
+                else {
+                    switch(unit.name){
+                        case("Friendly Fighter"):
+                            break;
+                        case("Friendly Archer"):
+                            break;
+                        case("Friendly Mage"):
+                            break;
+                        case("Friendly Healer"):
+                            break;
+                        default:
+                            break;
+                    } 
+                    // if(unit.name != "Friendly Healer"){
+                    //     if (enemyUnits.indexOf(possibleTiles[j].unit) != -1) {
+                    //         graphics.lineStyle(2, 0xff0000, .5);
+                    //         graphics.beginFill(0xff0000, .5);
+                    //         graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
 
-                            attackTiles.push(possibleTiles[j]);
-                        }
-                    }
-                    else{
-                        if (friendlyUnits.indexOf(possibleTiles[j].unit) != -1 && possibleTiles[j].unit != unit) {
-                            graphics.lineStyle(2, 0x33ff33, .5);
-                            graphics.beginFill(0x33ff33, .5);
-                            graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
+                    //         attackTiles.push(possibleTiles[j]);
+                    //     }
+                    // }
+                    // else{
+                    //     if (friendlyUnits.indexOf(possibleTiles[j].unit) != -1 && possibleTiles[j].unit != unit) {
+                    //         graphics.lineStyle(2, 0x33ff33, .5);
+                    //         graphics.beginFill(0x33ff33, .5);
+                    //         graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
 
-                            attackTiles.push(possibleTiles[j]);
-                        }
-                    }
+                    //         attackTiles.push(possibleTiles[j]);
+                    //     }
+                    // }
                     //remove impossible locations
                     possibleTiles.splice(j, 1);
                     j--;
