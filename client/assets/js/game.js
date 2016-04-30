@@ -197,6 +197,7 @@ var Game = {
         rightButton = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
         pauseButton = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
+        backButton = game.input.keyboard.addKey(Phaser.Keyboard.BACKSPACE);
 
         downButton.onDown.add(this.cursorDown, this);
         upButton.onDown.add(this.cursorUp, this);
@@ -204,6 +205,7 @@ var Game = {
         rightButton.onDown.add(this.cursorRight, this);
         enterButton.onDown.add(this.choosingMove, this);
         pauseButton.onDown.add(this.pauseGame, this);
+        backButton.onDown.add(this.dontMove, this);
     },
 
     initTimer : function() {
@@ -516,8 +518,33 @@ var Game = {
         }
     },
 
+    dontMove : function() {
+        var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
+        var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
+        var currTile = map.getTile(x, y);
+        if(!pause){
+            if(turn == playerId){
+                if(isDown == 1){
+                    selected.clear();
+                    if(currTile)
+                        this.lockUnit(currTile.unit);
+
+                        lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                        lockRequest.unit_id = currTile.unit.id;
+
+                        strReq = JSON.stringify(lockRequest);
+                        connection.send(strReq);
+
+                        graphics.clear();
+                        isDown = 0;
+                }
+            }
+        }
+    },
+
     // functionality of 'enter'
     choosingMove : function() {
+
         if (!pause){
             if(turn == playerId){
                 if (isDown == 0)
@@ -624,27 +651,20 @@ var Game = {
         attackTiles = [];
         var adjacent = [];
         var x = currTile.x;
-        var y = currTile.y;
-
-        //0 for fighters, 1 for other
-        var attackRange; 
+        var y = currTile.y; 
 
         switch (unitType) {
             case 1:
                 max = 4;
-                attackRange = 0;
                 break;
             case 2:
                 max = 6;
-                attackRange = 1;
                 break;
             case 3:
                 max = 5;
-                attackRange = 1;
                 break;
             case 4:
                 max = 6;
-                attackRange = 1;
             default:
                 break;
         }
@@ -681,6 +701,15 @@ var Game = {
             }
         }
 
+        this.getAttackOptions(currTile);
+
+        possibleTiles = this.drawOptions(set, currTile.unit);
+    },
+
+    getAttackOptions : function(currTile){
+        var tile;
+        var adjacent = [];
+        attackTiles = [];
         switch(currTile.unit.name){
             case("Friendly Fighter"):
                 attackTiles = this.getAdjacent(currTile);
@@ -753,9 +782,7 @@ var Game = {
                     attackTiles.push(tile);
                 break;
         }
-
-        possibleTiles = this.drawOptions(set, currTile.unit);
-    },
+    }
 
     getAdjacent : function(currTile) {
         var adjacent = [];
@@ -846,27 +873,26 @@ var Game = {
                 strReq = JSON.stringify(moveRequest);
                 connection.send(strReq);
 
-                    // set the unit's location to new tile
-                    oldTile.unit.x = currTile.worldX;
-                    oldTile.unit.y = currTile.worldY;
-                    currTile.unit = oldTile.unit;
+                // set the unit's location to new tile
+                oldTile.unit.x = currTile.worldX;
+                oldTile.unit.y = currTile.worldY;
+                currTile.unit = oldTile.unit;
 
-                    // give the new tile all of the old tile's properties
-                    currTile.properties.unitType = oldTile.properties.unitType;
-                    oldTile.properties.unitType = 0;
-                    oldTile.unit = null;
+                // give the new tile all of the old tile's properties
+                currTile.properties.unitType = oldTile.properties.unitType;
+                oldTile.properties.unitType = 0;
+                oldTile.unit = null;
 
-                    this.updateBar(currTile.unit.id, currTile.unit.x, currTile.unit.y, false);
-                    // show the user that this unit is now locked, and cannot be moved again
-                    //if(distance>=max){
-                        this.lockUnit(currTile.unit);
+                this.updateBar(currTile.unit.id, currTile.unit.x, currTile.unit.y, false);
 
-                        lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
-                        lockRequest.unit_id = currTile.unit.id;
+                // show the user that this unit is now locked, and cannot be moved again                
+                this.lockUnit(currTile.unit);
 
-                        strReq = JSON.stringify(lockRequest);
-                        connection.send(strReq);
-                    //}
+                lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                lockRequest.unit_id = currTile.unit.id;
+
+                strReq = JSON.stringify(lockRequest);
+                connection.send(strReq);
             }
         } else if (attackTiles.indexOf(currTile) != -1)
             this.attack(oldTile, currTile);
