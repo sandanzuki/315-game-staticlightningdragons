@@ -16,6 +16,7 @@ var map,
     attackTiles = [],
     coordinates = [],
     isDown,
+    alreadyMoved = false,
     graphics,
     lockGraphics,
     selected,
@@ -648,6 +649,7 @@ var Game = {
 
     // calculates possible movement
     getMoveOptions : function(currTile, unitType) {
+        alreadyMoved = false;
         attackTiles = [];
         var adjacent = [];
         var x = currTile.x;
@@ -708,6 +710,8 @@ var Game = {
 
     getAttackOptions : function(currTile){
         var tile;
+        var x = currTile.x;
+        var y = currTile.y;
         var adjacent = [];
         attackTiles = [];
         switch(currTile.unit.name){
@@ -718,29 +722,37 @@ var Game = {
                 tile = map.getTile(x+1, y);
                 if(tile){
                     adjacent = this.getAdjacent(tile);
-                    for(var i = 0; i<adjacent.length; i++)
-                        attackTiles.push(adjacent[i]);    
+                    for(var i = 0; i<adjacent.length; i++){
+                        if(attackTiles.indexOf(adjacent[i] == 1))
+                            attackTiles.push(adjacent[i]);
+                    }    
                 }
 
                 tile = map.getTile(x-1, y);
                 if(tile){
                     adjacent = this.getAdjacent(tile);
-                    for(var i = 0; i<adjacent.length; i++)
-                        attackTiles.push(adjacent[i]);    
+                    for(var i = 0; i<adjacent.length; i++){
+                        if(attackTiles.indexOf(adjacent[i] == 1))
+                            attackTiles.push(adjacent[i]);
+                    }    
                 }
 
                 tile = map.getTile(x, y+1);
                 if(tile){
                     adjacent = this.getAdjacent(tile);
-                    for(var i = 0; i<adjacent.length; i++)
-                        attackTiles.push(adjacent[i]); 
+                    for(var i = 0; i<adjacent.length; i++){
+                        if(attackTiles.indexOf(adjacent[i] == 1))
+                            attackTiles.push(adjacent[i]);
+                    } 
                 }
 
                 tile = map.getTile(x, y-1);
                 if(tile){
                     adjacent = this.getAdjacent(tile);
-                    for(var i = 0; i<adjacent.length; i++)
-                        attackTiles.push(adjacent[i]);  
+                    for(var i = 0; i<adjacent.length; i++){
+                        if(attackTiles.indexOf(adjacent[i] == 1))
+                            attackTiles.push(adjacent[i]); 
+                    } 
                 } 
                 break;
             case("Friendly Mage"):
@@ -782,7 +794,7 @@ var Game = {
                     attackTiles.push(tile);
                 break;
         }
-    }
+    },
 
     getAdjacent : function(currTile) {
         var adjacent = [];
@@ -813,23 +825,8 @@ var Game = {
     // overlay possible movement for selected unit
     drawOptions : function(possibleTiles, unit) {
         graphics = game.add.graphics();
-        for (var j = 0; j < attackTiles.length; j++) {
-            if(unit.name != "Friendly Healer"){
-                if (enemyUnits.indexOf(attackTiles[j].unit) != -1) {
-                    graphics.lineStyle(2, 0xff0000, .5);
-                    graphics.beginFill(0xff0000, .5);
-                    graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
-                }
-            }
-            else{
-                if (friendlyUnits.indexOf(attackTiles[j].unit) != -1 && attackTiles[j].unit != unit) {
-                    graphics.lineStyle(2, 0x33ff33, .5);
-                    graphics.beginFill(0x33ff33, .5);
-                    graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
-                }
-            }
-        }
 
+        this.drawAttack(unit);
         for (var j = 0; j < possibleTiles.length; j++) {
             if (possibleTiles[j] != null) {
                 if (possibleTiles[j].unit == null) {
@@ -853,14 +850,35 @@ var Game = {
         return possibleTiles;
     },
 
+    drawAttack : function(unit){
+        for (var j = 0; j < attackTiles.length; j++) {
+            if(unit.name != "Friendly Healer"){
+                if (enemyUnits.indexOf(attackTiles[j].unit) != -1) {
+                    graphics.lineStyle(2, 0xff0000, .5);
+                    graphics.beginFill(0xff0000, .5);
+                    graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
+                }
+            }
+            else{
+                if (friendlyUnits.indexOf(attackTiles[j].unit) != -1 && attackTiles[j].unit != unit) {
+                    graphics.lineStyle(2, 0x33ff33, .5);
+                    graphics.beginFill(0x33ff33, .5);
+                    graphics.drawRect(attackTiles[j].worldX + 2, attackTiles[j].worldY + 2, 56, 56);
+                }
+            }
+        }
+    },
+
     // complete movement
     moveComplete : function(coordinates) {
-        isDown = 0;
         var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
         var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
-        var currTile = map.getTile(x,y, background);
-        var oldTile = map.getTile(coordinates[0], coordinates[1], background);
+        var currTile = map.getTile(x,y);
+        var oldTile = map.getTile(coordinates[0], coordinates[1]);
 
+        console.log(oldTile.x);
+        console.log(currTile.x);
+        
         if (possibleTiles.indexOf(currTile) != -1) {
             var distance = Math.abs(oldTile.x-currTile.x) + Math.abs(oldTile.y-currTile.y);
             if (!oldTile.unit.locked) {
@@ -871,7 +889,8 @@ var Game = {
                 moveRequest.y = y;
 
                 strReq = JSON.stringify(moveRequest);
-                connection.send(strReq);
+                if(!alreadyMoved)
+                    connection.send(strReq);
 
                 // set the unit's location to new tile
                 oldTile.unit.x = currTile.worldX;
@@ -881,23 +900,54 @@ var Game = {
                 // give the new tile all of the old tile's properties
                 currTile.properties.unitType = oldTile.properties.unitType;
                 oldTile.properties.unitType = 0;
-                oldTile.unit = null;
+
+                if(!alreadyMoved)
+                    oldTile.unit = null;
 
                 this.updateBar(currTile.unit.id, currTile.unit.x, currTile.unit.y, false);
 
-                // show the user that this unit is now locked, and cannot be moved again                
-                this.lockUnit(currTile.unit);
+                graphics.clear();
+                this.getAttackOptions(currTile);
+                this.drawAttack(currTile.unit);
 
-                lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
-                lockRequest.unit_id = currTile.unit.id;
+                var check = false;
+                for(var i = 0; i<attackTiles.length; i++){
+                    if(enemyUnits.indexOf(attackTiles[i].unit) != -1){
+                        check = true
+                        break;
+                    }
+                }
 
-                strReq = JSON.stringify(lockRequest);
-                connection.send(strReq);
+                if(check){
+                    alreadyMoved = true;
+                    selected.lineStyle(2, 0xffbf00, 1);
+                    selected.beginFill(0xffbf00, .5);
+                    selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
+                    coordinates[0] = currTile.x;
+                    coordinates[1] = currTile.y;
+                }
+                else{
+                    // show the user that this unit is now locked, and cannot be moved again                
+                    this.lockUnit(currTile.unit);
+
+                    lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                    lockRequest.unit_id = currTile.unit.id;
+
+                    strReq = JSON.stringify(lockRequest);
+                    connection.send(strReq);
+                    graphics.clear();
+                    isDown = 0;
+                }
             }
-        } else if (attackTiles.indexOf(currTile) != -1)
+        } else if (attackTiles.indexOf(currTile) != -1){
             this.attack(oldTile, currTile);
-
-        graphics.clear();
+            graphics.clear();
+            isDown = 0;
+        }
+        else{
+            graphics.clear();
+            isDown = 0;
+        }
     },
 
     hpBarsHit : function(targetId, targetHp, unitId, unitHp){
