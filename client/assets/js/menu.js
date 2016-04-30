@@ -10,7 +10,7 @@ var Menu = {
         game.load.image('menu', './assets/images/menu.png');
         game.load.image('arrow_white', './assets/images/arrow_white.png');
 
-        //game.load.audio('intro', './assets/audio/music/Exposition.ogg');
+        game.load.audio('intro', './assets/audio/music/Exposition.ogg');
 
         // align canvas
         game.scale.pageAlignHorizontally = true;
@@ -22,8 +22,8 @@ var Menu = {
         arrow = this.add.sprite(205, 345, 'arrow_white');
 
         //bg music when ready
-        //music_intro = game.add.audio('intro');
-        //music_intro.loopFull();
+        music_intro = game.add.audio('intro');
+        music_intro.loopFull();
 
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.select, this);
