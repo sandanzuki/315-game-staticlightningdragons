@@ -681,20 +681,6 @@ var Game = {
             }
         }
 
-        // for (var i = 0; i < set.length; i++) {
-        //     adjacent = [];
-        //     tile = set[i];
-
-        //     if ((Math.abs(tile.x-currTile.x) + Math.abs(tile.y-currTile.y)) == max) {
-        //         adjacent = this.getAdjacent(tile);
-
-        //         for (var j = 0; j < adjacent.length; j++) {
-        //             if (set.indexOf(adjacent[j]) == -1 && attackTiles.indexOf(adjacent[j]) == -1)
-        //                 attackTiles.push(adjacent[j]);
-        //         }
-        //     }
-        // }
-        //down up right left
         switch(currTile.unit.name){
             case("Friendly Fighter"):
                 attackTiles = this.getAdjacent(currTile);
@@ -826,24 +812,6 @@ var Game = {
                     graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
                 } 
                 else { 
-                    // if(unit.name != "Friendly Healer"){
-                    //     if (enemyUnits.indexOf(possibleTiles[j].unit) != -1) {
-                    //         graphics.lineStyle(2, 0xff0000, .5);
-                    //         graphics.beginFill(0xff0000, .5);
-                    //         graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
-
-                    //         attackTiles.push(possibleTiles[j]);
-                    //     }
-                    // }
-                    // else{
-                    //     if (friendlyUnits.indexOf(possibleTiles[j].unit) != -1 && possibleTiles[j].unit != unit) {
-                    //         graphics.lineStyle(2, 0x33ff33, .5);
-                    //         graphics.beginFill(0x33ff33, .5);
-                    //         graphics.drawRect(possibleTiles[j].worldX + 2, possibleTiles[j].worldY + 2, 56, 56);
-
-                    //         attackTiles.push(possibleTiles[j]);
-                    //     }
-                    // }
                     //remove impossible locations
                     possibleTiles.splice(j, 1);
                     j--;
