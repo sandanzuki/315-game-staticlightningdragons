@@ -555,8 +555,8 @@ var Game = {
 
                     connection.send(strReq);
                     //turn off battle music here
-                    //battle_music.destroy();
-                    //game.cache.removeSound('battle');
+                    music.destroy();  
+                    game.cache.removeSound('music');
                     this.state.start('GameOver');
                     break;
 

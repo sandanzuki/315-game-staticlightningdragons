@@ -1,5 +1,5 @@
 Accreditation for in-game sound effects.
-All files were taken from soundbible.com.
+All listed files were taken from soundbible.com.
 
 Original download filename                                  Modified filename               License
 ---------------------------------------------------------------------------------------------------------------
