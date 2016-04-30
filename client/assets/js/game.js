@@ -26,7 +26,7 @@ var map,
     enemyUnits = [],
     enemyCount = 5,
     pause = false,
-    battle_music,
+    //battle_music,
     moveRequest = new Object(),
     attackRequest = new Object(),
     hb_cnfg = { // healthbar
@@ -68,7 +68,7 @@ var Game = {
         game.load.image('cursor', './assets/images/cursor.png');
 
         //load bg music here.. must load in this game state!
-        game.load.audio('battle', './assets/audio/music/battle.m4a');
+        //game.load.audio('battle', './assets/audio/music/battle.m4a');
     },
 
     create : function() {
@@ -583,8 +583,8 @@ var Game = {
 
                     connection.send(strReq);
                     //turn off battle music here
-                    //battle_music.destroy();
-                    //game.cache.removeSound('battle');
+                    music.destroy();  
+                    game.cache.removeSound('music');
                     this.state.start('GameOver');
                     break;
 

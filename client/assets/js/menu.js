@@ -1,4 +1,4 @@
-var music_intro,
+var music,
     arrow,
     x, y,
     opponentId,
@@ -10,7 +10,7 @@ var Menu = {
         game.load.image('menu', './assets/images/menu.png');
         game.load.image('arrow_white', './assets/images/arrow_white.png');
 
-        game.load.audio('intro', './assets/audio/music/Exposition.ogg');
+        game.load.audio('music', './assets/audio/music/exposition.mp3');
 
         // align canvas
         game.scale.pageAlignHorizontally = true;
@@ -22,8 +22,8 @@ var Menu = {
         arrow = this.add.sprite(205, 345, 'arrow_white');
 
         //bg music when ready
-        music_intro = game.add.audio('intro');
-        music_intro.loopFull();
+        music = game.add.audio('music');
+        music.loopFull();
 
         enterButton = game.input.keyboard.addKey(Phaser.Keyboard.ENTER);
         enterButton.onDown.add(this.select, this);
@@ -141,8 +141,10 @@ var Menu = {
                     }
                     else if(response.state == "GAME_OVER"){
                         if(friendCount > 0){
-                            console.log("hello");
                             game.win = true;
+                            // turn off music 
+                            music.destroy();  
+                            game.cache.removeSound('music');
                             this.state.start('GameOver');
                         }
                     }
@@ -162,9 +164,6 @@ var Menu = {
                         otherUnits = response.player_one;
                         units = response.player_two;
                     }
-                    // turn off intro music 
-                    //music_intro.destroy();  
-                    //game.cache.removeSound('intro');
                     this.state.start('Game');
                     break;
                 case("TurnChangeEvent"):
