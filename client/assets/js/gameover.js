@@ -17,6 +17,8 @@ var GameOver = {
     create : function() {
         defeat = game.add.audio('sound_defeat');
         victory = game.add.audio('sound_victory');
+        music.destroy();  
+        game.cache.removeSound('music');
 
         if(game.win) {
             this.add.sprite(0, 0, 'victory'); // add background
