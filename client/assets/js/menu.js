@@ -203,9 +203,10 @@ var Menu = {
                     unitId = response.unit_id;
                     unitHp = response.unit_hp;
 
-                    if(targetId != -1)
+                    if(targetId != -1){
                         Game.hpBarsHit(targetId, targetHp, unitId, unitHp);
-                    
+                        Game.soundEffect(friendlyUnits[unitId]);
+                    }
                     if(targetHp == 0)
                         Game.killUnit(true, targetId);
                     if(unitHp == 0)

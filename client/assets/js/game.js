@@ -43,7 +43,12 @@ var map,
     playerTurn,
     tutorialState = true,
     attackRequest = new Object(),
-    lockRequest = new Object();
+    lockRequest = new Object(),
+    fighterSound,
+    archerSound,
+    mageSound,
+    healerSound,
+    lockSound;
 
 var Game = { 
     preload : function() {
@@ -67,8 +72,11 @@ var Game = {
         game.load.image('arrow', './assets/images/arrow_white.png');
         game.load.image('cursor', './assets/images/cursor.png');
 
-        //load bg music here.. must load in this game state!
-        //game.load.audio('battle', './assets/audio/music/battle.m4a');
+        game.load.audio('fSound', './assets/audio/soundeffects/sword.mp3');
+        game.load.audio('aSound', './assets/audio/soundeffects/bow.mp3');
+        game.load.audio('mSound', './assets/audio/soundeffects/bottle_rocket.mp3');
+        game.load.audio('hSound', './assets/audio/soundeffects/ting.mp3'); 
+        game.load.audio('lSound', './assets/audio/soundeffects/tick.mp3');   
     },
 
     create : function() {
@@ -189,6 +197,12 @@ var Game = {
 
         game.physics.enable(cursor);
         game.camera.follow(cursor);
+
+        fighterSound = game.add.audio('fSound');
+        archerSound = game.add.audio('aSound');
+        mageSound = game.add.audio('mSound');
+        healerSound = game.add.audio('hSound');
+        lockSound = game.add.audio('lSound');
     },
 
     update : function() {
@@ -547,12 +561,24 @@ var Game = {
     choosingMove : function() {
 
         if (!pause){
+            var x = game.math.snapToFloor(Math.floor(cursor.x), 60) / 60;
+            var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
+            var currTile = map.getTile(x,y);
+
             if(turn == playerId){
-                if (isDown == 0)
+                if (isDown == 0 && !alreadyMoved)
                     oldTile = this.moveMenu();
                 else {
-                    selected.clear();
-                    this.moveComplete(coordinates);
+                    if(!alreadyMoved){
+                        selected.clear();
+                        this.moveComplete(coordinates);
+                    }
+                    else{
+                        if(currTile.unit){
+                            selected.clear();
+                            this.moveComplete(coordinates);
+                        }
+                    }
                 }
             }      
         } else {
@@ -893,6 +919,7 @@ var Game = {
                 oldTile.unit.x = currTile.worldX;
                 oldTile.unit.y = currTile.worldY;
                 currTile.unit = oldTile.unit;
+                lockSound.play();
 
                 // give the new tile all of the old tile's properties
                 currTile.properties.unitType = oldTile.properties.unitType;
@@ -908,15 +935,27 @@ var Game = {
                 this.drawAttack(currTile.unit);
 
                 var check = false;
-                for(var i = 0; i<attackTiles.length; i++){
-                    if(enemyUnits.indexOf(attackTiles[i].unit) != -1){
-                        check = true
-                        break;
+
+                if(currTile.unit.name != "Friendly Healer"){
+                    for(var i = 0; i<attackTiles.length; i++){
+                        if(enemyUnits.indexOf(attackTiles[i].unit) != -1){
+                            check = true
+                            break;
+                        }
+                    }
+                }
+                else{
+                    for(var i = 0; i<attackTiles.length; i++){
+                        if(friendlyUnits.indexOf(attackTiles[i].unit) != -1){
+                            check = true
+                            break;
+                        }
                     }
                 }
 
                 if(check){
                     alreadyMoved = true;
+                    possibleTiles = [];
                     selected.lineStyle(2, 0xffbf00, 1);
                     selected.beginFill(0xffbf00, .5);
                     selected.drawRect(currTile.worldX + 2, currTile.worldY + 2, 56, 56);
@@ -936,8 +975,22 @@ var Game = {
                     isDown = 0;
                 }
             }
-        } else if (attackTiles.indexOf(currTile) != -1){
+        } 
+        else if (attackTiles.indexOf(currTile) != -1){
+            alreadyMoved = false;
             this.attack(oldTile, currTile);
+            graphics.clear();
+            isDown = 0;
+        }
+        else if (currTile == oldTile){
+            alreadyMoved = false;
+            this.lockUnit(currTile.unit);
+
+            lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+            lockRequest.unit_id = currTile.unit.id;
+
+            strReq = JSON.stringify(lockRequest);
+            connection.send(strReq);
             graphics.clear();
             isDown = 0;
         }
@@ -979,14 +1032,53 @@ var Game = {
         var targetedUnit = currTile.unit;
         var strReq;
 
-        attackRequest.unit_id = selectedUnit.id;
-        attackRequest.target_id = targetedUnit.id;
-        strReq = JSON.stringify(attackRequest);
-        console.log(strReq);
-        connection.send(strReq);
+        if(selectedUnit.name != "Friendly Healer"){
+            this.soundEffect(selectedUnit.name);
 
+            attackRequest.unit_id = selectedUnit.id;
+            attackRequest.target_id = targetedUnit.id;
+            strReq = JSON.stringify(attackRequest);
+            console.log(strReq);
+            connection.send(strReq);
+        }
+        else{
+            if(targetedUnit){
+                if(targetedUnit.health != 100){
+                    this.soundEffect(selectedUnit.name);
+
+                    attackRequest.unit_id = selectedUnit.id;
+                    attackRequest.target_id = targetedUnit.id;
+                    strReq = JSON.stringify(attackRequest);
+                    console.log(strReq);
+                    connection.send(strReq);
+                }
+                this.lockUnit(selectedUnit);
+                lockRequest.request_id = Math.floor(Math.random() * (1000 - 10) + 10);
+                lockRequest.unit_id = selectedUnit.id;
+
+                strReq = JSON.stringify(lockRequest);
+                connection.send(strReq);
+            }
+        }
         // if (selectedUnit && targetedUnit) 
         //     this.lockUnit(oldTile.unit); 
+    },
+
+    soundEffect : function(selectedName){
+        switch(selectedName){
+            case("Friendly Fighter"):
+                fighterSound.play();
+                break;
+            case("Friendly Archer"):
+                archerSound.play();
+                break;
+            case("Friendly Mage"):
+                mageSound.play();
+                break;
+            case("Friendly Healer"):
+                healerSound.play();
+                break;
+        }
     },
 
     killUnit : function(enemyOrFriendly, unitId){
@@ -1082,14 +1174,6 @@ var Game = {
 
             // increment the number of locked units (in place of turns)
             lockCounter++; 
-
-            // if the the lock counter == total number of units, unlock all
-            // TODO replace this with turn mechanism
-            // if (lockCounter == friendlyUnits.length + enemyUnits.length) {
-            //     this.unlockUnits(friendlyUnits);
-            //     this.unlockUnits(enemyUnits);
-            //     lockCounter = 0;
-            // }
         }
     },
 
