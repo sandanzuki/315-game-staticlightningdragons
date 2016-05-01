@@ -875,9 +875,6 @@ var Game = {
         var y = game.math.snapToFloor(Math.floor(cursor.y), 60) / 60;
         var currTile = map.getTile(x,y);
         var oldTile = map.getTile(coordinates[0], coordinates[1]);
-
-        console.log(oldTile.x);
-        console.log(currTile.x);
         
         if (possibleTiles.indexOf(currTile) != -1) {
             var distance = Math.abs(oldTile.x-currTile.x) + Math.abs(oldTile.y-currTile.y);
@@ -1084,11 +1081,11 @@ var Game = {
 
             // if the the lock counter == total number of units, unlock all
             // TODO replace this with turn mechanism
-            if (lockCounter == friendlyUnits.length + enemyUnits.length) {
-                this.unlockUnits(friendlyUnits);
-                this.unlockUnits(enemyUnits);
-                lockCounter = 0;
-            }
+            // if (lockCounter == friendlyUnits.length + enemyUnits.length) {
+            //     this.unlockUnits(friendlyUnits);
+            //     this.unlockUnits(enemyUnits);
+            //     lockCounter = 0;
+            // }
         }
     },
 
