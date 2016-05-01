@@ -1028,8 +1028,6 @@ var Game = {
         var strReq;
 
         if(selectedUnit.name != "Friendly Healer"){
-            this.soundEffect(selectedUnit.name);
-
             attackRequest.unit_id = selectedUnit.id;
             attackRequest.target_id = targetedUnit.id;
             strReq = JSON.stringify(attackRequest);
@@ -1039,8 +1037,6 @@ var Game = {
         else{
             if(targetedUnit){
                 if(targetedUnit.health != 100){
-                    this.soundEffect(selectedUnit.name);
-
                     attackRequest.unit_id = selectedUnit.id;
                     attackRequest.target_id = targetedUnit.id;
                     strReq = JSON.stringify(attackRequest);
@@ -1064,13 +1060,25 @@ var Game = {
             case("Friendly Fighter"):
                 fighterSound.play();
                 break;
+            case("Enemy Fighter"):
+                fighterSound.play();
+                break;  
             case("Friendly Archer"):
+                archerSound.play();
+                break;
+            case("Enemy Archer"):
                 archerSound.play();
                 break;
             case("Friendly Mage"):
                 mageSound.play();
                 break;
+            case("Enemy Mage"):
+                mageSound.play();
+                break;
             case("Friendly Healer"):
+                healerSound.play();
+                break;
+            case("Enemy Healer"):
                 healerSound.play();
                 break;
         }
@@ -1205,6 +1213,7 @@ var Game = {
         for(var i = 0; i<enemyUnits.length; i++){
             unit = enemyUnits[i];
             if((unit.id == unitId) && (unit.owner == turn)){
+                lockSound.play();
                 oldX = game.math.snapToFloor(Math.floor(unit.x), 60) / 60;
                 oldY = game.math.snapToFloor(Math.floor(unit.y), 60) / 60;
                 newTile = map.getTile(newX, newY, background);
