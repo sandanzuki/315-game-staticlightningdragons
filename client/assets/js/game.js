@@ -738,11 +738,11 @@ var Game = {
                 break;
             case("Friendly Archer"):
                 tile = map.getTile(x+1, y);
-                attackTiles.push(currTile);
+                attackTiles[0] = currTile;
                 if(tile){
                     adjacent = this.getAdjacent(tile);
                     for(var i = 0; i<adjacent.length; i++){
-                        if(attackTiles.indexOf(adjacent[i] == 1))
+                        if(attackTiles.indexOf(adjacent[i] == -1))
                             attackTiles.push(adjacent[i]);
                     }    
                 }
@@ -751,7 +751,7 @@ var Game = {
                 if(tile){
                     adjacent = this.getAdjacent(tile);
                     for(var i = 0; i<adjacent.length; i++){
-                        if(attackTiles.indexOf(adjacent[i] == 1))
+                        if(attackTiles.indexOf(adjacent[i] == -1))
                             attackTiles.push(adjacent[i]);
                     }    
                 }
@@ -760,7 +760,7 @@ var Game = {
                 if(tile){
                     adjacent = this.getAdjacent(tile);
                     for(var i = 0; i<adjacent.length; i++){
-                        if(attackTiles.indexOf(adjacent[i] == 1))
+                        if(attackTiles.indexOf(adjacent[i] == -1))
                             attackTiles.push(adjacent[i]);
                     } 
                 }
@@ -769,7 +769,7 @@ var Game = {
                 if(tile){
                     adjacent = this.getAdjacent(tile);
                     for(var i = 0; i<adjacent.length; i++){
-                        if(attackTiles.indexOf(adjacent[i] == 1))
+                        if(attackTiles.indexOf(adjacent[i] == -1))
                             attackTiles.push(adjacent[i]); 
                     } 
                 } 
