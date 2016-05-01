@@ -981,10 +981,14 @@ var Game = {
 
         if(enemyCount == 0){
             game.win = true;
+            music.destroy();  
+            game.cache.removeSound('music');
             this.state.start('GameOver');
         }
         if(friendCount == 0){
             game.win = false;
+            music.destroy();  
+            game.cache.removeSound('music');
             this.state.start('GameOver');
         }
     },
