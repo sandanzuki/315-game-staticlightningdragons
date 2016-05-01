@@ -210,9 +210,10 @@ var Menu = {
                         Game.killUnit(true, targetId);
                     if(unitHp == 0)
                         Game.killUnit(false, unitId);
-                    else
-                        Game.lockUnit(friendlyUnits[unitId]);
-
+                    else{
+                        if(turn == playerId)
+                            Game.lockUnit(friendlyUnits[unitId]);
+                    }
                     break;
                 case("PlayerRenameEvent"):
                     console.log(response);
