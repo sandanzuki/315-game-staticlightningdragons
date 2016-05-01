@@ -26,7 +26,6 @@ var map,
     enemyUnits = [],
     enemyCount = 5,
     pause = false,
-    //battle_music,
     moveRequest = new Object(),
     attackRequest = new Object(),
     hb_cnfg = { // healthbar
@@ -131,10 +130,6 @@ var Game = {
             playerTurn.text = turn + " - " + username._text;
         else
             playerTurn.text = turn + " - " + opponentName;
-
-        // bg music can go here when ready
-        // battle_music = game.add.audio('battle');
-        // battle_music.loopFull();
 
         //create health bars then load the units
         myHealthBar = new HealthBar(this.game, hb_cnfg);
@@ -608,9 +603,6 @@ var Game = {
                     strReq = JSON.stringify(request);
 
                     connection.send(strReq);
-                    //turn off battle music here
-                    music.destroy();  
-                    game.cache.removeSound('music');
                     this.state.start('GameOver');
                     break;
 
@@ -1146,14 +1138,10 @@ var Game = {
 
         if(enemyCount == 0){
             game.win = true;
-            music.destroy();  
-            game.cache.removeSound('music');
             this.state.start('GameOver');
         }
         if(friendCount == 0){
             game.win = false;
-            music.destroy();  
-            game.cache.removeSound('music');
             this.state.start('GameOver');
         }
     },

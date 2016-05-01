@@ -142,9 +142,6 @@ var Menu = {
                     else if(response.state == "GAME_OVER"){
                         if(friendCount > 0){
                             game.win = true;
-                            // turn off music 
-                            music.destroy();  
-                            game.cache.removeSound('music');
                             this.state.start('GameOver');
                         }
                     }
