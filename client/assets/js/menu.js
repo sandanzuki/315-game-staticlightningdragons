@@ -202,7 +202,10 @@ var Menu = {
 
                     if(targetId != -1){
                         Game.hpBarsHit(targetId, targetHp, unitId, unitHp);
-                        Game.soundEffect(friendlyUnits[unitId]);
+                        if(turn == playerId)
+                            Game.soundEffect(friendlyUnits[unitId]);
+                        else
+                            Game.soundEffect(enemyUnits[unitId]);
                     }
                     if(targetHp == 0)
                         Game.killUnit(true, targetId);

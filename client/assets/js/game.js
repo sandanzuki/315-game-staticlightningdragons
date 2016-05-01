@@ -738,6 +738,7 @@ var Game = {
                 break;
             case("Friendly Archer"):
                 tile = map.getTile(x+1, y);
+                attackTiles.push(currTile);
                 if(tile){
                     adjacent = this.getAdjacent(tile);
                     for(var i = 0; i<adjacent.length; i++){
@@ -772,6 +773,8 @@ var Game = {
                             attackTiles.push(adjacent[i]); 
                     } 
                 } 
+
+                attackTiles.splice(0, 1);
                 break;
             case("Friendly Mage"):
                 attackTiles = this.getAdjacent(currTile);
